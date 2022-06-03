@@ -1,22 +1,24 @@
 import path from "path";
 import fs from "fs";
-import "prismjs";
-import "prismjs/themes/prism.css";
 
 import { GetStaticProps, GetStaticPaths, NextPage } from "next";
-import PostLayout from "~/layouts/PostLayout";
 import React from "react";
-import ReactMarkdown from "react-markdown";
-import matter from "gray-matter";
+import { Markdown } from "~/components/Markdown";
+import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
+import MainLayout from "~/layouts/MainLayout";
 
 type PostProps = {
   id: string;
   content: string;
 };
 
-const postDirectory = "static/posts";
+type PostPaths = {
+  id: string;
+};
 
-const getStaticPaths: GetStaticPaths = async () => {
+const postDirectory = "markdowns/ja/post";
+
+const getStaticPaths: GetStaticPaths<PostPaths> = async () => {
   const fileNames = fs.readdirSync(postDirectory);
   const extractID = (fileName: string): string => {
     // note that path.basename will remove the extension
@@ -25,13 +27,11 @@ const getStaticPaths: GetStaticPaths = async () => {
     return id;
   };
 
-  const paths = fileNames.map((fileName) => {
-    return {
-      params: {
-        id: extractID(fileName),
-      },
-    };
-  });
+  const paths = fileNames.map((fileName) => ({
+    params: {
+      id: extractID(fileName),
+    },
+  }));
 
   return {
     paths: paths,
@@ -52,20 +52,17 @@ const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 };
 
-const Post: NextPage<PostProps> = (props: PostProps) => {
-  const markdown = matter(props.content);
-  return (
-    <>
-      <PostLayout>
-        <>
-          <>{props.id}</>
-          <br />
-          <ReactMarkdown>{markdown.content}</ReactMarkdown>
-        </>
-      </PostLayout>
-    </>
-  );
+// the dynamic page in Next.js may require the defalut argument to the props.
+const Post: NextPageWithLayout<PostProps> = ({
+  id = "",
+  content = "",
+}: PostProps) => {
+  return <Markdown content={content} />;
 };
 
-export { getStaticPaths, getStaticProps };
+Post.getLayout = (page) => {
+  return <MainLayout>{page}</MainLayout>;
+};
+
+export { getStaticProps, getStaticPaths };
 export default Post;
