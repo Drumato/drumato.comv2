@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 
-import { GetStaticProps, GetStaticPaths, NextPage } from "next";
+import { GetStaticProps, GetStaticPaths } from "next";
 import React from "react";
 import { Markdown } from "~/components/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";

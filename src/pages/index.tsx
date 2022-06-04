@@ -1,7 +1,7 @@
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 
-const Home: NextPageWithLayout = () => {
+const Home: NextPageWithLayout<{}> = () => {
   return <>WIP</>;
 };
 
