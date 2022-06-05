@@ -1,4 +1,4 @@
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import { listIDFromMarkdownDir } from "~/utils/markdown";
@@ -13,7 +13,9 @@ type PostListProps = {
   posts: PostItem[];
 };
 
-const getStaticProps: GetStaticProps<PostListProps> = async ({ locale }) => {
+export const getStaticProps: GetStaticProps<PostListProps> = async ({
+  locale,
+}) => {
   const postDirectory = `markdowns/${locale}/post`;
   const ids = listIDFromMarkdownDir(postDirectory);
   const posts = ids.map((id) => {
@@ -46,5 +48,4 @@ PostList.getLayout = (page) => {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export { getStaticProps };
 export default PostList;

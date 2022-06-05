@@ -1,5 +1,8 @@
+type createdAt = `${number}-${number}-${number}`;
 type MarkdownFrontMatter = {
-  createdAt: `${number}-${number}-${number}`;
+  createdAt: createdAt;
+  title: string;
+  tags: string[];
 };
 
-export { MarkdownFrontMatter };
+export { MarkdownFrontMatter, createdAt };

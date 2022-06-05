@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { GrayMatterFile } from "gray-matter";
-import { GetStaticPaths } from "next";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type MarkdownPath = {
@@ -10,6 +9,7 @@ type MarkdownPath = {
   };
   locale: string;
 };
+
 type MarkdownPaths = {
   paths: MarkdownPath[];
   fallback: boolean;
@@ -21,15 +21,10 @@ const listIDFromMarkdownDir = (dirName: string): string[] => {
     return path.extname(fileName) == ".md";
   });
 
-  const extractID = (fileName: string): string => {
-    // note that path.basename will remove the extension
-    // if the optional 2nd arg is given.
-    const id = path.basename(fileName, ".md");
-    return id;
-  };
-
+  // note that path.basename will remove the extension
+  // if the optional 2nd arg is given.
   const ids = mdFileNames.map((fileName) => {
-    return extractID(fileName);
+    return path.basename(fileName, ".md");
   });
 
   return ids;
@@ -56,7 +51,11 @@ const getPathsFromMarkdownDir = (
 const extractMarkdownFrontMatter = (
   markdown: GrayMatterFile<string>
 ): MarkdownFrontMatter => {
-  return { createdAt: markdown.data.createdAt };
+  return {
+    createdAt: markdown.data.createdAt,
+    title: markdown.data.title,
+    tags: markdown.data.tags,
+  };
 };
 
 export {

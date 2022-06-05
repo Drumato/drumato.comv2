@@ -14,6 +14,7 @@ const StyledTypography = styled(Typography)({
   justifyContent: "center",
   alignItems: "center",
   fontSize: "10px",
+  fontFamily: "Klee One",
 });
 
 const BlogFooterTypography = (

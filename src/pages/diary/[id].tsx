@@ -6,11 +6,17 @@ import React from "react";
 import { Markdown } from "~/components/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
-import { getPathsFromMarkdownDir } from "~/utils/markdown";
+import {
+  extractMarkdownFrontMatter,
+  getPathsFromMarkdownDir,
+} from "~/utils/markdown";
 import { english, japanese } from "~/locales/supported";
+import matter, { GrayMatterFile } from "gray-matter";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type DiaryProps = {
-  content: string;
+  markdown: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 type DiaryPath = {
@@ -40,20 +46,22 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
   const fileName = `${params?.id}.md`;
   const diaryDirectoryWithLocale = diaryDirectory(locale ?? english);
   const filePath = path.join(diaryDirectoryWithLocale, fileName);
-  console.log(filePath);
 
   const content = fs.readFileSync(filePath, { encoding: "utf-8" });
+  const markdown = matter(content);
+  const fronmatter = extractMarkdownFrontMatter(markdown);
 
   return {
     props: {
       id: params?.id,
-      content: content,
+      markdown: markdown.content,
+      frontmatter: fronmatter,
     },
   };
 };
 
-const Diary: NextPageWithLayout<DiaryProps> = ({ content }: DiaryProps) => {
-  return <Markdown content={content} />;
+const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
+  return <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />;
 };
 
 Diary.getLayout = (page) => {

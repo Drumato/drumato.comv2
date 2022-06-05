@@ -1,4 +1,4 @@
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import { listIDFromMarkdownDir } from "~/utils/markdown";
@@ -13,7 +13,9 @@ type DiaryItemProps = {
   diaries: DiaryItem[];
 };
 
-const getStaticProps: GetStaticProps<DiaryItemProps> = async ({ locale }) => {
+export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
+  locale,
+}) => {
   const postDirectory = `markdowns/${locale}/diary`;
   const ids = listIDFromMarkdownDir(postDirectory);
   const posts = ids.map((id) => {
@@ -47,5 +49,4 @@ DiaryList.getLayout = (page) => {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export { getStaticProps };
 export default DiaryList;

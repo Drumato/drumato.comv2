@@ -1,11 +1,15 @@
 import fs from "fs";
+import matter, { GrayMatterFile } from "gray-matter";
 import { GetStaticProps } from "next";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { Markdown } from "~/components/Markdown";
 import MainLayout from "~/layouts/MainLayout";
+import { extractMarkdownFrontMatter } from "~/utils/markdown";
 
 type ContactsProps = {
-  content: string;
+  markdown: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 export const getStaticProps: GetStaticProps<ContactsProps> = async ({
@@ -13,18 +17,19 @@ export const getStaticProps: GetStaticProps<ContactsProps> = async ({
 }) => {
   const filePath = `markdowns/${locale}/contacts.md`;
   const content: string = fs.readFileSync(filePath, "utf-8");
+  const markdown = matter(content);
+  const frontmatter = extractMarkdownFrontMatter(markdown);
 
   return {
     props: {
-      content: content,
+      markdown: markdown.content,
+      frontmatter: frontmatter,
     },
   };
 };
 
-const Contacts: NextPageWithLayout<ContactsProps> = ({
-  content,
-}: ContactsProps) => {
-  return <Markdown content={content} />;
+const Contacts: NextPageWithLayout<ContactsProps> = (props: ContactsProps) => {
+  return <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />;
 };
 
 Contacts.getLayout = (page) => {

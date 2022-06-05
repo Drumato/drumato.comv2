@@ -1,12 +1,7 @@
 ---
 title: "Go Parser Combinator with Go Generics"
-description: ""
 createdAt: "2022-04-10"
 tags: ["go", "parser"]
-categories: ["go"]
-aliases: []
-series: []
-author: "Drumato"
 ---
 
 Maybe this post will be old cuz I'm developing peachcomb actively!

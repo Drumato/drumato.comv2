@@ -6,11 +6,17 @@ import React from "react";
 import { Markdown } from "~/components/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
-import { getPathsFromMarkdownDir } from "~/utils/markdown";
+import {
+  extractMarkdownFrontMatter,
+  getPathsFromMarkdownDir,
+} from "~/utils/markdown";
 import { english, japanese } from "~/locales/supported";
+import matter, { GrayMatterFile } from "gray-matter";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type PostProps = {
-  content: string;
+  markdown: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 type PostPath = {
@@ -40,20 +46,22 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
   const fileName = `${params?.id}.md`;
   const postDirectoryWithLocale = postDirectory(locale ?? english);
   const filePath = path.join(postDirectoryWithLocale, fileName);
-  console.log(filePath);
 
   const content = fs.readFileSync(filePath, { encoding: "utf-8" });
+  const markdown = matter(content);
+  const fronmatter = extractMarkdownFrontMatter(markdown);
 
   return {
     props: {
       id: params?.id,
-      content: content,
+      markdown: markdown.content,
+      frontmatter: fronmatter,
     },
   };
 };
 
-const Post: NextPageWithLayout<PostProps> = ({ content }: PostProps) => {
-  return <Markdown content={content} />;
+const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
+  return <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />;
 };
 
 Post.getLayout = (page) => {

@@ -1,12 +1,7 @@
 ---
 title: "Go Parser Combinator with Go Generics"
-description: ""
 createdAt: "2022-04-10"
 tags: ["go", "parser"]
-categories: ["go"]
-aliases: []
-series: []
-author: "Drumato"
 ---
 
 現在も活発に開発しているため，仕様が大きく変更される場合があります．
