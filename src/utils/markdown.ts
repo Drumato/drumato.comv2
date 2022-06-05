@@ -88,3 +88,4 @@ export {
   extractMarkdownFrontMatter,
   getPathsFromMarkdownDir,
 };
+export type { MarkdownEntry };
