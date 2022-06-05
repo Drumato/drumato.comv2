@@ -5,19 +5,20 @@ type BlogTitleProps = {
   siteTitle: string;
 };
 
-const StyledButton = styled(Button)({
-  width: "10px",
-  padding: "20px",
-  marginRight: "30px",
-});
-
 type BlogTitleButtonProps = {
   children: ReactNode;
 };
 
 const BlogTitleButton = (props: BlogTitleButtonProps): JSX.Element => {
+  const StyledButton = styled(Button)({
+    width: "10px",
+    padding: "20px",
+    marginRight: "30px",
+    color: "#FFFFFF",
+  });
+
   return (
-    <StyledButton size="small" color="inherit" href="/">
+    <StyledButton size="small" href="/">
       {props.children}
     </StyledButton>
   );
