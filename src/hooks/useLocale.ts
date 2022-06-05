@@ -1,13 +1,14 @@
 import { useRouter } from "next/router";
+import { categories } from "~/locales/category";
 
 type CustomLocale = {
-  locale: string;
+  categories: Map<string, string>;
 };
 
 const useLocale = (): CustomLocale => {
   const { locale } = useRouter();
   return {
-    locale: locale ?? "en",
+    categories: categories(locale),
   };
 };
 

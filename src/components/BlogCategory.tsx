@@ -1,8 +1,9 @@
 import { Button, styled, Typography } from "@mui/material";
+import { useRouter } from "next/router";
 
 type BlogCategoryProps = {
-  categoryBaseDir: string;
-  name: string;
+  categoryInURL: string;
+  categoryName: string;
 };
 
 type BlogCategoryTypographyProps = {
@@ -22,14 +23,16 @@ const BlogCategoryTypography = (
 };
 
 const BlogCategory = (props: BlogCategoryProps): JSX.Element => {
-  const link = `/${props.categoryBaseDir}/${props.name}`;
+  const { locale } = useRouter();
+  const link = `/${locale}/${props.categoryInURL}`;
 
   const StyledButton = styled(Button)({
     height: "64px",
   });
+
   return (
     <StyledButton size="large" color="inherit" href={link}>
-      <BlogCategoryTypography content={props.name} />
+      <BlogCategoryTypography content={props.categoryName} />
     </StyledButton>
   );
 };

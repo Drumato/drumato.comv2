@@ -4,17 +4,26 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import { listIDFromMarkdownDir } from "~/utils/markdown";
 
+type PostItem = {
+  link: string;
+  // INFO: the type should have the title
+};
+
 type PostListProps = {
-  ids: string[];
+  // INFO: I want the post's title.
+  posts: PostItem[];
 };
 
 const getStaticProps: GetStaticProps<PostListProps> = async ({ locale }) => {
   const postDirectory = `markdowns/${locale}/post`;
   const ids = listIDFromMarkdownDir(postDirectory);
+  const posts = ids.map((id) => {
+    return { link: `/${locale}/post/${id}` };
+  });
 
   return {
     props: {
-      ids: ids,
+      posts: posts,
     },
   };
 };
@@ -24,10 +33,10 @@ const PostList: NextPageWithLayout<PostListProps> = (
 ) => {
   return (
     <ul>
-      {postProps.ids.map((id) => {
+      {postProps.posts.map((post) => {
         return (
-          <li key={id}>
-            <a href={`/ja/post/${id}`}>{id}</a>
+          <li key={post.link}>
+            <a href={post.link}>{post.link}</a>
           </li>
         );
       })}

@@ -5,20 +5,11 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import BlogCategory from "./BlogCategory";
 import BlogTitle from "./BlogTitle";
+import useLocale from "~/hooks/useLocale";
 
 type BlogHeaderProps = {
   siteTitle: string;
-  categoryBaseDir: string;
 };
-
-const categories = [
-  "about",
-  "contacts",
-  "disclaimer",
-  "license",
-  "post",
-  "diary",
-];
 
 const StyledBox = styled(Box)({
   height: "64px",
@@ -33,6 +24,16 @@ const StyledToolbar = styled(Toolbar)({
 });
 
 const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
+  const loc = useLocale();
+  const categories = Array.from(loc.categories).map(([key, value]) => {
+    return {
+      // "post"
+      urlElement: key,
+      // "記事一覧"
+      categoryName: value,
+    };
+  });
+
   return (
     <StyledBox sx={{ flexGrow: 1 }}>
       <StyledAppBar position="static">
@@ -42,9 +43,9 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
             {categories.map((category) => {
               return (
                 <BlogCategory
-                  key={category}
-                  categoryBaseDir={props.categoryBaseDir}
-                  name={category}
+                  key={category.categoryName}
+                  categoryInURL={category.urlElement}
+                  categoryName={category.categoryName}
                 ></BlogCategory>
               );
             })}
