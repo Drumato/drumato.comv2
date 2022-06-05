@@ -1,11 +1,21 @@
 import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
-import { listIDFromMarkdownDir } from "~/utils/markdown";
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import {
+  extractMarkdownFrontMatter,
+  readMarkdownsFromDir,
+} from "~/utils/markdown";
+import BlogCardGrid from "~/components/BlogCardGrid";
 
 type DiaryItem = {
   link: string;
-  // INFO: the type should have the title
+  title: string;
+  createdAt: string;
+  imageLink: string;
+  description: string;
 };
 
 type DiaryItemProps = {
@@ -16,15 +26,24 @@ type DiaryItemProps = {
 export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
   locale,
 }) => {
-  const postDirectory = `markdowns/${locale}/diary`;
-  const ids = listIDFromMarkdownDir(postDirectory);
-  const posts = ids.map((id) => {
-    return { link: `/${locale}/diary/${id}` };
+  const diaryDirectory = `markdowns/${locale}/diary`;
+  const entries = readMarkdownsFromDir(diaryDirectory);
+  const diaries = entries.map((entry) => {
+    const id = path.basename(entry.fileName, ".md");
+    const link = `/${locale}/diary/${id}`;
+
+    return {
+      link: link,
+      title: entry.frontmatter.title,
+      createdAt: entry.frontmatter.createdAt,
+      imageLink: entry.frontmatter.imageLink,
+      description: entry.frontmatter.description,
+    };
   });
 
   return {
     props: {
-      diaries: posts,
+      diaries: diaries,
     },
   };
 };
@@ -32,17 +51,7 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
 const DiaryList: NextPageWithLayout<DiaryItemProps> = (
   diaryProps: DiaryItemProps
 ) => {
-  return (
-    <ul>
-      {diaryProps.diaries.map((diary) => {
-        return (
-          <li key={diary.link}>
-            <a href={diary.link}>{diary.link}</a>
-          </li>
-        );
-      })}
-    </ul>
-  );
+  return <BlogCardGrid cards={diaryProps.diaries} />;
 };
 
 DiaryList.getLayout = (page) => {

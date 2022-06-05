@@ -1,7 +1,9 @@
 ---
-title: "Go Parser Combinator with Go Generics"
+title: "Go GenericsでつくるParser Combinator"
 createdAt: "2022-04-10"
 tags: ["go", "parser"]
+imageLink: "/Drumato.png"
+description: "Genericsを使用してParser Combinatorを実装したのでそれを紹介します."
 ---
 
 現在も活発に開発しているため，仕様が大きく変更される場合があります．

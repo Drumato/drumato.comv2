@@ -2,6 +2,8 @@
 createdAt: "2022-06-05"
 title: "LICENSE"
 tags: []
+imageLink: ""
+description: ""
 ---
 
 本Blogで記載されているSource Codeのうち,

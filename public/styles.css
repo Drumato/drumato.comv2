@@ -3,6 +3,24 @@ html, body {
     text-align: start;
 }
 
-*, p {
+p {
     font-size: xx-small;
+}
+
+/* for PC */
+@media screen and (min-width: 769px) {
+}
+
+/* for Tablet */
+@media only screen and (min-width: 641px) and (max-width: 960px) {
+}
+
+/* for Mobile */
+@media screen and (max-width: 640px) {
+    h1, h2, h3, h4, h5, h6 {
+        font-size: "80%",
+    }
+    img {
+        width: 100%;
+    }
 }

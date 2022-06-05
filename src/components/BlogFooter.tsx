@@ -20,7 +20,7 @@ const StyledTypography = styled(Typography)({
 const BlogFooterTypography = (
   props: BlogFooterTypographyProps
 ): JSX.Element => {
-  return <StyledTypography variant="h1">{props.content}</StyledTypography>;
+  return <StyledTypography variant="caption">{props.content}</StyledTypography>;
 };
 
 const BlogFooter = (props: BlogFooterProps): JSX.Element => {

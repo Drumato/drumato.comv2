@@ -1,10 +1,19 @@
 ---
 title: "Go Parser Combinator with Go Generics"
+description: ""
 createdAt: "2022-04-10"
 tags: ["go", "parser"]
+imageLink: "/Drumato.png"
 ---
 
 Maybe this post will be old cuz I'm developing peachcomb actively!
+
+- [Sample](#sample)
+- [Internals](#internals)
+	- [Parser Signature](#parser-signature)
+	- [Type Resolving](#type-resolving)
+	- [Custom Input Types](#custom-input-types)
+- [Conclusion](#conclusion)
 
 This post introduces a Go parser-library that is being developed by me, called **peachcomb** .
 this library is aimed to reduce overhead with dynamically dispatching, and notify mismatching among parsers.

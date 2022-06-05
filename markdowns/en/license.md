@@ -2,6 +2,8 @@
 createdAt: "2022-06-05"
 title: "License"
 tags: []
+imageLink: ""
+description: ""
 ---
 
 All Source codes in this blog(excepting they're hosted in GitHub)

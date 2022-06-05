@@ -14,7 +14,7 @@ const BlogCategoryTypography = (
   props: BlogCategoryTypographyProps
 ): JSX.Element => {
   const StyledTypography = styled(Typography)({
-    fontSize: "14px",
+    fontSize: "12px",
     fontFamily: "Klee One",
     color: "#FFFFFF",
   });
@@ -23,7 +23,7 @@ const BlogCategoryTypography = (
 };
 
 const BlogCategory = (props: BlogCategoryProps): JSX.Element => {
-  const { locale } = useLocale();
+  const { rawLocale: locale } = useLocale();
   const link = `/${locale}/${props.categoryInURL}`;
 
   const StyledButton = styled(Button)({

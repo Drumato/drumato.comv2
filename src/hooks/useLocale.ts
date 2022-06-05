@@ -3,7 +3,7 @@ import { categories } from "~/locales/category";
 import { english } from "~/locales/supported";
 
 type CustomLocale = {
-  locale: string;
+  rawLocale: string;
   categories: Map<string, string>;
 };
 
@@ -11,7 +11,7 @@ const useLocale = (): CustomLocale => {
   const { locale } = useRouter();
   const l = locale ?? english;
   return {
-    locale: l,
+    rawLocale: l,
     categories: categories(l),
   };
 };

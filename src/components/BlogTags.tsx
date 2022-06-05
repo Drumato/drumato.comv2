@@ -6,6 +6,10 @@ type Props = {
 };
 
 const BlogTags = (props: Props): JSX.Element => {
+  if (props.tags.length === 0) {
+    return <></>;
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <StyleIcon style={{ fontSize: "large" }}></StyleIcon>

@@ -36,7 +36,7 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
 
   return (
     <StyledBox sx={{ flexGrow: 1 }}>
-      <StyledAppBar position="static">
+      <StyledAppBar position="fixed">
         <StyledToolbar color="inherit">
           <>
             <BlogTitle siteTitle={props.siteTitle} />

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { GrayMatterFile } from "gray-matter";
+import matter, { GrayMatterFile } from "gray-matter";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type MarkdownPath = {
@@ -30,6 +30,29 @@ const listIDFromMarkdownDir = (dirName: string): string[] => {
   return ids;
 };
 
+type MarkdownEntry = {
+  fileName: string;
+  frontmatter: MarkdownFrontMatter;
+  markdown: GrayMatterFile<string>;
+};
+
+const readMarkdownsFromDir = (dirName: string): MarkdownEntry[] => {
+  const fileNames = fs.readdirSync(dirName);
+  const entries = fileNames.map((fileName) => {
+    const id = path.basename(fileName, ".md");
+    const filePath = path.join(dirName, fileName);
+    const content = fs.readFileSync(filePath, { encoding: "utf-8" });
+    const md = matter(content);
+    const frontmatter = extractMarkdownFrontMatter(md);
+    return {
+      fileName: fileName,
+      frontmatter: frontmatter,
+      markdown: md,
+    };
+  });
+  return entries;
+};
+
 const getPathsFromMarkdownDir = (
   locale: string,
   dirName: string
@@ -55,11 +78,13 @@ const extractMarkdownFrontMatter = (
     createdAt: markdown.data.createdAt,
     title: markdown.data.title,
     tags: markdown.data.tags,
+    imageLink: markdown.data.imageLink,
+    description: markdown.data.description,
   };
 };
 
 export {
+  readMarkdownsFromDir,
   extractMarkdownFrontMatter,
-  listIDFromMarkdownDir,
   getPathsFromMarkdownDir,
 };

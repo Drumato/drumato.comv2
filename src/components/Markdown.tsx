@@ -1,3 +1,4 @@
+import style from "/public/markdown-styles.module.css";
 import { Edit as EditIcon } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Chip } from "@mui/material";
 import matter, { GrayMatterFile } from "gray-matter";
@@ -20,6 +21,7 @@ type CustomReactMarkdownProps = {
 const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
   return (
     <ReactMarkdown
+      className={style.reactMarkDown}
       remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
       components={{
         code({ node, inline, className, children, ...props }) {
@@ -27,9 +29,13 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
           if (inline || !match) {
             return (
               <code
-                style={{ backgroundColor: "#ffe6e6" }}
-                className={className}
                 {...props}
+                style={{
+                  fontSize: "xx-small",
+                  fontFamily: "Klee One",
+                  backgroundColor: "#ffe6e6",
+                }}
+                className={className}
               >
                 {children}
               </code>
@@ -38,7 +44,6 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
 
           return (
             <SyntaxHighlighter
-              customStyle={{ fontFamily: "cursive" }}
               language={match[1]}
               style={tomorrow}
               PreTag="div"
@@ -57,6 +62,7 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
 const Markdown = (props: Props): JSX.Element => {
   return (
     <>
+      <h2>{props.frontmatter.title}</h2>
       <BottomNavigation showLabels>
         <BottomNavigationAction
           label={`created at ${props.frontmatter.createdAt}`}
@@ -64,6 +70,7 @@ const Markdown = (props: Props): JSX.Element => {
         />
       </BottomNavigation>
       <BlogTags tags={props.frontmatter.tags}></BlogTags>
+      <hr />
       <CustomReactMarkdown content={props.markdown} />
     </>
   );

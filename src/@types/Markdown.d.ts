@@ -3,6 +3,8 @@ type MarkdownFrontMatter = {
   createdAt: createdAt;
   title: string;
   tags: string[];
+  description: string;
+  imageLink: string;
 };
 
 export { MarkdownFrontMatter, createdAt };

@@ -11,6 +11,15 @@ const nextConfig = {
     locales: ["en", "ja"],
     defaultLocale: "en",
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/post",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

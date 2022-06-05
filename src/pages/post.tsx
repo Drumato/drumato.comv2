@@ -1,15 +1,19 @@
 import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
-import { listIDFromMarkdownDir } from "~/utils/markdown";
+import path from "path";
+import { readMarkdownsFromDir } from "~/utils/markdown";
+import BlogCardGrid from "~/components/BlogCardGrid";
 
 type PostItem = {
   link: string;
-  // INFO: the type should have the title
+  title: string;
+  createdAt: string;
+  imageLink: string;
+  description: string;
 };
 
 type PostListProps = {
-  // INFO: I want the post's title.
   posts: PostItem[];
 };
 
@@ -17,9 +21,18 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
   locale,
 }) => {
   const postDirectory = `markdowns/${locale}/post`;
-  const ids = listIDFromMarkdownDir(postDirectory);
-  const posts = ids.map((id) => {
-    return { link: `/${locale}/post/${id}` };
+  const entries = readMarkdownsFromDir(postDirectory);
+  const posts = entries.map((entry) => {
+    const id = path.basename(entry.fileName, ".md");
+    const link = `/${locale}/post/${id}`;
+
+    return {
+      link: link,
+      title: entry.frontmatter.title,
+      createdAt: entry.frontmatter.createdAt,
+      imageLink: entry.frontmatter.imageLink,
+      description: entry.frontmatter.description,
+    };
   });
 
   return {
@@ -30,20 +43,11 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
 };
 
 const PostList: NextPageWithLayout<PostListProps> = (
-  postProps: PostListProps
+  postListProps: PostListProps
 ) => {
-  return (
-    <ul>
-      {postProps.posts.map((post) => {
-        return (
-          <li key={post.link}>
-            <a href={post.link}>{post.link}</a>
-          </li>
-        );
-      })}
-    </ul>
-  );
+  return <BlogCardGrid cards={postListProps.posts} />;
 };
+
 PostList.getLayout = (page) => {
   return <MainLayout>{page}</MainLayout>;
 };

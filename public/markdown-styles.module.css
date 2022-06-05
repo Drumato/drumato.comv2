@@ -1,0 +1,45 @@
+.reactMarkDown blockquote * {
+    background-color: #f7f7f7;
+    font-style: italic;
+}
+
+.reactMarkDown a {
+    font-size: xx-small;
+}
+
+.reactMarkDown ul {
+    font-size: xx-small;
+}
+
+.reactMarkDown th {
+    background-color: #f7f7f7;
+    border: solid 1px;
+}
+
+.reactMarkDown td {
+    border: solid 1px;
+}
+ 
+.reactMarkDown table {
+    border-collapse: collapse;
+}
+
+.reactMarkDown code {
+    font-family: M PLUS 1p;
+    font-size: xx-small;
+}
+
+.reactMarkDown code * {
+    font-family: M PLUS 1p;
+    font-size: xx-small;
+}
+
+.reactMarkDown pre {
+    font-family: M PLUS 1p;
+    font-size: xx-small;
+}
+
+.reactMarkDown pre * {
+    font-family: M PLUS 1p;
+    font-size: xx-small;
+}
