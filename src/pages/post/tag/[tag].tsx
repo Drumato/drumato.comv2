@@ -1,3 +1,4 @@
+import fs from "fs";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { GetStaticPaths, GetStaticProps } from "next";
 import MainLayout from "~/layouts/MainLayout";
@@ -22,59 +23,29 @@ type TagPath = {
   tag: string;
 };
 
-// collects all tags in the markdowns in the post directory.
-// for getStaticPaths, the tag is duplicated btw locales.
-// markdowns: [{tags: ["go"], locale: "ja"}, {tags: ["go"], locale: "ja"}]
-// returns: [{tag: "go", locale: "ja"}, {tag: "go", locale: "ja"}]
-const setUniqueTagSetInLocaleFromMarkdowns = (
-  markdowns: {
-    tags: string[];
-    locale: string;
-  }[]
-): { tag: string; locale: string }[] => {
-  const tagsSequence = markdowns.map((entry) => entry.tags);
-
-  const allTagList = tagsSequence.reduceRight((prev, cur, _idx, _ary) => {
-    return prev.concat(cur);
-  });
-  const allTagSet = new Set(allTagList);
-  const allTags = Array.from(allTagSet).map((tag) => {
-    return { tag: tag, locale: japanese };
-  });
-  allTags.push(
-    ...allTags.map((entry) => {
-      return { tag: entry.tag, locale: english };
-    })
-  );
-
-  return allTags;
-};
-
 export const getStaticPaths: GetStaticPaths<TagPath> = async () => {
-  const jaPostDirectory = `markdowns/${japanese}/post`;
-  const enPostDirectory = `markdowns/${english}/post`;
-  const jaPosts = readMarkdownsFromDir(jaPostDirectory).map((entry) => ({
-    tags: entry.frontmatter.tags,
-    locale: japanese,
-  }));
-
-  const enPosts = readMarkdownsFromDir(enPostDirectory).map((entry) => ({
-    tags: entry.frontmatter.tags,
-    locale: english,
-  }));
-
-  // note that allPostTags may have the duplicate tag.
-  const allPosts = jaPosts.concat(enPosts);
-  const allTagSet = setUniqueTagSetInLocaleFromMarkdowns(allPosts);
-
-  const paths = allTagSet.map((entry) => {
+  const tagsFile = fs.readFileSync("markdowns/all-posttags.json", {
+    encoding: "utf-8",
+  });
+  const tags: string[] = JSON.parse(tagsFile);
+  const jaPaths = tags.map((tag) => {
     return {
       params: {
-        tag: entry.tag,
+        tag: tag,
       },
-      locale: entry.locale,
+      locale: japanese,
     };
   });
+  const paths = jaPaths.concat(
+    tags.map((tag) => {
+      return {
+        params: {
+          tag: tag,
+        },
+        locale: english,
+      };
+    })
+  );
 
   return { paths: paths, fallback: false };
 };
