@@ -30,6 +30,7 @@ const Markdown = (props: Props): JSX.Element => {
 
           return (
             <SyntaxHighlighter
+              customStyle={{ fontFamily: "cursive" }}
               language={match[1]}
               style={tomorrow}
               PreTag="div"

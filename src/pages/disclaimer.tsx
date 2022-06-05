@@ -4,15 +4,15 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { Markdown } from "~/components/Markdown";
 import MainLayout from "~/layouts/MainLayout";
 
-type AboutProps = {
+type DisclaimerProps = {
   content: string;
 };
 
-export const getStaticProps: GetStaticProps<AboutProps> = async ({
+export const getStaticProps: GetStaticProps<DisclaimerProps> = async ({
   locale,
 }) => {
-  const aboutPath = `markdowns/${locale}/about.md`;
-  const content: string = fs.readFileSync(aboutPath, "utf-8");
+  const filePath = `markdowns/${locale}/disclaimer.md`;
+  const content: string = fs.readFileSync(filePath, "utf-8");
 
   return {
     props: {
@@ -21,12 +21,14 @@ export const getStaticProps: GetStaticProps<AboutProps> = async ({
   };
 };
 
-const About: NextPageWithLayout<AboutProps> = ({ content }: AboutProps) => {
+const Disclaimer: NextPageWithLayout<DisclaimerProps> = ({
+  content,
+}: DisclaimerProps) => {
   return <Markdown content={content} />;
 };
 
-About.getLayout = (page) => {
+Disclaimer.getLayout = (page) => {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default About;
+export default Disclaimer;

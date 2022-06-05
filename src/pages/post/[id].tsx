@@ -21,7 +21,7 @@ const postDirectory = (locale: string) => `markdowns/${locale}/post`;
 const jaPostDirectory = postDirectory(japanese);
 const enPostDirectory = postDirectory(english);
 
-const getStaticPaths: GetStaticPaths<PostPath> = async () => {
+export const getStaticPaths: GetStaticPaths<PostPath> = async () => {
   const jaPosts = getPathsFromMarkdownDir(japanese, jaPostDirectory);
   const enPosts = getPathsFromMarkdownDir(english, enPostDirectory);
 
@@ -33,7 +33,7 @@ const getStaticPaths: GetStaticPaths<PostPath> = async () => {
   return allPostPaths;
 };
 
-const getStaticProps: GetStaticProps<PostProps> = async ({
+export const getStaticProps: GetStaticProps<PostProps> = async ({
   params,
   locale,
 }) => {
@@ -60,5 +60,4 @@ Post.getLayout = (page) => {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export { getStaticProps, getStaticPaths };
 export default Post;

@@ -15,6 +15,7 @@ const BlogTitleButton = (props: BlogTitleButtonProps): JSX.Element => {
     padding: "20px",
     marginRight: "30px",
     color: "#FFFFFF",
+    fontFamily: "Klee One",
   });
 
   return (

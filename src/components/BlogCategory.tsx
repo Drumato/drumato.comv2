@@ -1,5 +1,4 @@
 import { Button, styled, Typography } from "@mui/material";
-import { useRouter } from "next/router";
 import useLocale from "~/hooks/useLocale";
 
 type BlogCategoryProps = {
@@ -16,7 +15,7 @@ const BlogCategoryTypography = (
 ): JSX.Element => {
   const StyledTypography = styled(Typography)({
     fontSize: "14px",
-    fontFamily: "Sawarabi Gothic",
+    fontFamily: "Klee One",
     color: "#FFFFFF",
   });
 
