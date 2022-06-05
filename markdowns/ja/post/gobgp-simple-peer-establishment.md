@@ -3,7 +3,7 @@ title: "GoBGPでpeer establishmentをやってみる"
 description: ""
 createdAt: "2021-03-26"
 tags: ["bgp", "gobgp"]
-imageLink: "/images/gobgp/img1.png"
+imageLink: "/Drumato.png"
 ---
 
 - [本記事の目標](#本記事の目標)
@@ -220,8 +220,6 @@ BGP neighbor is 192.168.33.11, remote AS 65002
 
 node1では `sudo tcpdump tcp port bgp -n -w node1.pcap` のようにしてパケットキャプチャも走らせておいた．  
 ということで，OPENメッセージをパケットレベルでも見てみることにする．  
-
-![img1](/images/gobgp/img1.png)  
 
 - BGP Message Header
   - `Marker/16octet` ... BGP Peer間の同期を取るために用いられる領域

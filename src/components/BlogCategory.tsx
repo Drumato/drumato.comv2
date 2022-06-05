@@ -14,7 +14,7 @@ const BlogCategoryTypography = (
   props: BlogCategoryTypographyProps
 ): JSX.Element => {
   const StyledTypography = styled(Typography)({
-    fontSize: "12px",
+    fontSize: "medium",
     fontFamily: "Klee One",
     color: "#FFFFFF",
   });

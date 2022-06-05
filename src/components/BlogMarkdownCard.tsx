@@ -20,8 +20,8 @@ const StyledTypography = styled(Typography)({
   display: "block",
   justifyContent: "center",
   alignItems: "center",
-  fontSize: "10px",
   fontFamily: "Klee One",
+  fontSize: "large",
 });
 
 const BlogMarkdownCard = (props: BlogMarkdownCardProps): JSX.Element => {

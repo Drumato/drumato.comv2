@@ -13,9 +13,10 @@ const BlogTitleButton = (props: BlogTitleButtonProps): JSX.Element => {
   const StyledButton = styled(Button)({
     width: "10px",
     padding: "20px",
-    marginRight: "30px",
+    margin: "30px",
     color: "#FFFFFF",
     fontFamily: "Klee One",
+    fontSize: "medium",
   });
 
   return (

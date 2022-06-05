@@ -1,7 +1,6 @@
 import style from "/public/markdown-styles.module.css";
 import { Edit as EditIcon } from "@mui/icons-material";
-import { BottomNavigation, BottomNavigationAction, Chip } from "@mui/material";
-import matter, { GrayMatterFile } from "gray-matter";
+import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import tomorrow from "react-syntax-highlighter/dist/cjs/styles/prism/tomorrow";
@@ -31,7 +30,6 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
               <code
                 {...props}
                 style={{
-                  fontSize: "xx-small",
                   fontFamily: "Klee One",
                   backgroundColor: "#ffe6e6",
                 }}
@@ -46,6 +44,7 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
             <SyntaxHighlighter
               language={match[1]}
               style={tomorrow}
+              showLineNumbers={true}
               PreTag="div"
             >
               {String(children).replace(/\n$/, "")}
