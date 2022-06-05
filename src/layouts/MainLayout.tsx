@@ -28,7 +28,7 @@ const author = "Drumato";
 const MainLayout = ({ children }: Props): JSX.Element => {
   return (
     <ThemeProvider theme={theme}>
-      <BlogHeader siteTitle={siteTitle} categoryBaseDir={"/"} />
+      <BlogHeader siteTitle={siteTitle} />
       {children}
       <BlogFooter year={year} author={author} />
     </ThemeProvider>

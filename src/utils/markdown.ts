@@ -16,7 +16,11 @@ type MarkdownPaths = {
 };
 
 const listIDFromMarkdownDir = (dirName: string): string[] => {
-  const fileNames = fs.readdirSync(dirName);
+  const fileNames = fs.readdirSync(dirName, { encoding: "utf-8" });
+  const mdFileNames = fileNames.filter((fileName) => {
+    return path.extname(fileName) == ".md";
+  });
+
   const extractID = (fileName: string): string => {
     // note that path.basename will remove the extension
     // if the optional 2nd arg is given.
@@ -24,7 +28,7 @@ const listIDFromMarkdownDir = (dirName: string): string[] => {
     return id;
   };
 
-  const ids = fileNames.map((fileName) => {
+  const ids = mdFileNames.map((fileName) => {
     return extractID(fileName);
   });
 
@@ -45,7 +49,7 @@ const getPathsFromMarkdownDir = (
 
   return {
     paths: paths,
-    fallback: true,
+    fallback: false,
   };
 };
 

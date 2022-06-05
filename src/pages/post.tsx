@@ -1,4 +1,3 @@
-import fs from "fs";
 import { GetStaticProps, NextPage } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";

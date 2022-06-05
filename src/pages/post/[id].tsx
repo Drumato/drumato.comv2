@@ -7,6 +7,7 @@ import { Markdown } from "~/components/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import { getPathsFromMarkdownDir } from "~/utils/markdown";
+import { english, japanese } from "~/locales/supported";
 
 type PostProps = {
   content: string;
@@ -17,12 +18,12 @@ type PostPath = {
 };
 
 const postDirectory = (locale: string) => `markdowns/${locale}/post`;
-const jaPostDirectory = postDirectory("ja");
-const enPostDirectory = postDirectory("en");
+const jaPostDirectory = postDirectory(japanese);
+const enPostDirectory = postDirectory(english);
 
 const getStaticPaths: GetStaticPaths<PostPath> = async () => {
-  const jaPosts = getPathsFromMarkdownDir("ja", jaPostDirectory);
-  const enPosts = getPathsFromMarkdownDir("en", enPostDirectory);
+  const jaPosts = getPathsFromMarkdownDir(japanese, jaPostDirectory);
+  const enPosts = getPathsFromMarkdownDir(english, enPostDirectory);
 
   const allPostPaths = {
     ...jaPosts,
@@ -32,11 +33,16 @@ const getStaticPaths: GetStaticPaths<PostPath> = async () => {
   return allPostPaths;
 };
 
-const getStaticProps: GetStaticProps = async ({ params, locale }) => {
+const getStaticProps: GetStaticProps<PostProps> = async ({
+  params,
+  locale,
+}) => {
   const fileName = `${params?.id}.md`;
-  const postDirectoryWithLocale = postDirectory(locale ?? "en");
+  const postDirectoryWithLocale = postDirectory(locale ?? english);
   const filePath = path.join(postDirectoryWithLocale, fileName);
-  const content = fs.readFileSync(filePath, "utf-8");
+  console.log(filePath);
+
+  const content = fs.readFileSync(filePath, { encoding: "utf-8" });
 
   return {
     props: {
@@ -46,7 +52,6 @@ const getStaticProps: GetStaticProps = async ({ params, locale }) => {
   };
 };
 
-// the dynamic page in Next.js may require the defalut argument to the props.
 const Post: NextPageWithLayout<PostProps> = ({ content }: PostProps) => {
   return <Markdown content={content} />;
 };

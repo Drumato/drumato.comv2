@@ -1,5 +1,6 @@
 import { Button, styled, Typography } from "@mui/material";
 import { useRouter } from "next/router";
+import useLocale from "~/hooks/useLocale";
 
 type BlogCategoryProps = {
   categoryInURL: string;
@@ -23,7 +24,7 @@ const BlogCategoryTypography = (
 };
 
 const BlogCategory = (props: BlogCategoryProps): JSX.Element => {
-  const { locale } = useRouter();
+  const { locale } = useLocale();
   const link = `/${locale}/${props.categoryInURL}`;
 
   const StyledButton = styled(Button)({
