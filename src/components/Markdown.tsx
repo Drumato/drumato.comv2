@@ -18,7 +18,11 @@ const Markdown = (props: Props): JSX.Element => {
           const match = /language-(\w+)/.exec(className || "");
           if (inline || !match) {
             return (
-              <code className={className} {...props}>
+              <code
+                style={{ backgroundColor: "#ffe6e6" }}
+                className={className}
+                {...props}
+              >
                 {children}
               </code>
             );

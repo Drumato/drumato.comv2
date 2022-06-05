@@ -8,7 +8,7 @@ const MyDocument = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Sawarabi+Gothic&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Klee+One&family=M+PLUS+1p&family=Noto+Sans+JP&display=swap"
           rel="stylesheet"
         ></link>
         <></>
