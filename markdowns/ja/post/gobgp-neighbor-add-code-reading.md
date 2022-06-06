@@ -1,6 +1,6 @@
 ---
 title: "GoBGPのneighbor addが何をやっているか見る"
-description: ""
+description: "GoBGPでneighbor addを実行したときに何が起こるのかcode baseで理解します."
 createdAt: "2021-04-04"
 tags: ["bgp", "gobgp", "code-reading"]
 imageLink: "/Drumato.png"
@@ -17,6 +17,9 @@ imageLink: "/Drumato.png"
     - [TCPコネクションの確立](#tcpコネクションの確立)
 - [おわりに](#おわりに)
 - [参考資料](#参考資料)
+
+> この記事はBGPに入門したての時期に試行錯誤しながら書いたものであり，
+> 情報の正確性については保証しかねますので，ご了承ください．
 
 前回の続き．  
 [まだ読んでない方はそちら](http://drumato.com/ja/posts/gobgp-simple-ipv4-unicast/)を．  

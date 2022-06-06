@@ -1,6 +1,6 @@
 ---
 title: "Linuxのopen(2) syscallをもう一度復習する"
-description: ""
+description: "今一度Linuxのopen(2)を復習します."
 createdAt: "2021-01-24"
 tags: ["c", "linux"]
 imageLink: "/Drumato.png"

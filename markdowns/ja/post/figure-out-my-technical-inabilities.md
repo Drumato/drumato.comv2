@@ -1,6 +1,6 @@
 ---
 title: "今の私が持っていないskillを考える"
-description: ""
+description: "自分に足りない技術を理解することで, これからの学習方針を立ててみます."
 createdAt: "2021-09-20"
 tags: ["essay"]
 imageLink: "/Drumato.png"

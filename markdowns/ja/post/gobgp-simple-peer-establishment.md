@@ -1,6 +1,6 @@
 ---
 title: "GoBGPでpeer establishmentをやってみる"
-description: ""
+description: "GoBGPを使ってsimpleにipv4 unicast peerを動かしてみます."
 createdAt: "2021-03-26"
 tags: ["bgp", "gobgp"]
 imageLink: "/Drumato.png"
@@ -17,6 +17,9 @@ imageLink: "/Drumato.png"
 - [まとめ](#まとめ)
 - [参考資料](#参考資料)
 - [おまけ: ブログの形式について](#おまけ-ブログの形式について)
+
+> この記事はBGPに入門したての時期に試行錯誤しながら書いたものであり，
+> 情報の正確性については保証しかねますので，ご了承ください．
 
 BGPの勉強をする上で，しっかり実装まで追いたかったのでコードリーディングしつつメモを残す．  
 ざっと調べるだけでも，BGPを実装するOSSはいくつか存在する．

@@ -1,6 +1,6 @@
 ---
 title: "Figure out my technical inabilities"
-description: ""
+description: "Introducting my technical inabilities briefly."
 createdAt: "2021-09-20"
 tags: ["essay"]
 imageLink: "/Drumato.png"

@@ -1,6 +1,6 @@
 ---
 title: "glibc wrapperから読み始めてsystem call handlerまで"
-description: ""
+description: "勢いだけでcode readingをはじめて, sytem callの流れを追ってみます."
 createdAt: "2019-12-01"
 tags: ["c", "linux"]
 imageLink: "/Drumato.png"

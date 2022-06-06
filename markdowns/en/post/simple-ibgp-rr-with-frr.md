@@ -1,6 +1,6 @@
 ---
 title: "Simple iBGP Route Reflector With FRR"
-description: ""
+description: "playing with the simplest iBGP RR"
 createdAt: "2021-09-23"
 tags: ["bgp", "frr"]
 imageLink: "/images/ibgp-rr/rr-cluster2.png"

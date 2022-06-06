@@ -1,6 +1,6 @@
 ---
 title: "Rustでつくる単相型システムもどき"
-description: ""
+description: "単相型システムを実装しながら入門します."
 createdAt: "2020-12-20"
 tags: ["type-system", "rust"]
 imageLink: "/images/type-system/eql2.png"

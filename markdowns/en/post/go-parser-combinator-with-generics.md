@@ -1,6 +1,6 @@
 ---
 title: "Go Parser Combinator with Go Generics"
-description: ""
+description: "I developed a parser combinator library that uses Go Generics"
 createdAt: "2022-04-10"
 tags: ["go", "parser"]
 imageLink: "/Drumato.png"

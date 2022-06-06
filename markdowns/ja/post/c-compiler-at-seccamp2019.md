@@ -1,6 +1,6 @@
 ---
 title: "seccamp2019のCコンパイラゼミに参加しました"
-description: ""
+description: "seccamp2019の活動を振り返ります."
 createdAt: "2019-08-18"
 tags: ["c", "compiler"]
 imageLink: "/Drumato.png"

@@ -1,6 +1,6 @@
 ---
 title: "FRR BGPdのbestpath selectionの3番までを動かして検証する"
-description: ""
+description: "bestpath selectionのalgorithmを一部動かして理解します."
 createdAt: "2021-10-04"
 tags: ["bgp", "frr"]
 imageLink: "/images/frr-bestpath/archey.png"

@@ -1,6 +1,6 @@
 ---
 title: "実行プログラム作成基盤をスクラッチで書いた"
-description: ""
+description: "SecHack365で実装したx64 toolchainを解説します."
 createdAt: "2019-12-08"
 tags: ["compiler", "assembler", "linker", "rust"]
 imageLink: "/images/sechack365/figure9.jpg"

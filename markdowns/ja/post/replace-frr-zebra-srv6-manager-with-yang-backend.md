@@ -1,6 +1,6 @@
 ---
 title: "Replace FRR Zebra SRv6 Manager with YANG Backend"
-description: ""
+description: "FRR ZebraのSRv6基盤をYANG Backendで置き換えるPoCを解説します."
 createdAt: "2022-01-04"
 tags: []
 imageLink: "/Drumato.png"

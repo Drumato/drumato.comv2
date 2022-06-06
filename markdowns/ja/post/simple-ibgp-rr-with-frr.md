@@ -1,6 +1,6 @@
 ---
 title: "simpleなiBGP route-reflectorをFRRでやってみる"
-description: ""
+description: "iBGP RR構成をFRRで検証しながら入門します."
 createdAt: "2021-09-23"
 tags: ["bgp", "frr"]
 imageLink: "/images/ibgp-rr/rr-cluster2.png"

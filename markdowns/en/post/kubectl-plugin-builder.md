@@ -1,6 +1,6 @@
 ---
 title: "Kubectl Plugin Builder"
-description: ""
+description: "The idea to implement a kubectl plugin by practical"
 createdAt: "2021-12-06"
 tags: ["kubernetes", "go", "kubectl"]
 imageLink: "/Drumato.png"

@@ -1,6 +1,6 @@
 ---
 title: "TUI Based ELF Analyzer in Rust"
-description: ""
+description: "tui-rsを使ってELF analyzerを実装したので紹介します."
 createdAt: "2020-10-10"
 tags: ["elf", "rust"]
 imageLink: "/images/elfpeach/scshot4.png"

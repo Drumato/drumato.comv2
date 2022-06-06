@@ -1,6 +1,6 @@
 ---
 title: "Rust製のパーサコンビネータcombine v4.4.0を覗き見する"
-description: ""
+description: "combineというparser libraryの実装を覗き見します."
 createdAt: "2020-12-10"
 tags: ["parser-combinator", "code-reading", "combine", "rust"]
 imageLink: "/Drumato.png"

@@ -1,6 +1,6 @@
 ---
 title: "SecHack365 3rdとして一年間活動しました"
-description: ""
+description: "SecHack365の1年間を振り返ります."
 createdAt: "2020-02-08"
 tags: ["compiler", "assembler", "linker", "rust"]
 imageLink: "/Drumato.png"

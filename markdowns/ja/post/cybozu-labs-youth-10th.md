@@ -1,6 +1,6 @@
 ---
 title: "Cybozu Labs Youth 10thとして一年間活動しました"
-description: ""
+description: "Cybozu Labs Youthの活動を振り返ります."
 createdAt: "2021-03-30"
 tags: ["cybozu-labs-youth", "rust"]
 imageLink: "/Drumato.png"

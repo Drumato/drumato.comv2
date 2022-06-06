@@ -1,6 +1,6 @@
 ---
 title: "Rust製のパーサコンビネータnom v6.0.0を解剖する"
-description: ""
+description: "nomというparser libraryの実装を深く追っていきます."
 createdAt: "2020-12-01"
 tags: ["parser-combinator", "code-reading", "nom", "rust"]
 imageLink: "/Drumato.png"

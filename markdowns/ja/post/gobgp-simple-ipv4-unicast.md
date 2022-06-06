@@ -1,6 +1,6 @@
 ---
 title: "GoBGPでipv4 unicast addressを広報してみる"
-description: ""
+description: "GoBGPでipv4 unicastの経路広報を行ってみます."
 createdAt: "2021-03-27"
 tags: ["bgp", "gobgp"]
 imageLink: "/images/gobgp/img3.png"

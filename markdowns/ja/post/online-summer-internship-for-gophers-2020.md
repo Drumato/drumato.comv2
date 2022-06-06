@@ -1,6 +1,6 @@
 ---
 title: "Online Summer Internship for Gophers 2020に参加しました"
-description: ""
+description: "MercariさんのIntershipに参加した際のreportです."
 createdAt: "2020-09-04"
 tags: ["static-analyzer", "go"]
 imageLink: "/images/gopher-2020/scshot1.png"
