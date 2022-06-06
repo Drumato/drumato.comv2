@@ -6,6 +6,7 @@ import { english, japanese } from "~/locales/supported";
 import { MarkdownEntry, readMarkdownsFromDir } from "~/utils/markdown";
 import path from "path";
 import BlogCardGrid from "~/components/BlogCardGrid";
+import { Typography } from "@mui/material";
 
 type PostItem = {
   link: string;
@@ -16,6 +17,7 @@ type PostItem = {
 };
 
 type TagProps = {
+  tag: string;
   posts: PostItem[];
 };
 
@@ -81,12 +83,18 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
   return {
     props: {
       posts: sortedPosts,
+      tag: tag,
     },
   };
 };
 
 const Tag: NextPageWithLayout<TagProps> = (props) => {
-  return <BlogCardGrid cards={props.posts} />;
+  return (
+    <>
+      <h1>{`tag: ${props.tag}`}</h1>
+      <BlogCardGrid cards={props.posts} />
+    </>
+  );
 };
 
 Tag.getLayout = (page) => {
