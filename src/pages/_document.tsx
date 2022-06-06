@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
+import HeadTitle from "~/components/HeadTitle";
 
 const GoogleFontDOM = (): JSX.Element => {
   return (
@@ -46,6 +47,7 @@ const MyDocument = () => {
   return (
     <Html>
       <Head>
+        <HeadTitle />
         <GoogleFontDOM />
         <link
           href="https://fonts.googleapis.com/css2?family=Klee+One&family=M+PLUS+1p&family=Noto+Sans+JP&display=swap"
