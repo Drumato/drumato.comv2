@@ -1,10 +1,8 @@
-import { slide as Menu } from "react-burger-menu";
 import { Container, createTheme, ThemeProvider } from "@mui/material";
 import { red, grey } from "@mui/material/colors";
 import { ReactElement } from "react";
 import BlogFooter from "~/components/BlogFooter";
 import BlogHeader from "~/components/BlogHeader";
-import Link from "next/link";
 
 type Props = {
   children: ReactElement;

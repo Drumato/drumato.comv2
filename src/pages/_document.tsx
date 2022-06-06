@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import Script from "next/script";
 
 const GoogleFontDOM = (): JSX.Element => {
   return (
@@ -41,6 +42,7 @@ const FaviconDOM = (): JSX.Element => {
 };
 
 const MyDocument = () => {
+  const googleAnalyticsID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID ?? "";
   return (
     <Html>
       <Head>
@@ -50,6 +52,19 @@ const MyDocument = () => {
           rel="stylesheet"
         />
         <FaviconDOM />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', '${googleAnalyticsID}');
+          `}
+        </Script>
       </Head>
       <body>
         <Main />
