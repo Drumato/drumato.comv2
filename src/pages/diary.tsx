@@ -41,9 +41,16 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
     };
   });
 
+  // descending order of the created time
+  const sortedDiaries = diaries.sort((a, b) => {
+    const aAge = Date.parse(a.createdAt);
+    const bAge = Date.parse(b.createdAt);
+    return bAge - aAge;
+  });
+
   return {
     props: {
-      diaries: diaries,
+      diaries: sortedDiaries,
     },
   };
 };

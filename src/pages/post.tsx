@@ -34,10 +34,16 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
       description: entry.frontmatter.description,
     };
   });
+  // descending order of the created time
+  const sortedPosts = posts.sort((a, b) => {
+    const aAge = Date.parse(a.createdAt);
+    const bAge = Date.parse(b.createdAt);
+    return bAge - aAge;
+  });
 
   return {
     props: {
-      posts: posts,
+      posts: sortedPosts,
     },
   };
 };

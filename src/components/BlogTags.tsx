@@ -1,7 +1,5 @@
 import { Style as StyleIcon } from "@mui/icons-material";
 import { Box, Chip } from "@mui/material";
-import { useRouter } from "next/router";
-import { useState } from "react";
 
 type Props = {
   tags: string[];

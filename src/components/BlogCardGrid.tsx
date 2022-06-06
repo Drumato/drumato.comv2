@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Container, Grid, gridClasses } from "@mui/material";
 import BlogMarkdownCard, { BlogMarkdownCardProps } from "./BlogMarkdownCard";
 type BlogCardGridProps = {
   cards: BlogMarkdownCardProps[];
@@ -6,11 +6,11 @@ type BlogCardGridProps = {
 
 const BlogCardGrid = (props: BlogCardGridProps): JSX.Element => {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={3}>
+    <Container maxWidth="xl">
+      <Grid container direction="row" alignItems="stretch" spacing={3}>
         {props.cards.map((card) => {
           return (
-            <Grid item key={card.link} xs={4}>
+            <Grid item key={card.link} xs={4} lg={3}>
               <BlogMarkdownCard
                 link={card.link}
                 title={card.title}
@@ -22,7 +22,7 @@ const BlogCardGrid = (props: BlogCardGridProps): JSX.Element => {
           );
         })}
       </Grid>
-    </Box>
+    </Container>
   );
 };
 export default BlogCardGrid;
