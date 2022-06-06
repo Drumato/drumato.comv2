@@ -54,28 +54,12 @@ programmingLanguages:
 
 ## GitHub Repositories
 
-- [Depth](https://github.com/Drumato/Depth)
-  - developed a compiler driver from scratch
-  - supports a toy programming language
-  - it translates to x86_64 assembly
-  - contains an x86_64 assembler/static linker
-  - all of it is written in pure Rust
-  - execution machine codes without calling any subprocesses
-    - It uses a mechanism like JIT execution
-  - an ELF analyzer
-  - finally It was able to generate an ELF that can be executed in Linux
-- [Peachili](https://github.com/Drumato/Peachili)
-  - My 2nd compiler driver from scratch
-  - supports a toy programming language
-  - It doesn't depend on libc
-  - can print Hello, World to stdout
-  - all of it is written in pure Rust
+- [drumato.comv2](https://github.com/Drumato/drumato.comv2) ... My Blog with TypeScript + Next.js
+- [Depth](https://github.com/Drumato/Depth) ... my 1st generation x86_64 toolchain
+- [Peachili](https://github.com/Drumato/Peachili) ... my toy compiler that doesn't depends on libc
 - [asmpeach](https://github.com/Drumato/asmpeach)
-  - an x86_64 assembler written in Rust
 - [elfpeach](https://github.com/Drumato/elfpeach)
-  - a TUI based ELF analyzer
 - [elf-utilities](https://github.com/Drumato/elf-utilities)
-  - a library suite for handling/manipulating ELF in Rust
 
 ## Slides
 

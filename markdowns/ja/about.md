@@ -54,28 +54,12 @@ programmingLanguages:
 
 ## My Products
 
-- [Depth](https://github.com/Drumato/Depth)
-  - Compiler Driverをscratchで自作しました
-  - 自作言語をsupportしています
-  - x86_64に向けた翻訳を行います
-  - assembler/static linkerも含みます
-  - すべてRustで書かれています
-  - ちょっとだけLLVM IRを生成することもできます
-  - subprocess callを使わずに自作ELFを実行します
-    - これはJIT executionの仕組みを流用しています
-  - readelfっぽい機能が入っています
-  - 最終的に，gccを使わずに実行可能なELFを生成することができました
-- [Peachili](https://github.com/Drumato/Peachili)
-  - 第二作目の自作Compiler Driverです
-  - 自作言語をsupportしています
-  - libc非依存で，Hello, worldもできます
-  - すべてRustで書かれています
+- [drumato.comv2](https://github.com/Drumato/drumato.comv2) ... My Blog with TypeScript + Next.js
+- [Depth](https://github.com/Drumato/Depth) ... my 1st generation x86_64 toolchain
+- [Peachili](https://github.com/Drumato/Peachili) ... my toy compiler that doesn't depends on libc
 - [asmpeach](https://github.com/Drumato/asmpeach)
-  - Rustで書かれたx86_64 assemblerです
 - [elfpeach](https://github.com/Drumato/elfpeach)
-  - TUI basedなELF解析toolです
 - [elf-utilities](https://github.com/Drumato/elf-utilities)
-  - RustでELFを扱うためのlibrary suiteです
 
 ## Slides
 
