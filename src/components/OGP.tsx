@@ -1,3 +1,5 @@
+import Head from "next/head";
+
 type OGPProps = {
   cardType: "website" | "article";
   title: string;
@@ -10,7 +12,7 @@ type OGPProps = {
 
 const OGP = (props: OGPProps): JSX.Element => {
   return (
-    <>
+    <Head>
       <meta property="og:type" content={props.cardType} />
       <meta property="og:title" content={props.title} />
       <meta property="og:description" content={props.description} />
@@ -20,7 +22,7 @@ const OGP = (props: OGPProps): JSX.Element => {
       {props.articleAuthorURL && (
         <meta property="article:author" content={props.articleAuthorURL} />
       )}
-    </>
+    </Head>
   );
 };
 export default OGP;

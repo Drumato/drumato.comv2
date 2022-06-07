@@ -1,4 +1,3 @@
-import Head from "next/head";
 import OGP from "~/components/OGP";
 import TwitterCard from "~/components/TwitterCard";
 import Favicons from "../Favicons";
@@ -14,8 +13,8 @@ const BlogEntriesHead = (props: BlogEntriesHeadProps): JSX.Element => {
   const siteName = "drumato.com";
   const facebookURL = "https://www.facebook.com/drumato.yamato.sugawara";
   return (
-    <Head>
-      <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <>
+      <meta name="viewport" content="width=device-width,initial-scale=1.0" />
       <title>{props.title}</title>
       <GoogleAnalytics />
       <Favicons />
@@ -29,7 +28,7 @@ const BlogEntriesHead = (props: BlogEntriesHeadProps): JSX.Element => {
         imageLink={imageLink}
       />
       <TwitterCard userID="drumato" cardContent="summary" />
-    </Head>
+    </>
   );
 };
 

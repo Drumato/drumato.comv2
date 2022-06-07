@@ -1,4 +1,3 @@
-import Head from "next/head";
 import OGP from "~/components/OGP";
 import TwitterCard from "~/components/TwitterCard";
 import GoogleAnalytics from "~/components/GoogleAnalytics";
@@ -18,7 +17,7 @@ const BlogEntryHead = (props: BlogEntryHeadProps): JSX.Element => {
   const facebookURL = "https://www.facebook.com/drumato.yamato.sugawara";
 
   return (
-    <Head>
+    <>
       <title>{props.entryName}</title>
       <GoogleAnalytics />
       <Favicons />
@@ -32,7 +31,7 @@ const BlogEntryHead = (props: BlogEntryHeadProps): JSX.Element => {
         imageLink={props.imageLink}
       />
       <TwitterCard userID="drumato" cardContent="summary_large_image" />
-    </Head>
+    </>
   );
 };
 
