@@ -63,6 +63,7 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
 };
 
 const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
+  const imageLink = `${path.basename(props.frontmatter.imageLink, ".png")}.jpg`;
   return (
     <>
       <BlogEntryHead
@@ -70,7 +71,7 @@ const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
         description={props.frontmatter.description}
         entryCategory={"diary"}
         id={props.id}
-        imageLink={props.frontmatter.imageLink}
+        imageLink={imageLink}
       />
       <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />
     </>
