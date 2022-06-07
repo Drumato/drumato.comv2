@@ -122,6 +122,7 @@ const extractMarkdownFrontMatter = (
     title: markdown.data.title,
     tags: markdown.data.tags,
     imageLink: markdown.data.imageLink,
+    thumbnailLink: markdown.data.thumbnailLink ?? "",
     description: markdown.data.description,
   };
 };

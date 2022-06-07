@@ -32,6 +32,7 @@ const BlogEntriesHead = (props: BlogEntriesHeadProps): JSX.Element => {
         cardContent="summary"
         title={props.title}
         description={props.title}
+        imageLink={imageLink}
       />
     </>
   );

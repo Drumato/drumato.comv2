@@ -63,6 +63,12 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
 };
 
 const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
+  const imageLink =
+    props.frontmatter.thumbnailLink === ""
+      ? props.frontmatter.imageLink
+      : props.frontmatter.thumbnailLink;
+  const imagePath = path.join("https://www.drumato.com", imageLink);
+
   return (
     <>
       <BlogEntryHead
@@ -70,7 +76,7 @@ const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
         description={props.frontmatter.description}
         entryCategory={"diary"}
         id={props.id}
-        imageLink={props.frontmatter.imageLink}
+        imageLink={imagePath}
       />
       <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />
     </>

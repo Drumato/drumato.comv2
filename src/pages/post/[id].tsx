@@ -63,6 +63,11 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
 };
 
 const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
+  const imageLink =
+    props.frontmatter.thumbnailLink === ""
+      ? props.frontmatter.imageLink
+      : props.frontmatter.thumbnailLink;
+  const imagePath = path.join("https://www.drumato.com", imageLink);
   return (
     <>
       <BlogEntryHead
@@ -70,7 +75,7 @@ const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
         description={props.frontmatter.description}
         entryCategory={"post"}
         id={props.id}
-        imageLink={props.frontmatter.imageLink}
+        imageLink={imagePath}
       />
       <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />
     </>

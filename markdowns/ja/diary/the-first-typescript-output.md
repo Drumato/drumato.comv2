@@ -3,6 +3,7 @@ createdAt: "2022-06-07"
 title: "The 1st TypeScript output"
 tags: ["typescript"]
 imageLink: "/images/the-1st-typescript/thumbnail.png"
+thumbnailLink: "/images/the-1st-typescript/thumbnail.jpg"
 description: "TypeScriptで初めてものを作った感想をつらつらと."
 ---
 

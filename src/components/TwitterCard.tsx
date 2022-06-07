@@ -5,6 +5,7 @@ type TwitterCardProps = {
   cardContent: "summary" | "summary_large_image";
   title: string;
   description: string;
+  imageLink: string;
 };
 
 const TwitterCard = (props: TwitterCardProps): JSX.Element => {
@@ -13,6 +14,7 @@ const TwitterCard = (props: TwitterCardProps): JSX.Element => {
       <meta name="twitter:card" content={props.cardContent} />
       <meta name="twitter:site" content={`@${props.userID}`} />
       <meta name="twitter:creator" content={`@${props.userID}`} />
+      <meta name="twitter:image" content={props.imageLink} />
       <meta name="twitter:title" content={props.title} />
       <meta name="twitter:description" content={props.description} />
     </Head>

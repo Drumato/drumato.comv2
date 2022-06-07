@@ -5,6 +5,7 @@ type MarkdownFrontMatter = {
   tags: string[];
   description: string;
   imageLink: string;
+  thumbnailLink: string;
 };
 
 export { MarkdownFrontMatter, createdAt };
