@@ -1,6 +1,8 @@
 import Head from "next/head";
 import OGP from "~/components/OGP";
 import TwitterCard from "~/components/TwitterCard";
+import GoogleAnalytics from "~/components/GoogleAnalytics";
+import Favicons from "../Favicons";
 
 type BlogEntryHeadProps = {
   entryName: string;
@@ -18,6 +20,8 @@ const BlogEntryHead = (props: BlogEntryHeadProps): JSX.Element => {
   return (
     <Head>
       <title>{props.entryName}</title>
+      <GoogleAnalytics />
+      <Favicons />
       <OGP
         cardType="article"
         title={props.entryName}

@@ -1,13 +1,6 @@
-import Head from "next/head";
-
-type Props = {};
-
-const DocumentHead = (_props: Props): JSX.Element => {
+const Favicons = (): JSX.Element => {
   return (
-    <Head>
-      <title>drumato.com</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <>
       <link
         rel="apple-touch-icon"
         sizes="180x180"
@@ -33,8 +26,7 @@ const DocumentHead = (_props: Props): JSX.Element => {
       />
       <meta name="msapplication-TileColor" content="#da532c" />
       <meta name="theme-color" content="#ffffff" />
-    </Head>
+    </>
   );
 };
-
-export default DocumentHead;
+export default Favicons;
