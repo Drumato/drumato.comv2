@@ -3,7 +3,7 @@ import fs from "fs";
 
 import { GetStaticProps, GetStaticPaths } from "next";
 import React from "react";
-import { Markdown } from "~/components/Markdown";
+import { Markdown } from "~/components/entry/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import {
@@ -11,10 +11,12 @@ import {
   getPathsFromMarkdownDir,
 } from "~/utils/markdown";
 import { english, japanese } from "~/locales/supported";
-import matter, { GrayMatterFile } from "gray-matter";
+import matter from "gray-matter";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
+import BlogEntryHead from "~/components/entry/BlogEntryHead";
 
 type DiaryProps = {
+  id: string;
   markdown: string;
   frontmatter: MarkdownFrontMatter;
 };
@@ -53,7 +55,7 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
 
   return {
     props: {
-      id: params?.id,
+      id: `${params?.id}`,
       markdown: markdown.content,
       frontmatter: fronmatter,
     },
@@ -61,7 +63,18 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
 };
 
 const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
-  return <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />;
+  return (
+    <>
+      <BlogEntryHead
+        entryName={props.frontmatter.title}
+        description={props.frontmatter.description}
+        entryCategory={"diary"}
+        id={props.id}
+        imageLink={props.frontmatter.imageLink}
+      />
+      <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />
+    </>
+  );
 };
 
 Diary.getLayout = (page) => {

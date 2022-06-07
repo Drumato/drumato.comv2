@@ -3,10 +3,12 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { GetStaticPaths, GetStaticProps } from "next";
 import MainLayout from "~/layouts/MainLayout";
 import { english, japanese } from "~/locales/supported";
-import { MarkdownEntry, readMarkdownsFromDir } from "~/utils/markdown";
+import { readMarkdownsFromDir } from "~/utils/markdown";
 import path from "path";
-import BlogCardGrid from "~/components/BlogCardGrid";
-import { Typography } from "@mui/material";
+import BlogCardGrid from "~/components/entries/BlogCardGrid";
+import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
+import useLocale from "~/hooks/useLocale";
+import { categoryPost } from "~/locales/category";
 
 type PostItem = {
   link: string;
@@ -89,9 +91,17 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 };
 
 const Tag: NextPageWithLayout<TagProps> = (props) => {
+  const loc = useLocale();
+  const entryCategory = loc.categories.get(categoryPost) ?? "post";
+  const tagDescription = `tag: ${props.tag}`;
+  const title = `${tagDescription} | ${entryCategory}`;
   return (
     <>
-      <h1>{`tag: ${props.tag}`}</h1>
+      <BlogEntriesHead
+        title={title}
+        link={`/post/tag/${props.tag}`}
+      ></BlogEntriesHead>
+      <h1>{tagDescription}</h1>
       <BlogCardGrid cards={props.posts} />
     </>
   );

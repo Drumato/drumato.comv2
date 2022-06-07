@@ -1,9 +1,9 @@
 import fs from "fs";
 import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
-import { Markdown } from "~/components/Markdown";
+import { Markdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
-import matter, { GrayMatterFile } from "gray-matter";
+import matter from "gray-matter";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import { extractMarkdownFrontMatter } from "~/utils/markdown";
 

@@ -1,14 +1,12 @@
 import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
-import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
-import {
-  extractMarkdownFrontMatter,
-  readMarkdownsFromDir,
-} from "~/utils/markdown";
-import BlogCardGrid from "~/components/BlogCardGrid";
+import { readMarkdownsFromDir } from "~/utils/markdown";
+import BlogCardGrid from "~/components/entries/BlogCardGrid";
+import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
+import useLocale from "~/hooks/useLocale";
+import { categoryDiary } from "~/locales/category";
 
 type DiaryItem = {
   link: string;
@@ -58,7 +56,14 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
 const DiaryList: NextPageWithLayout<DiaryItemProps> = (
   diaryProps: DiaryItemProps
 ) => {
-  return <BlogCardGrid cards={diaryProps.diaries} />;
+  const loc = useLocale();
+  const title = loc.categories.get(categoryDiary) ?? "diary";
+  return (
+    <>
+      <BlogEntriesHead title={title} link="/diary"></BlogEntriesHead>
+      <BlogCardGrid cards={diaryProps.diaries} />
+    </>
+  );
 };
 
 DiaryList.getLayout = (page) => {

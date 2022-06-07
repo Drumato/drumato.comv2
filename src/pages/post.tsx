@@ -3,7 +3,10 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import path from "path";
 import { readMarkdownsFromDir } from "~/utils/markdown";
-import BlogCardGrid from "~/components/BlogCardGrid";
+import BlogCardGrid from "~/components/entries/BlogCardGrid";
+import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
+import useLocale from "~/hooks/useLocale";
+import { categoryPost } from "~/locales/category";
 
 type PostItem = {
   link: string;
@@ -51,7 +54,15 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
 const PostList: NextPageWithLayout<PostListProps> = (
   postListProps: PostListProps
 ) => {
-  return <BlogCardGrid cards={postListProps.posts} />;
+  const loc = useLocale();
+  const title = loc.categories.get(categoryPost) ?? "post";
+
+  return (
+    <>
+      <BlogEntriesHead title={title} link="/post"></BlogEntriesHead>
+      <BlogCardGrid cards={postListProps.posts} />
+    </>
+  );
 };
 
 PostList.getLayout = (page) => {

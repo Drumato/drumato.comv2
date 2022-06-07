@@ -1,4 +1,4 @@
-import { Button, styled, Typography } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { ReactNode } from "react";
 
 type BlogTitleProps = {

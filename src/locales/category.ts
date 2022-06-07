@@ -1,32 +1,40 @@
 import { english } from "./supported";
 
-const about = "about";
-const contacts = "contacts";
-const disclaimer = "disclaimer";
-const license = "license";
-const post = "post";
-const diary = "diary";
+const categoryAbout = "about";
+const categoryContacts = "contacts";
+const categoryDisclaimer = "disclaimer";
+const categoryLicense = "license";
+const categoryPost = "post";
+const categoryDiary = "diary";
 
 const englishCategories: Map<string, string> = new Map([
-  [about, about],
-  [contacts, contacts],
-  [disclaimer, disclaimer],
-  [license, license],
-  [post, post],
-  [diary, diary],
+  [categoryAbout, categoryAbout],
+  [categoryContacts, categoryContacts],
+  [categoryDisclaimer, categoryDisclaimer],
+  [categoryLicense, categoryLicense],
+  [categoryPost, categoryPost],
+  [categoryDiary, categoryDiary],
 ]);
 
 const japaneseCategories: Map<string, string> = new Map([
-  [about, about],
-  [contacts, contacts],
-  [disclaimer, "免責事項"],
-  [license, "ライセンス"],
-  [post, "記事一覧"],
-  [diary, "日記一覧"],
+  [categoryAbout, categoryAbout],
+  [categoryContacts, categoryContacts],
+  [categoryDisclaimer, "免責事項"],
+  [categoryLicense, "ライセンス"],
+  [categoryPost, "記事一覧"],
+  [categoryDiary, "日記一覧"],
 ]);
 
 const categories = (locale: string): Map<string, string> => {
   return locale === english ? englishCategories : japaneseCategories;
 };
 
-export { categories };
+export {
+  categoryAbout,
+  categoryContacts,
+  categoryDisclaimer,
+  categoryLicense,
+  categoryPost,
+  categoryDiary,
+  categories,
+};
