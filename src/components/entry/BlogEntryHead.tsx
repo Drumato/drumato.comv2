@@ -30,7 +30,12 @@ const BlogEntryHead = (props: BlogEntryHeadProps): JSX.Element => {
         articleAuthorURL={facebookURL}
         imageLink={props.imageLink}
       />
-      <TwitterCard userID="drumato" cardContent="summary_large_image" />
+      <TwitterCard
+        userID="drumato"
+        cardContent="summary_large_image"
+        title={props.entryName}
+        description={props.description}
+      />
     </>
   );
 };
