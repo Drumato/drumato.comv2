@@ -1,4 +1,4 @@
-import { Button, styled } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { ReactNode } from "react";
 
 type BlogTitleProps = {
@@ -10,24 +10,19 @@ type BlogTitleButtonProps = {
 };
 
 const BlogTitleButton = (props: BlogTitleButtonProps): JSX.Element => {
-  const StyledButton = styled(Button)({
-    width: "10px",
-    padding: "20px",
-    margin: "30px",
-    color: "#FFFFFF",
-    fontFamily: "Klee One",
-    fontSize: "medium",
-  });
-
   return (
-    <StyledButton size="medium" href="/">
+    <Button size="medium" href="/" color="secondary">
       {props.children}
-    </StyledButton>
+    </Button>
   );
 };
 
 const BlogTitle = (props: BlogTitleProps) => {
-  return <BlogTitleButton>{props.siteTitle}</BlogTitleButton>;
+  return (
+    <BlogTitleButton>
+      <Typography fontFamily="Klee One">{props.siteTitle}</Typography>
+    </BlogTitleButton>
+  );
 };
 
 export default BlogTitle;

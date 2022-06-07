@@ -1,29 +1,21 @@
-import styled from "@emotion/styled";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import BlogCategory from "./BlogCategory";
 import BlogTitle from "./BlogTitle";
 import useLocale from "~/hooks/useLocale";
+import { Stack } from "@mui/material";
+import useMobileMode from "~/hooks/useMobileMode";
+import BlogHeaderInMobile from "./BlogHeaderInMobile";
 
 type BlogHeaderProps = {
   siteTitle: string;
 };
 
-const StyledBox = styled(Box)({
-  height: "64px",
-});
-
-const StyledAppBar = styled(AppBar)({
-  height: "64px",
-});
-
-const StyledToolbar = styled(Toolbar)({
-  height: "64px",
-});
-
 const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
   const loc = useLocale();
+  const isMobileMode = useMobileMode();
+  console.log(isMobileMode);
   const categories = Array.from(loc.categories).map(([key, value]) => {
     return {
       // "post"
@@ -33,23 +25,37 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
     };
   });
 
+  if (isMobileMode) {
+    return <BlogHeaderInMobile siteTitle={props.siteTitle} />;
+  }
+
   return (
-    <StyledBox sx={{ flexGrow: 1 }}>
-      <StyledAppBar position="fixed">
-        <StyledToolbar color="inherit">
-          <BlogTitle siteTitle={props.siteTitle} />
-          {categories.map((category) => {
-            return (
-              <BlogCategory
-                key={category.categoryName}
-                categoryInURL={category.urlElement}
-                categoryName={category.categoryName}
-              ></BlogCategory>
-            );
-          })}
-        </StyledToolbar>
-      </StyledAppBar>
-    </StyledBox>
+    <Box
+      sx={{
+        my: 4,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <AppBar position="fixed">
+        <Toolbar color="inherit">
+          <Stack direction="row" spacing={2}>
+            <BlogTitle siteTitle={props.siteTitle} />
+            {categories.map((category) => {
+              return (
+                <BlogCategory
+                  key={category.categoryName}
+                  categoryInURL={category.urlElement}
+                  categoryName={category.categoryName}
+                ></BlogCategory>
+              );
+            })}
+          </Stack>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
 
