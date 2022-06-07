@@ -13,10 +13,7 @@ const BlogCardGrid = (props: BlogCardGridProps): JSX.Element => {
             <Grid item key={card.link} xs={4} lg={3}>
               <BlogMarkdownCard
                 link={card.link}
-                title={card.title}
-                imageLink={card.imageLink}
-                description={card.description}
-                createdAt={card.createdAt}
+                frontmatter={card.frontmatter}
               />
             </Grid>
           );

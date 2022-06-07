@@ -13,13 +13,11 @@ import BlogCardGrid from "~/components/entries/BlogCardGrid";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryDiary } from "~/locales/category";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type DiaryItem = {
   link: string;
-  title: string;
-  createdAt: string;
-  imageLink: string;
-  description: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 type TagProps = {
@@ -36,25 +34,18 @@ export const getStaticPaths: GetStaticPaths<TagPath> = async () => {
     encoding: "utf-8",
   });
   const tags: string[] = JSON.parse(tagsFile);
-  const jaPaths = tags.map((tag) => {
+  const tagToPath = (tag: string, locale: string) => {
     return {
       params: {
         tag: tag,
       },
-      locale: japanese,
+      locale: locale,
     };
-  });
+  };
 
-  const paths = jaPaths.concat(
-    tags.map((tag) => {
-      return {
-        params: {
-          tag: tag,
-        },
-        locale: english,
-      };
-    })
-  );
+  const jaPaths = tags.map((tag) => tagToPath(tag, japanese));
+  const enPaths = tags.map((tag) => tagToPath(tag, english));
+  const paths = jaPaths.concat(enPaths);
 
   return { paths: paths, fallback: false };
 };
@@ -73,7 +64,7 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 
     return {
       link: link,
-      ...entry.frontmatter,
+      frontmatter: entry.frontmatter,
     };
   });
 

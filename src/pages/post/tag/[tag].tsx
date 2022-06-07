@@ -13,13 +13,11 @@ import BlogCardGrid from "~/components/entries/BlogCardGrid";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryPost } from "~/locales/category";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type PostItem = {
   link: string;
-  title: string;
-  createdAt: string;
-  imageLink: string;
-  description: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 type TagProps = {
@@ -65,7 +63,7 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 
     return {
       link: link,
-      ...entry.frontmatter,
+      frontmatter: entry.frontmatter,
     };
   });
 

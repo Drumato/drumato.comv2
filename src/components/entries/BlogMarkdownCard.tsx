@@ -7,13 +7,11 @@ import {
   Typography,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type BlogMarkdownCardProps = {
   link: string;
-  title: string;
-  imageLink: string;
-  description: string;
-  createdAt: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 const StyledTypography = styled(Typography)({
@@ -28,16 +26,20 @@ const BlogMarkdownCard = (props: BlogMarkdownCardProps): JSX.Element => {
   return (
     <Card sx={{ display: "block" }}>
       <CardActionArea href={props.link}>
-        <CardMedia component="img" image={props.imageLink} alt={props.title} />
+        <CardMedia
+          component="img"
+          image={props.frontmatter.imageLink}
+          alt={props.frontmatter.title}
+        />
         <CardContent>
           <StyledTypography gutterBottom variant="h1">
-            {props.title}
+            {props.frontmatter.title}
           </StyledTypography>
           <StyledTypography variant="subtitle1" color="text.secondary">
-            {props.description}
+            {props.frontmatter.description}
             <br />
             <CalendarMonthIcon />
-            {props.createdAt}
+            {props.frontmatter.createdAt}
           </StyledTypography>
         </CardContent>
       </CardActionArea>

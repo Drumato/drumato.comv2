@@ -10,13 +10,11 @@ import BlogCardGrid from "~/components/entries/BlogCardGrid";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryDiary } from "~/locales/category";
+import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type DiaryItem = {
   link: string;
-  title: string;
-  createdAt: string;
-  imageLink: string;
-  description: string;
+  frontmatter: MarkdownFrontMatter;
 };
 
 type DiaryItemProps = {
@@ -36,7 +34,7 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
 
     return {
       link: link,
-      ...entry.frontmatter,
+      frontmatter: entry.frontmatter,
     };
   });
 
