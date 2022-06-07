@@ -32,8 +32,9 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
               <code
                 {...props}
                 style={{
-                  fontFamily: "Klee One",
                   backgroundColor: "#ffe6e6",
+                  fontFamily: "M PLUG 1p",
+                  fontStyle: "italic",
                 }}
                 className={className}
               >
