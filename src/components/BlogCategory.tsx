@@ -16,7 +16,7 @@ const BlogCategoryTypography = (
   return (
     <Typography
       fontWeight="bold"
-      variant="overline"
+      variant="subtitle1"
       color="secondary"
       fontFamily="Klee One"
     >
