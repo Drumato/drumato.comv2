@@ -1,11 +1,9 @@
-import fs from "fs";
-import matter from "gray-matter";
 import { GetStaticProps } from "next";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { Markdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
-import { extractMarkdownFrontMatter } from "~/utils/markdown";
+import { parseMarkdownForEntry } from "~/utils/markdown";
 
 type AboutProps = {
   markdown: string;
@@ -15,15 +13,13 @@ type AboutProps = {
 export const getStaticProps: GetStaticProps<AboutProps> = async ({
   locale,
 }) => {
-  const aboutPath = `markdowns/${locale}/about.md`;
-  const content = fs.readFileSync(aboutPath, "utf-8");
-  const markdown = matter(content);
-  const frontmatter = extractMarkdownFrontMatter(markdown);
+  const filePath = `markdowns/${locale}/about.md`;
+  const entry = parseMarkdownForEntry(filePath);
 
   return {
     props: {
-      markdown: markdown.content,
-      frontmatter: frontmatter,
+      markdown: entry.markdown.content,
+      frontmatter: entry.frontmatter,
     },
   };
 };

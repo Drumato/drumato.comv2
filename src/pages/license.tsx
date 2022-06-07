@@ -1,11 +1,9 @@
-import fs from "fs";
 import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { Markdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
-import matter from "gray-matter";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
-import { extractMarkdownFrontMatter } from "~/utils/markdown";
+import { parseMarkdownForEntry } from "~/utils/markdown";
 
 type LicenseProps = {
   markdown: string;
@@ -16,14 +14,12 @@ export const getStaticProps: GetStaticProps<LicenseProps> = async ({
   locale,
 }) => {
   const filePath = `markdowns/${locale}/license.md`;
-  const content: string = fs.readFileSync(filePath, "utf-8");
-  const markdown = matter(content);
-  const frontmatter = extractMarkdownFrontMatter(markdown);
+  const entry = parseMarkdownForEntry(filePath);
 
   return {
     props: {
-      markdown: markdown.content,
-      frontmatter: frontmatter,
+      markdown: entry.markdown.content,
+      frontmatter: entry.frontmatter,
     },
   };
 };

@@ -15,6 +15,18 @@ type MarkdownPaths = {
   fallback: boolean;
 };
 
+const parseMarkdownForEntry = (filePath: string): MarkdownEntry => {
+  const content = fs.readFileSync(filePath, { encoding: "utf-8" });
+  const md = matter(content);
+  const frontmatter = extractMarkdownFrontMatter(md);
+
+  return {
+    fileName: path.basename(filePath),
+    frontmatter: frontmatter,
+    markdown: md,
+  };
+};
+
 const listIDFromMarkdownDir = (dirName: string): string[] => {
   const fileNames = fs.readdirSync(dirName, { encoding: "utf-8" });
   const mdFileNames = fileNames.filter((fileName) => {
@@ -39,18 +51,23 @@ type MarkdownEntry = {
 const readMarkdownsFromDir = (dirName: string): MarkdownEntry[] => {
   const fileNames = fs.readdirSync(dirName);
   const entries = fileNames.map((fileName) => {
-    const id = path.basename(fileName, ".md");
     const filePath = path.join(dirName, fileName);
-    const content = fs.readFileSync(filePath, { encoding: "utf-8" });
-    const md = matter(content);
-    const frontmatter = extractMarkdownFrontMatter(md);
-    return {
-      fileName: fileName,
-      frontmatter: frontmatter,
-      markdown: md,
-    };
+    return parseMarkdownForEntry(filePath);
   });
+
   return entries;
+};
+
+const sortMarkdownEntriesAsFresh = (
+  entries: MarkdownEntry[]
+): MarkdownEntry[] => {
+  const sortedEntries = entries.sort((a, b) => {
+    const aAge = Date.parse(a.frontmatter.createdAt);
+    const bAge = Date.parse(b.frontmatter.createdAt);
+    return bAge - aAge;
+  });
+
+  return sortedEntries;
 };
 
 const getPathsFromMarkdownDir = (
@@ -87,5 +104,7 @@ export {
   readMarkdownsFromDir,
   extractMarkdownFrontMatter,
   getPathsFromMarkdownDir,
+  parseMarkdownForEntry,
+  sortMarkdownEntriesAsFresh,
 };
 export type { MarkdownEntry };

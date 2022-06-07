@@ -11,9 +11,9 @@ import path from "path";
 import BlogCardGrid from "~/components/entries/BlogCardGrid";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
-import { categoryPost } from "~/locales/category";
+import { categoryDiary } from "~/locales/category";
 
-type PostItem = {
+type DiaryItem = {
   link: string;
   title: string;
   createdAt: string;
@@ -23,7 +23,7 @@ type PostItem = {
 
 type TagProps = {
   tag: string;
-  posts: PostItem[];
+  diaries: DiaryItem[];
 };
 
 type TagPath = {
@@ -31,7 +31,7 @@ type TagPath = {
 };
 
 export const getStaticPaths: GetStaticPaths<TagPath> = async () => {
-  const tagsFile = fs.readFileSync("markdowns/all-posttags.json", {
+  const tagsFile = fs.readFileSync("markdowns/all-diarytags.json", {
     encoding: "utf-8",
   });
   const tags: string[] = JSON.parse(tagsFile);
@@ -43,6 +43,7 @@ export const getStaticPaths: GetStaticPaths<TagPath> = async () => {
       locale: japanese,
     };
   });
+
   const paths = jaPaths.concat(
     tags.map((tag) => {
       return {
@@ -62,14 +63,14 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
   locale,
 }) => {
   const tag = `${params?.tag}`;
-  const postDirectory = `markdowns/${locale}/post`;
+  const postDirectory = `markdowns/${locale}/diary`;
   const entries = readMarkdownsFromDir(postDirectory);
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
-  const posts = sortedEntries
+  const diaries = sortedEntries
     .filter((entry) => entry.frontmatter.tags.includes(tag))
     .map((entry) => {
       const id = path.basename(entry.fileName, ".md");
-      const link = `/${locale}/post/${id}`;
+      const link = `/${locale}/diary/${id}`;
 
       return {
         link: link,
@@ -79,7 +80,7 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 
   return {
     props: {
-      posts: posts,
+      diaries: diaries,
       tag: tag,
     },
   };
@@ -87,7 +88,7 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 
 const Tag: NextPageWithLayout<TagProps> = (props) => {
   const loc = useLocale();
-  const entryCategory = loc.categories.get(categoryPost) ?? "post";
+  const entryCategory = loc.categories.get(categoryDiary) ?? "diary";
   const tagDescription = `tag: ${props.tag}`;
   const title = `${tagDescription} | ${entryCategory}`;
 
@@ -95,10 +96,10 @@ const Tag: NextPageWithLayout<TagProps> = (props) => {
     <>
       <BlogEntriesHead
         title={title}
-        link={`/post/tag/${props.tag}`}
+        link={`/diary/tag/${props.tag}`}
       ></BlogEntriesHead>
       <h1>{tagDescription}</h1>
-      <BlogCardGrid cards={props.posts} />
+      <BlogCardGrid cards={props.diaries} />
     </>
   );
 };
