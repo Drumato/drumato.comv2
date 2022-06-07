@@ -15,7 +15,6 @@ type BlogHeaderProps = {
 const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
   const loc = useLocale();
   const isMobileMode = useMobileMode();
-  console.log(isMobileMode);
   const categories = Array.from(loc.categories).map(([key, value]) => {
     return {
       // "post"

@@ -14,7 +14,12 @@ const BlogCategoryTypography = (
   props: BlogCategoryTypographyProps
 ): JSX.Element => {
   return (
-    <Typography variant="overline" color="secondary" fontFamily="Klee One">
+    <Typography
+      fontWeight="bold"
+      variant="overline"
+      color="secondary"
+      fontFamily="Klee One"
+    >
       {props.content}
     </Typography>
   );

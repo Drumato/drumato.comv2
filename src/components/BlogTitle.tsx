@@ -20,7 +20,9 @@ const BlogTitleButton = (props: BlogTitleButtonProps): JSX.Element => {
 const BlogTitle = (props: BlogTitleProps) => {
   return (
     <BlogTitleButton>
-      <Typography fontFamily="Klee One">{props.siteTitle}</Typography>
+      <Typography fontWeight="bold" fontFamily="Klee One">
+        {props.siteTitle}
+      </Typography>
     </BlogTitleButton>
   );
 };
