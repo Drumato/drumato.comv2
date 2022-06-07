@@ -20,7 +20,7 @@ const BlogTitleButton = (props: BlogTitleButtonProps): JSX.Element => {
   });
 
   return (
-    <StyledButton size="small" href="/">
+    <StyledButton size="medium" href="/">
       {props.children}
     </StyledButton>
   );

@@ -15,6 +15,7 @@ const BlogEntriesHead = (props: BlogEntriesHeadProps): JSX.Element => {
   const facebookURL = "https://www.facebook.com/drumato.yamato.sugawara";
   return (
     <Head>
+      <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
       <title>{props.title}</title>
       <GoogleAnalytics />
       <Favicons />

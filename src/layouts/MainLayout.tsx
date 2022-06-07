@@ -1,4 +1,4 @@
-import { Container, createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material";
 import { red, grey } from "@mui/material/colors";
 import { ReactElement } from "react";
 import BlogFooter from "~/components/BlogFooter";
@@ -9,6 +9,15 @@ type Props = {
 };
 
 const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
   palette: {
     primary: {
       main: red[200],
@@ -28,7 +37,7 @@ const MainLayout = ({ children }: Props): JSX.Element => {
   return (
     <ThemeProvider theme={theme}>
       <BlogHeader siteTitle={siteTitle} />
-      <Container fixed>{children}</Container>
+      {children}
       <BlogFooter year={year} author={author} />
     </ThemeProvider>
   );

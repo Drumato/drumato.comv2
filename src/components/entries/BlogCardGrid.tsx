@@ -7,10 +7,16 @@ type BlogCardGridProps = {
 const BlogCardGrid = (props: BlogCardGridProps): JSX.Element => {
   return (
     <Container maxWidth="xl">
-      <Grid container direction="row" alignItems="stretch" spacing={3}>
+      <Grid
+        container
+        direction="row"
+        alignItems="stretch"
+        spacing={2}
+        columns={{ xs: 1, sm: 2, lg: 3, xl: 3 }}
+      >
         {props.cards.map((card) => {
           return (
-            <Grid item key={card.link} xs={4} lg={3}>
+            <Grid item key={card.link} xs={1} lg={1} xl={1}>
               <BlogMarkdownCard
                 link={card.link}
                 frontmatter={card.frontmatter}

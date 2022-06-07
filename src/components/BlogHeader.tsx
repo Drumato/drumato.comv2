@@ -37,18 +37,16 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
     <StyledBox sx={{ flexGrow: 1 }}>
       <StyledAppBar position="fixed">
         <StyledToolbar color="inherit">
-          <>
-            <BlogTitle siteTitle={props.siteTitle} />
-            {categories.map((category) => {
-              return (
-                <BlogCategory
-                  key={category.categoryName}
-                  categoryInURL={category.urlElement}
-                  categoryName={category.categoryName}
-                ></BlogCategory>
-              );
-            })}
-          </>
+          <BlogTitle siteTitle={props.siteTitle} />
+          {categories.map((category) => {
+            return (
+              <BlogCategory
+                key={category.categoryName}
+                categoryInURL={category.urlElement}
+                categoryName={category.categoryName}
+              ></BlogCategory>
+            );
+          })}
         </StyledToolbar>
       </StyledAppBar>
     </StyledBox>
