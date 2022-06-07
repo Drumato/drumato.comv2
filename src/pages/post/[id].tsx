@@ -63,7 +63,6 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({
 };
 
 const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
-  const imageLink = `${path.basename(props.frontmatter.imageLink, ".png")}.jpg`;
   return (
     <>
       <BlogEntryHead
@@ -71,7 +70,7 @@ const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
         description={props.frontmatter.description}
         entryCategory={"post"}
         id={props.id}
-        imageLink={imageLink}
+        imageLink={props.frontmatter.imageLink}
       />
       <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />
     </>
