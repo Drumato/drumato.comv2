@@ -2,18 +2,12 @@ import Head from "next/head";
 
 type Props = {};
 
-const GoogleFontDOM = (): JSX.Element => {
+const DocumentHead = (_props: Props): JSX.Element => {
   return (
-    <>
+    <Head>
+      <title>drumato.com</title>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />
-    </>
-  );
-};
-
-const FaviconDOM = (): JSX.Element => {
-  return (
-    <>
       <link
         rel="apple-touch-icon"
         sizes="180x180"
@@ -39,16 +33,6 @@ const FaviconDOM = (): JSX.Element => {
       />
       <meta name="msapplication-TileColor" content="#da532c" />
       <meta name="theme-color" content="#ffffff" />
-    </>
-  );
-};
-
-const DocumentHead = (_props: Props): JSX.Element => {
-  return (
-    <Head>
-      <title>drumato.com</title>
-      <GoogleFontDOM />
-      <FaviconDOM />
     </Head>
   );
 };
