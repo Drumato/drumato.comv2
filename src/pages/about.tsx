@@ -3,7 +3,7 @@ import { MarkdownFrontMatter } from "~/@types/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { Markdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
-import { parseMarkdownForEntry } from "~/utils/markdown";
+import { parseMarkdownEntry } from "~/utils/markdown";
 
 type AboutProps = {
   markdown: string;
@@ -14,7 +14,7 @@ export const getStaticProps: GetStaticProps<AboutProps> = async ({
   locale,
 }) => {
   const filePath = `markdowns/${locale}/about.md`;
-  const entry = parseMarkdownForEntry(filePath);
+  const entry = parseMarkdownEntry(filePath);
 
   return {
     props: {

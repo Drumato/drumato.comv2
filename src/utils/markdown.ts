@@ -3,6 +3,10 @@ import path from "path";
 import matter, { GrayMatterFile } from "gray-matter";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 
+/**
+ * A Next.js path that identifies an entry of the markdown.
+ * @remarks it's used in some page components that lists the entries.
+ */
 type MarkdownPath = {
   params: {
     id: string;
@@ -10,12 +14,31 @@ type MarkdownPath = {
   locale: string;
 };
 
+/**
+ * A Next.js path sequence that lists the entries of the markdown.
+ * @remarks it's used in some page components that lists the entries of tha markdown.
+ */
 type MarkdownPaths = {
   paths: MarkdownPath[];
   fallback: boolean;
 };
 
-const parseMarkdownForEntry = (filePath: string): MarkdownEntry => {
+/**
+ * A markdown representation that is used for rendering an markdown as HTMl.
+ */
+type MarkdownEntry = {
+  /** for extracting its ID */
+  fileName: string;
+  frontmatter: MarkdownFrontMatter;
+  markdown: GrayMatterFile<string>;
+};
+
+/**
+ * parses a markdown file that has explicitly defined frontmatter.
+ * @param filePath - the parse-target markdown-file
+ * @returns an entry of the markdown
+ */
+const parseMarkdownEntry = (filePath: string): MarkdownEntry => {
   const content = fs.readFileSync(filePath, { encoding: "utf-8" });
   const md = matter(content);
   const frontmatter = extractMarkdownFrontMatter(md);
@@ -27,37 +50,27 @@ const parseMarkdownForEntry = (filePath: string): MarkdownEntry => {
   };
 };
 
-const listIDFromMarkdownDir = (dirName: string): string[] => {
-  const fileNames = fs.readdirSync(dirName, { encoding: "utf-8" });
-  const mdFileNames = fileNames.filter((fileName) => {
-    return path.extname(fileName) == ".md";
-  });
-
-  // note that path.basename will remove the extension
-  // if the optional 2nd arg is given.
-  const ids = mdFileNames.map((fileName) => {
-    return path.basename(fileName, ".md");
-  });
-
-  return ids;
-};
-
-type MarkdownEntry = {
-  fileName: string;
-  frontmatter: MarkdownFrontMatter;
-  markdown: GrayMatterFile<string>;
-};
-
-const readMarkdownsFromDir = (dirName: string): MarkdownEntry[] => {
+/**
+ * parses the list of the markdowns to entries.
+ * @param dirName - the directory that holds parse-target markdown-files
+ * @returns an sequence of the entry
+ */
+const parseMarkdownEntries = (dirName: string): MarkdownEntry[] => {
+  const onlyMD = (fileName: string) => path.extname(fileName) === ".md";
   const fileNames = fs.readdirSync(dirName);
-  const entries = fileNames.map((fileName) => {
+  const entries = fileNames.filter(onlyMD).map((fileName) => {
     const filePath = path.join(dirName, fileName);
-    return parseMarkdownForEntry(filePath);
+    return parseMarkdownEntry(filePath);
   });
 
   return entries;
 };
 
+/**
+ * sorts the markdown list in descending of the entry's createdAt.
+ * @param entries - the list of the markdown entry
+ * @returns the sorted list of the given entries
+ */
 const sortMarkdownEntriesAsFresh = (
   entries: MarkdownEntry[]
 ): MarkdownEntry[] => {
@@ -70,11 +83,19 @@ const sortMarkdownEntriesAsFresh = (
   return sortedEntries;
 };
 
+/**
+ * setup the id list of the markdown for getStaticPaths.
+ * @param locale - the page's locale of the path
+ * @param dirName - the source directory of the page paths
+ * @returns the page paths
+ */
 const getPathsFromMarkdownDir = (
   locale: string,
   dirName: string
 ): MarkdownPaths => {
-  const ids = listIDFromMarkdownDir(dirName);
+  const extractID = (fileName: string) => path.basename(fileName, ".md");
+  const entries = parseMarkdownEntries(dirName);
+  const ids = entries.map((entry) => extractID(entry.fileName));
   const paths = ids.map((id) => ({
     params: {
       id: id,
@@ -88,6 +109,11 @@ const getPathsFromMarkdownDir = (
   };
 };
 
+/**
+ * casts markdown as ours frontmatter.
+ * @param markdown - the markdown that holds the raw frontmatter
+ * @returns the frontmatter that is explicitly defined for our usecase
+ */
 const extractMarkdownFrontMatter = (
   markdown: GrayMatterFile<string>
 ): MarkdownFrontMatter => {
@@ -100,11 +126,26 @@ const extractMarkdownFrontMatter = (
   };
 };
 
+/**
+ * filter markdown entries with the given tag.
+ * @param entries - the target markdowns
+ * @param tag - the tag that is useds as an filter
+ * @returns the filtered entreies
+ */
+const filterEntriesWithTag = (
+  entries: MarkdownEntry[],
+  tag: string
+): MarkdownEntry[] => {
+  return entries.filter((entry) => entry.frontmatter.tags.includes(tag));
+};
+
 export {
-  readMarkdownsFromDir,
+  parseMarkdownEntries,
   extractMarkdownFrontMatter,
   getPathsFromMarkdownDir,
-  parseMarkdownForEntry,
+  parseMarkdownEntry,
   sortMarkdownEntriesAsFresh,
+  filterEntriesWithTag,
 };
+
 export type { MarkdownEntry };

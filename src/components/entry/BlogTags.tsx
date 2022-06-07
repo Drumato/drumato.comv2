@@ -1,11 +1,13 @@
 import { Style as StyleIcon } from "@mui/icons-material";
 import { Box, Chip } from "@mui/material";
+import useLocale from "~/hooks/useLocale";
 
 type Props = {
   tags: string[];
 };
 
 const BlogTags = (props: Props): JSX.Element => {
+  const loc = useLocale();
   if (props.tags.length === 0) {
     return <></>;
   }
@@ -20,7 +22,7 @@ const BlogTags = (props: Props): JSX.Element => {
             style={{ backgroundColor: "#ffe6e6" }}
             label={tag}
             key={tag}
-            href={`/post/tag/${tag}`}
+            href={`/${loc.rawLocale}/post/tag/${tag}`}
             clickable
           ></Chip>
         );

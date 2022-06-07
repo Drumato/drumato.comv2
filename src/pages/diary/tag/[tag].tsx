@@ -4,7 +4,8 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import MainLayout from "~/layouts/MainLayout";
 import { english, japanese } from "~/locales/supported";
 import {
-  readMarkdownsFromDir,
+  filterEntriesWithTag,
+  parseMarkdownEntries,
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
 import path from "path";
@@ -64,19 +65,17 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 }) => {
   const tag = `${params?.tag}`;
   const postDirectory = `markdowns/${locale}/diary`;
-  const entries = readMarkdownsFromDir(postDirectory);
+  const entries = parseMarkdownEntries(postDirectory);
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
-  const diaries = sortedEntries
-    .filter((entry) => entry.frontmatter.tags.includes(tag))
-    .map((entry) => {
-      const id = path.basename(entry.fileName, ".md");
-      const link = `/${locale}/diary/${id}`;
+  const diaries = filterEntriesWithTag(sortedEntries, tag).map((entry) => {
+    const id = path.basename(entry.fileName, ".md");
+    const link = `/${locale}/diary/${id}`;
 
-      return {
-        link: link,
-        ...entry.frontmatter,
-      };
-    });
+    return {
+      link: link,
+      ...entry.frontmatter,
+    };
+  });
 
   return {
     props: {

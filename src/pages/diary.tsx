@@ -3,7 +3,7 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import path from "path";
 import {
-  readMarkdownsFromDir,
+  parseMarkdownEntries,
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
 import BlogCardGrid from "~/components/entries/BlogCardGrid";
@@ -28,7 +28,7 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
   locale,
 }) => {
   const diaryDirectory = `markdowns/${locale}/diary`;
-  const entries = readMarkdownsFromDir(diaryDirectory);
+  const entries = parseMarkdownEntries(diaryDirectory);
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
   const diaries = sortedEntries.map((entry) => {
     const id = path.basename(entry.fileName, ".md");

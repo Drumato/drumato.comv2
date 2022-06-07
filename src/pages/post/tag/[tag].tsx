@@ -4,7 +4,8 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import MainLayout from "~/layouts/MainLayout";
 import { english, japanese } from "~/locales/supported";
 import {
-  readMarkdownsFromDir,
+  filterEntriesWithTag,
+  parseMarkdownEntries,
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
 import path from "path";
@@ -35,25 +36,18 @@ export const getStaticPaths: GetStaticPaths<TagPath> = async () => {
     encoding: "utf-8",
   });
   const tags: string[] = JSON.parse(tagsFile);
-  const jaPaths = tags.map((tag) => {
+  const tagToPath = (tag: string, locale: string) => {
     return {
       params: {
         tag: tag,
       },
-      locale: japanese,
+      locale: locale,
     };
-  });
-  const paths = jaPaths.concat(
-    tags.map((tag) => {
-      return {
-        params: {
-          tag: tag,
-        },
-        locale: english,
-      };
-    })
-  );
+  };
 
+  const jaPaths = tags.map((tag) => tagToPath(tag, japanese));
+  const enPaths = tags.map((tag) => tagToPath(tag, english));
+  const paths = jaPaths.concat(enPaths);
   return { paths: paths, fallback: false };
 };
 
@@ -63,19 +57,17 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 }) => {
   const tag = `${params?.tag}`;
   const postDirectory = `markdowns/${locale}/post`;
-  const entries = readMarkdownsFromDir(postDirectory);
+  const entries = parseMarkdownEntries(postDirectory);
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
-  const posts = sortedEntries
-    .filter((entry) => entry.frontmatter.tags.includes(tag))
-    .map((entry) => {
-      const id = path.basename(entry.fileName, ".md");
-      const link = `/${locale}/post/${id}`;
+  const posts = filterEntriesWithTag(sortedEntries, tag).map((entry) => {
+    const id = path.basename(entry.fileName, ".md");
+    const link = `/${locale}/post/${id}`;
 
-      return {
-        link: link,
-        ...entry.frontmatter,
-      };
-    });
+    return {
+      link: link,
+      ...entry.frontmatter,
+    };
+  });
 
   return {
     props: {

@@ -3,7 +3,7 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import path from "path";
 import {
-  readMarkdownsFromDir,
+  parseMarkdownEntries,
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
 import BlogCardGrid from "~/components/entries/BlogCardGrid";
@@ -27,7 +27,7 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
   locale,
 }) => {
   const postDirectory = `markdowns/${locale}/post`;
-  const entries = readMarkdownsFromDir(postDirectory);
+  const entries = parseMarkdownEntries(postDirectory);
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
   const posts = sortedEntries.map((entry) => {
     const id = path.basename(entry.fileName, ".md");

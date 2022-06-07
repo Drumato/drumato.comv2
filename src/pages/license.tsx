@@ -3,7 +3,7 @@ import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import { Markdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
-import { parseMarkdownForEntry } from "~/utils/markdown";
+import { parseMarkdownEntry } from "~/utils/markdown";
 
 type LicenseProps = {
   markdown: string;
@@ -14,7 +14,7 @@ export const getStaticProps: GetStaticProps<LicenseProps> = async ({
   locale,
 }) => {
   const filePath = `markdowns/${locale}/license.md`;
-  const entry = parseMarkdownForEntry(filePath);
+  const entry = parseMarkdownEntry(filePath);
 
   return {
     props: {
