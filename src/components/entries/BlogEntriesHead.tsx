@@ -1,4 +1,6 @@
 import Head from "next/head";
+import OGP from "~/components/OGP";
+import TwitterCard from "~/components/TwitterCard";
 
 type BlogEntriesHeadProps = {
   title: string;
@@ -7,21 +9,21 @@ type BlogEntriesHeadProps = {
 
 const BlogEntriesHead = (props: BlogEntriesHeadProps): JSX.Element => {
   const imageLink = "/Drumato.png";
+  const siteName = "drumato.com";
+  const facebookURL = "https://www.facebook.com/drumato.yamato.sugawara";
   return (
     <Head>
       <title>{props.title}</title>
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content={props.title} />
-      <meta property="og:description" content={props.title} />
-      <meta property="og:url" content={props.link} />
-      <meta property="og:site_name" content="drumato.com" />
-      <meta
-        property="article:author"
-        content="https://www.facebook.com/drumato.yamato.sugawara"
+      <OGP
+        cardType="website"
+        title={props.title}
+        description={props.title}
+        url={props.link}
+        siteName={siteName}
+        articleAuthorURL={facebookURL}
+        imageLink={imageLink}
       />
-      <meta property="og:image" content={imageLink} />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:site" content="drumato" />
+      <TwitterCard userID="drumato" cardContent="summary" />
     </Head>
   );
 };
