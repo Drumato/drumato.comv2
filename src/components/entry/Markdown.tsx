@@ -7,6 +7,7 @@ import tomorrow from "react-syntax-highlighter/dist/cjs/styles/prism/tomorrow";
 import remarkGfm from "remark-gfm";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import BlogTags from "./BlogTags";
+import rehypeSlug from "rehype-slug";
 
 type Props = {
   markdown: string;
@@ -22,6 +23,7 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
     <ReactMarkdown
       className={style.reactMarkDown}
       remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
+      rehypePlugins={[rehypeSlug]}
       components={{
         code({ node, inline, className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || "");
