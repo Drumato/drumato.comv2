@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
-import { Markdown } from "~/components/entry/Markdown";
+import { CategoryMarkdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import { parseMarkdownEntry } from "~/utils/markdown";
@@ -25,7 +25,12 @@ export const getStaticProps: GetStaticProps<LicenseProps> = async ({
 };
 
 const License: NextPageWithLayout<LicenseProps> = (props: LicenseProps) => {
-  return <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />;
+  return (
+    <CategoryMarkdown
+      markdown={props.markdown}
+      frontmatter={props.frontmatter}
+    />
+  );
 };
 
 License.getLayout = (page) => {

@@ -1,6 +1,4 @@
 import style from "/public/markdown-styles.module.css";
-import { Edit as EditIcon } from "@mui/icons-material";
-import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import tomorrow from "react-syntax-highlighter/dist/cjs/styles/prism/tomorrow";
@@ -8,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import BlogTags from "./BlogTags";
 import rehypeSlug from "rehype-slug";
+import BlogEntryNavigation from "./BlogEntryNavigation";
 
 type Props = {
   markdown: string;
@@ -61,20 +60,44 @@ const CustomReactMarkdown = (props: CustomReactMarkdownProps): JSX.Element => {
   );
 };
 
-const Markdown = (props: Props): JSX.Element => {
+const MarkdownBody = (props: Props): JSX.Element => {
+  return (
+    <>
+      <CustomReactMarkdown content={props.markdown} />
+    </>
+  );
+};
+
+type EntryMarkdownProps = {
+  entryType: "post" | "diary";
+  id: string;
+};
+
+const CategoryMarkdown = (props: Props): JSX.Element => {
   return (
     <>
       <h2>{props.frontmatter.title}</h2>
-      <BottomNavigation showLabels>
-        <BottomNavigationAction
-          label={`created at ${props.frontmatter.createdAt}`}
-          icon={<EditIcon style={{ fontSize: "large" }} />}
-        />
-      </BottomNavigation>
+      <hr />
+      <CustomReactMarkdown content={props.markdown} />
+    </>
+  );
+};
+
+const EntryMarkdown = (props: Props & EntryMarkdownProps): JSX.Element => {
+  return (
+    <>
+      <h2>{props.frontmatter.title}</h2>
+      <BlogEntryNavigation
+        createdAt={props.frontmatter.createdAt}
+        title={props.frontmatter.title}
+        entryType={props.entryType}
+        id={props.id}
+      />
       <BlogTags tags={props.frontmatter.tags}></BlogTags>
       <hr />
       <CustomReactMarkdown content={props.markdown} />
     </>
   );
 };
-export { Markdown };
+
+export { CategoryMarkdown, MarkdownBody, EntryMarkdown };

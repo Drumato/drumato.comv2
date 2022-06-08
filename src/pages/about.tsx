@@ -1,7 +1,7 @@
 import { GetStaticProps } from "next";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
-import { Markdown } from "~/components/entry/Markdown";
+import { CategoryMarkdown } from "~/components/entry/Markdown";
 import MainLayout from "~/layouts/MainLayout";
 import { parseMarkdownEntry } from "~/utils/markdown";
 
@@ -25,7 +25,12 @@ export const getStaticProps: GetStaticProps<AboutProps> = async ({
 };
 
 const About: NextPageWithLayout<AboutProps> = (props: AboutProps) => {
-  return <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />;
+  return (
+    <CategoryMarkdown
+      markdown={props.markdown}
+      frontmatter={props.frontmatter}
+    />
+  );
 };
 
 About.getLayout = (page) => {

@@ -3,7 +3,7 @@ import fs from "fs";
 
 import { GetStaticProps, GetStaticPaths } from "next";
 import React from "react";
-import { Markdown } from "~/components/entry/Markdown";
+import { EntryMarkdown } from "~/components/entry/Markdown";
 import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
 import MainLayout from "~/layouts/MainLayout";
 import {
@@ -77,7 +77,12 @@ const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
         id={props.id}
         imageLink={imagePath}
       />
-      <Markdown markdown={props.markdown} frontmatter={props.frontmatter} />
+      <EntryMarkdown
+        markdown={props.markdown}
+        frontmatter={props.frontmatter}
+        entryType={"post"}
+        id={props.id}
+      />
     </>
   );
 };
