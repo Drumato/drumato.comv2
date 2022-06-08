@@ -10,7 +10,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 
 type BlogMarkdownCardProps = {
-  link: string;
+  path: string;
   frontmatter: MarkdownFrontMatter;
 };
 
@@ -25,7 +25,7 @@ const StyledTypography = styled(Typography)({
 const BlogMarkdownCard = (props: BlogMarkdownCardProps): JSX.Element => {
   return (
     <Card sx={{ display: "block" }}>
-      <CardActionArea href={props.link}>
+      <CardActionArea href={props.path}>
         <CardMedia
           component="img"
           image={props.frontmatter.imageLink}

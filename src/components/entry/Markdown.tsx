@@ -7,6 +7,7 @@ import { MarkdownFrontMatter } from "~/@types/Markdown";
 import BlogTags from "./BlogTags";
 import rehypeSlug from "rehype-slug";
 import BlogEntryNavigation from "./BlogEntryNavigation";
+import { EntryKind } from "~/utils/siteLink";
 
 type Props = {
   markdown: string;
@@ -69,8 +70,8 @@ const MarkdownBody = (props: Props): JSX.Element => {
 };
 
 type EntryMarkdownProps = {
-  entryType: "post" | "diary";
-  id: string;
+  url: string;
+  entryKind: EntryKind;
 };
 
 const CategoryMarkdown = (props: Props): JSX.Element => {
@@ -90,10 +91,12 @@ const EntryMarkdown = (props: Props & EntryMarkdownProps): JSX.Element => {
       <BlogEntryNavigation
         createdAt={props.frontmatter.createdAt}
         title={props.frontmatter.title}
-        entryType={props.entryType}
-        id={props.id}
+        url={props.url}
       />
-      <BlogTags tags={props.frontmatter.tags}></BlogTags>
+      <BlogTags
+        tags={props.frontmatter.tags}
+        entryKind={props.entryKind}
+      ></BlogTags>
       <hr />
       <CustomReactMarkdown content={props.markdown} />
     </>

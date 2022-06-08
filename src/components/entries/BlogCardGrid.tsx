@@ -1,5 +1,6 @@
 import { Container, Grid } from "@mui/material";
 import BlogMarkdownCard, { BlogMarkdownCardProps } from "./BlogMarkdownCard";
+
 type BlogCardGridProps = {
   cards: BlogMarkdownCardProps[];
 };
@@ -16,9 +17,9 @@ const BlogCardGrid = (props: BlogCardGridProps): JSX.Element => {
       >
         {props.cards.map((card) => {
           return (
-            <Grid item key={card.link} xs={1} lg={1} xl={1}>
+            <Grid item key={card.path} xs={1} lg={1} xl={1}>
               <BlogMarkdownCard
-                link={card.link}
+                path={card.path}
                 frontmatter={card.frontmatter}
               />
             </Grid>

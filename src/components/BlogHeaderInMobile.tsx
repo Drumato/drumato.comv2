@@ -14,6 +14,7 @@ import { MouseEventHandler, useState } from "react";
 import BlogTitle from "./BlogTitle";
 import MenuIcon from "@mui/icons-material/Menu";
 import useLocale from "~/hooks/useLocale";
+import { categoryPath } from "~/utils/siteLink";
 
 type Props = {
   siteTitle: string;
@@ -37,11 +38,12 @@ const BlogHeaderDrawItems = (): JSX.Element => {
   const { rawLocale, categories } = useLocale();
   return (
     <List>
-      {Array.from(categories).map(([urlRepl, categoryName]) => {
-        const categoryLink = `/${rawLocale}/${urlRepl}`;
+      {Array.from(categories).map(([categoryInURL, categoryName]) => {
+        const path = categoryPath(rawLocale, categoryInURL);
+
         return (
-          <ListItem key={urlRepl} disablePadding>
-            <ListItemButton href={categoryLink}>
+          <ListItem key={categoryInURL} disablePadding>
+            <ListItemButton href={path}>
               <ListItemText
                 primaryTypographyProps={{ fontFamily: "Klee One" }}
                 primary={categoryName}

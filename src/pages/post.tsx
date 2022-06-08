@@ -11,9 +11,14 @@ import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryPost } from "~/locales/category";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
+import {
+  categoryLink,
+  entryContentPath,
+  entryKindPost,
+} from "~/utils/siteLink";
 
 type PostItem = {
-  link: string;
+  path: string;
   frontmatter: MarkdownFrontMatter;
 };
 
@@ -29,10 +34,10 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
   const posts = sortedEntries.map((entry) => {
     const id = path.basename(entry.fileName, ".md");
-    const link = `/${locale}/post/${id}`;
+    const postPath = entryContentPath(`${locale}`, entryKindPost, id);
 
     return {
-      link: link,
+      path: postPath,
       frontmatter: entry.frontmatter,
     };
   });
@@ -48,11 +53,12 @@ const PostList: NextPageWithLayout<PostListProps> = (
   postListProps: PostListProps
 ) => {
   const loc = useLocale();
-  const title = loc.categories.get(categoryPost) ?? "post";
+  const title = loc.categories.get(categoryPost) ?? entryKindPost;
+  const url = categoryLink(loc.rawLocale, entryKindPost);
 
   return (
     <>
-      <BlogEntriesHead title={title} link="/post"></BlogEntriesHead>
+      <BlogEntriesHead title={title} link={url}></BlogEntriesHead>
       <BlogCardGrid cards={postListProps.posts} />
     </>
   );

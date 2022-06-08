@@ -14,9 +14,14 @@ import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryPost } from "~/locales/category";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
+import {
+  entryContentPath,
+  entryKindPost,
+  tagSearchLink,
+} from "~/utils/siteLink";
 
 type PostItem = {
-  link: string;
+  path: string;
   frontmatter: MarkdownFrontMatter;
 };
 
@@ -54,15 +59,15 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
   locale,
 }) => {
   const tag = `${params?.tag}`;
-  const postDirectory = `markdowns/${locale}/post`;
+  const postDirectory = `markdowns/${locale}/${entryKindPost}`;
   const entries = parseMarkdownEntries(postDirectory);
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
   const posts = filterEntriesWithTag(sortedEntries, tag).map((entry) => {
     const id = path.basename(entry.fileName, ".md");
-    const link = `/${locale}/post/${id}`;
+    const postPath = entryContentPath(`${locale}`, entryKindPost, id);
 
     return {
-      link: link,
+      path: postPath,
       frontmatter: entry.frontmatter,
     };
   });
@@ -77,16 +82,14 @@ export const getStaticProps: GetStaticProps<TagProps> = async ({
 
 const Tag: NextPageWithLayout<TagProps> = (props) => {
   const loc = useLocale();
-  const entryCategory = loc.categories.get(categoryPost) ?? "post";
+  const categoryName = loc.categories.get(categoryPost) ?? entryKindPost;
   const tagDescription = `tag: ${props.tag}`;
-  const title = `${tagDescription} | ${entryCategory}`;
+  const title = `${tagDescription} | ${categoryName}`;
+  const tagPath = tagSearchLink(loc.rawLocale, entryKindPost, props.tag);
 
   return (
     <>
-      <BlogEntriesHead
-        title={title}
-        link={`/post/tag/${props.tag}`}
-      ></BlogEntriesHead>
+      <BlogEntriesHead title={title} link={tagPath}></BlogEntriesHead>
       <h1>{tagDescription}</h1>
       <BlogCardGrid cards={props.posts} />
     </>

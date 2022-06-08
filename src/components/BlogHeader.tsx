@@ -7,6 +7,7 @@ import useLocale from "~/hooks/useLocale";
 import { Stack } from "@mui/material";
 import useMobileMode from "~/hooks/useMobileMode";
 import BlogHeaderInMobile from "./BlogHeaderInMobile";
+import { categoryPath } from "~/utils/siteLink";
 
 type BlogHeaderProps = {
   siteTitle: string;
@@ -15,6 +16,10 @@ type BlogHeaderProps = {
 const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
   const loc = useLocale();
   const isMobileMode = useMobileMode();
+  if (isMobileMode) {
+    return <BlogHeaderInMobile siteTitle={props.siteTitle} />;
+  }
+
   const categories = Array.from(loc.categories).map(([key, value]) => {
     return {
       // "post"
@@ -23,10 +28,6 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
       categoryName: value,
     };
   });
-
-  if (isMobileMode) {
-    return <BlogHeaderInMobile siteTitle={props.siteTitle} />;
-  }
 
   return (
     <Box
@@ -43,11 +44,13 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
           <Stack direction="row" spacing={2}>
             <BlogTitle siteTitle={props.siteTitle} />
             {categories.map((category) => {
+              const path = categoryPath(loc.rawLocale, category.urlElement);
+
               return (
                 <BlogCategory
                   key={category.categoryName}
-                  categoryInURL={category.urlElement}
                   categoryName={category.categoryName}
+                  categoryPath={path}
                 ></BlogCategory>
               );
             })}

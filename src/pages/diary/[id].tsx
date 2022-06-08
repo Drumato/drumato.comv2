@@ -14,6 +14,12 @@ import { english, japanese } from "~/locales/supported";
 import matter from "gray-matter";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
 import BlogEntryHead from "~/components/entry/BlogEntryHead";
+import useLocale from "~/hooks/useLocale";
+import {
+  drumatoBaseURL,
+  entryKindDiary,
+  entryContentLink,
+} from "~/utils/siteLink";
 
 type DiaryProps = {
   id: string;
@@ -63,26 +69,28 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
 };
 
 const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
+  const loc = useLocale();
+  const url = entryContentLink(loc.rawLocale, entryKindDiary, props.id);
   const imageLink =
     props.frontmatter.thumbnailLink === ""
       ? props.frontmatter.imageLink
       : props.frontmatter.thumbnailLink;
-  const imagePath = path.join("https://www.drumato.com", imageLink);
+  const imagePath = path.join(drumatoBaseURL, imageLink);
 
   return (
     <>
       <BlogEntryHead
         entryName={props.frontmatter.title}
         description={props.frontmatter.description}
-        entryCategory={"diary"}
+        entryKind={entryKindDiary}
         id={props.id}
         imageLink={imagePath}
       />
       <EntryMarkdown
         markdown={props.markdown}
         frontmatter={props.frontmatter}
-        entryType={"diary"}
-        id={props.id}
+        url={url}
+        entryKind={entryKindDiary}
       />
     </>
   );

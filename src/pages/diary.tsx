@@ -11,9 +11,14 @@ import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryDiary } from "~/locales/category";
 import { MarkdownFrontMatter } from "~/@types/Markdown";
+import {
+  categoryLink,
+  entryContentPath,
+  entryKindDiary,
+} from "~/utils/siteLink";
 
 type DiaryItem = {
-  link: string;
+  path: string;
   frontmatter: MarkdownFrontMatter;
 };
 
@@ -30,10 +35,10 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
   const sortedEntries = sortMarkdownEntriesAsFresh(entries);
   const diaries = sortedEntries.map((entry) => {
     const id = path.basename(entry.fileName, ".md");
-    const link = `/${locale}/diary/${id}`;
+    const diaryPath = entryContentPath(`${locale}`, entryKindDiary, id);
 
     return {
-      link: link,
+      path: diaryPath,
       frontmatter: entry.frontmatter,
     };
   });
@@ -46,14 +51,15 @@ export const getStaticProps: GetStaticProps<DiaryItemProps> = async ({
 };
 
 const DiaryList: NextPageWithLayout<DiaryItemProps> = (
-  diaryProps: DiaryItemProps
+  props: DiaryItemProps
 ) => {
   const loc = useLocale();
-  const title = loc.categories.get(categoryDiary) ?? "diary";
+  const title = loc.categories.get(categoryDiary) ?? entryKindDiary;
+  const url = categoryLink(loc.rawLocale, entryKindDiary);
   return (
     <>
-      <BlogEntriesHead title={title} link="/diary"></BlogEntriesHead>
-      <BlogCardGrid cards={diaryProps.diaries} />
+      <BlogEntriesHead title={title} link={url}></BlogEntriesHead>
+      <BlogCardGrid cards={props.diaries} />
     </>
   );
 };

@@ -1,9 +1,8 @@
 import { Button, Typography } from "@mui/material";
-import useLocale from "~/hooks/useLocale";
 
 type BlogCategoryProps = {
-  categoryInURL: string;
   categoryName: string;
+  categoryPath: string;
 };
 
 type BlogCategoryTypographyProps = {
@@ -26,11 +25,8 @@ const BlogCategoryTypography = (
 };
 
 const BlogCategory = (props: BlogCategoryProps): JSX.Element => {
-  const { rawLocale: locale } = useLocale();
-  const link = `/${locale}/${props.categoryInURL}`;
-
   return (
-    <Button size="small" color="inherit" href={link}>
+    <Button size="small" color="inherit" href={props.categoryPath}>
       <BlogCategoryTypography content={props.categoryName} />
     </Button>
   );
