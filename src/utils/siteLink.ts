@@ -10,7 +10,7 @@ const categoryPath = (locale: string, category: string): string => {
 };
 
 const categoryLink = (locale: string, category: string): string => {
-  return path.join(drumatoBaseURL, locale, category);
+  return drumatoBaseURL + categoryPath(locale, category);
 };
 
 const entryContentLink = (
@@ -18,7 +18,7 @@ const entryContentLink = (
   entryKind: EntryKind,
   entryID: string
 ): string => {
-  return path.join(drumatoBaseURL, locale, entryKind, entryID);
+  return drumatoBaseURL + entryContentPath(locale, entryKind, entryID);
 };
 
 const entryContentPath = (
@@ -34,7 +34,7 @@ const tagSearchLink = (
   entryKind: EntryKind,
   tag: string
 ): string => {
-  return path.join(drumatoBaseURL, locale, entryKind, tag);
+  return drumatoBaseURL + tagSearchPath(locale, entryKind, tag);
 };
 
 const tagSearchPath = (
@@ -56,4 +56,5 @@ export {
   categoryPath,
   categoryLink,
 };
+
 export type { EntryKind };

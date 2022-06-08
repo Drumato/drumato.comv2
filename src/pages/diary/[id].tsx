@@ -71,11 +71,11 @@ export const getStaticProps: GetStaticProps<DiaryProps> = async ({
 const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
   const loc = useLocale();
   const url = entryContentLink(loc.rawLocale, entryKindDiary, props.id);
-  const imageLink =
+  const imagePath =
     props.frontmatter.thumbnailLink === ""
       ? props.frontmatter.imageLink
       : props.frontmatter.thumbnailLink;
-  const imagePath = path.join(drumatoBaseURL, imageLink);
+  const imageLink = drumatoBaseURL + `/${imagePath}`;
 
   return (
     <>
@@ -84,7 +84,7 @@ const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
         description={props.frontmatter.description}
         entryKind={entryKindDiary}
         id={props.id}
-        imageLink={imagePath}
+        imageLink={imageLink}
       />
       <EntryMarkdown
         markdown={props.markdown}

@@ -75,7 +75,7 @@ const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
     props.frontmatter.thumbnailLink === ""
       ? props.frontmatter.imageLink
       : props.frontmatter.thumbnailLink;
-  const imageLink = path.join(drumatoBaseURL, imagePath);
+  const imageLink = drumatoBaseURL + `/${imagePath}`;
 
   return (
     <>

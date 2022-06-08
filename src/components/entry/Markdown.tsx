@@ -8,6 +8,10 @@ import BlogTags from "./BlogTags";
 import rehypeSlug from "rehype-slug";
 import BlogEntryNavigation from "./BlogEntryNavigation";
 import { EntryKind } from "~/utils/siteLink";
+import FacebookShare from "./FacebookShare";
+import TwitterShare from "./TwitterShare";
+import PocketShare from "./PocketShare";
+import HatenaShare from "./HatenaShare";
 
 type Props = {
   markdown: string;
@@ -93,10 +97,11 @@ const EntryMarkdown = (props: Props & EntryMarkdownProps): JSX.Element => {
         title={props.frontmatter.title}
         url={props.url}
       />
-      <BlogTags
-        tags={props.frontmatter.tags}
-        entryKind={props.entryKind}
-      ></BlogTags>
+      <FacebookShare url={props.url} />
+      <TwitterShare url={props.url} title={props.frontmatter.title} />
+      <PocketShare url={props.url} title={props.frontmatter.title} />
+      <HatenaShare url={props.url} title={props.frontmatter.title} />
+      <BlogTags tags={props.frontmatter.tags} entryKind={props.entryKind} />
       <hr />
       <CustomReactMarkdown content={props.markdown} />
     </>
