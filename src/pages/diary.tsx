@@ -23,7 +23,6 @@ type DiaryItem = {
 };
 
 type DiaryItemProps = {
-  // INFO: I want the diary's title.
   diaries: DiaryItem[];
 };
 
