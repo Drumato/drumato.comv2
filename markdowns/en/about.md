@@ -83,14 +83,14 @@ programmingLanguages:
 ## Events
 
 - seccamp2019 Y-ⅡCコンパイラを自作してみよう! Trainee
-  - [Report](https://www.drumato.com/ja/posts/c-compiler-at-seccamp2019/)
+  - [Report in Japanese](https://www.drumato.com/ja/post/c-compiler-at-seccamp2019/)
 - SecHack365'19 Trainee
-  - [Report in Japanese](https://www.drumato.com/ja/posts/execution-program-infra-at-sechack365/)
-  - [Report2 in Japanese](https://www.drumato.com/ja/posts/execution-program-infra-in-rust/)
+  - [Report in Japanese](https://www.drumato.com/ja/post/execution-program-infra-at-sechack365/)
+  - [Report2 in Japanese](https://www.drumato.com/ja/post/execution-program-infra-in-rust/)
 - Cybozu Labs Youth 10th
-  - [Report in Japanese](https://www.drumato.com/ja/posts/cybozu-labs-youth-10th/)
+  - [Report in Japanese](https://www.drumato.com/ja/post/cybozu-labs-youth-10th/)
 - Online Summer Internship for Gophers 2020
-  - [Report in Japanese](https://www.drumato.com/ja/posts/online-summer-internship-for-gophers-2020/)
+  - [Report in Japanese](https://www.drumato.com/ja/pos/online-summer-internship-for-gophers-2020/)
 - KLab Expert Camp#3
 
 ## Other Posts
