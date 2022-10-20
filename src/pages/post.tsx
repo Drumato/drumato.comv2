@@ -1,71 +1,55 @@
-import { GetStaticProps } from "next";
-import { NextPageWithLayout } from "~/@types/NextPageWithLayout";
-import MainLayout from "~/layouts/MainLayout";
-import path from "path";
-import {
-  parseMarkdownEntries,
-  sortMarkdownEntriesAsFresh,
-} from "~/utils/markdown";
-import BlogCardGrid from "~/components/entries/BlogCardGrid";
-import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
-import useLocale from "~/hooks/useLocale";
-import { categoryPost } from "~/locales/category";
-import { MarkdownFrontMatter } from "~/@types/Markdown";
-import {
-  categoryLink,
-  entryContentPath,
-  entryKindPost,
-} from "~/utils/siteLink";
+import { TableContainer, Table, Thead, Tr, Th, Tbody, Td } from '@chakra-ui/react';
+import Head from 'next/head'
+import { ReactElement, ReactNode } from 'react';
+import useLocale from '~/hooks/useLocale';
+import MainLayout from '~/layouts/MainLayout';
+import { SupportedLocaleJapanese } from '~/utils/locale/supported';
+import { NextPageWithLayout } from './_app'
 
-type PostItem = {
-  path: string;
-  frontmatter: MarkdownFrontMatter;
-};
-
-type PostListProps = {
-  posts: PostItem[];
-};
-
-export const getStaticProps: GetStaticProps<PostListProps> = async ({
-  locale,
-}) => {
-  const postDirectory = `markdowns/${locale}/post`;
-  const entries = parseMarkdownEntries(postDirectory);
-  const sortedEntries = sortMarkdownEntriesAsFresh(entries);
-  const posts = sortedEntries.map((entry) => {
-    const id = path.basename(entry.fileName, ".md");
-    const postPath = entryContentPath(`${locale}`, entryKindPost, id);
-
-    return {
-      path: postPath,
-      frontmatter: entry.frontmatter,
-    };
-  });
-
-  return {
-    props: {
-      posts: posts,
-    },
-  };
-};
-
-const PostList: NextPageWithLayout<PostListProps> = (
-  postListProps: PostListProps
-) => {
-  const loc = useLocale();
-  const title = loc.categories.get(categoryPost) ?? entryKindPost;
-  const url = categoryLink(loc.rawLocale, entryKindPost);
+const PostList: NextPageWithLayout<{}> = () => {
+  const locale = useLocale();
+  const title = locale.rawLocale === SupportedLocaleJapanese ? "記事一覧" : "post";
 
   return (
     <>
-      <BlogEntriesHead title={title} link={url}></BlogEntriesHead>
-      <BlogCardGrid cards={postListProps.posts} />
+      <Head>
+        <title>{title} | drumato.com</title>
+      </Head>
+
+      <div>
+        <TableContainer>
+          <Table variant='simple'>
+            <Thead>
+              <Tr>
+                <Th>記事名</Th>
+                <Th>投稿日時</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <Tr>
+                <Td>記事1</Td>
+                <Td>今日</Td>
+              </Tr>
+              <Tr>
+                <Td>記事2</Td>
+                <Td>明日</Td>
+              </Tr>
+              <Tr>
+                <Td>記事3</Td>
+                <Td>明後日</Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </div>
     </>
-  );
+  )
 };
 
-PostList.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+PostList.getLayout = (page: ReactElement): ReactNode => {
+  return <MainLayout>
+    {page}
+  </MainLayout>;
 };
 
 export default PostList;

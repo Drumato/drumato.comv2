@@ -1,10 +1,12 @@
-import { useMediaQuery, useTheme } from "@mui/material";
+import { useMediaQuery } from "@chakra-ui/react";
+import { drumatoTheme } from "~/pages/_app";
 
 const useMobileMode = (): boolean => {
-  const theme = useTheme();
-  const isMobileSize = useMediaQuery(theme.breakpoints.down("sm"));
+  const [isDesktop] = useMediaQuery(
+    `(min-width: ${drumatoTheme.breakpoints.md})`
+  );
 
-  return isMobileSize;
+  return !isDesktop;
 };
 
 export default useMobileMode;

@@ -1,18 +1,35 @@
 import { useRouter } from "next/router";
-import { categories } from "~/locales/category";
-import { english } from "~/locales/supported";
+import { Localization, NavBarLinks } from "~/utils/locale/localization";
+import {
+  SupportedLocale,
+  SupportedLocaleEnglish,
+} from "~/utils/locale/supported";
 
 type CustomLocale = {
   rawLocale: string;
-  categories: Map<string, string>;
+  localization: Localization;
 };
 
 const useLocale = (): CustomLocale => {
   const { locale } = useRouter();
-  const l = locale ?? english;
+  const l = (locale as SupportedLocale) ?? SupportedLocaleEnglish;
+
   return {
     rawLocale: l,
-    categories: categories(l),
+    localization: localization(l),
+  };
+};
+
+const localization = (l: SupportedLocale): Localization => {
+  return {
+    navBarLinks: {
+      post: {
+        href: "post",
+      },
+      diary: {
+        href: "diary",
+      },
+    },
   };
 };
 
