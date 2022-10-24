@@ -9,7 +9,7 @@ import {
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
 import path from "path";
-import BlogCardGrid from "~/components/entries/BlogCardGrid";
+import BlogCardGrid from "~/components/entries/BlogEntryList";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryPost } from "~/locales/category";

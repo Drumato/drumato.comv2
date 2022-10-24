@@ -2,7 +2,7 @@
 title: "Researching the Behavior of FRR BGPd Bestpath Selection Partially"
 description: "studying the BGP bestpath selection with the simple test networks"
 createdAt: "2021-10-04"
-tags: []
+tags: ["frr", "bgp"]
 imageLink: "/images/frr-bestpath/archey.png"
 ---
 

@@ -6,7 +6,7 @@ import {
   parseMarkdownEntries,
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
-import BlogCardGrid from "~/components/entries/BlogCardGrid";
+import BlogCardGrid from "~/components/entries/BlogEntryList";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryDiary } from "~/locales/category";

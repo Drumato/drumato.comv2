@@ -6,7 +6,6 @@ import {
   parseMarkdownEntries,
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
-import BlogCardGrid from "~/components/entries/BlogCardGrid";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryPost } from "~/locales/category";
@@ -16,6 +15,7 @@ import {
   entryContentPath,
   entryKindPost,
 } from "~/utils/siteLink";
+import BlogEntryList from "~/components/entries/BlogEntryList";
 
 type PostItem = {
   path: string;
@@ -50,7 +50,7 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
 };
 
 const PostList: NextPageWithLayout<PostListProps> = (
-  postListProps: PostListProps
+  props: PostListProps
 ) => {
   const loc = useLocale();
   const title = loc.categories.get(categoryPost) ?? entryKindPost;
@@ -59,7 +59,7 @@ const PostList: NextPageWithLayout<PostListProps> = (
   return (
     <>
       <BlogEntriesHead title={title} link={url}></BlogEntriesHead>
-      <BlogCardGrid cards={postListProps.posts} />
+      <BlogEntryList cards={props.posts} />
     </>
   );
 };
