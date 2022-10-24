@@ -97,7 +97,7 @@ const Post: NextPageWithLayout<PostProps> = (props: PostProps) => {
 };
 
 Post.getLayout = (page) => {
-  return <MainLayout containerWidth="xl">{page}</MainLayout>;
+  return <MainLayout containerWidth="lg">{page}</MainLayout>;
 };
 
 export default Post;
