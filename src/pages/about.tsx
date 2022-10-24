@@ -34,7 +34,7 @@ const About: NextPageWithLayout<AboutProps> = (props: AboutProps) => {
 };
 
 About.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="lg">{page}</MainLayout>;
 };
 
 export default About;

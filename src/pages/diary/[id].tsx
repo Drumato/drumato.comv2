@@ -97,7 +97,7 @@ const Diary: NextPageWithLayout<DiaryProps> = (props: DiaryProps) => {
 };
 
 Diary.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="xl">{page}</MainLayout>;
 };
 
 export default Diary;

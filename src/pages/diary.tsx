@@ -64,7 +64,7 @@ const DiaryList: NextPageWithLayout<DiaryItemProps> = (
 };
 
 DiaryList.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="lg">{page}</MainLayout>;
 };
 
 export default DiaryList;

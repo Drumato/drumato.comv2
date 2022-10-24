@@ -1,10 +1,11 @@
-import { createTheme, ThemeProvider } from "@mui/material";
+import { Breakpoint, Container, createTheme, ThemeProvider } from "@mui/material";
 import { red, grey } from "@mui/material/colors";
 import { ReactElement } from "react";
 import BlogFooter from "~/components/BlogFooter";
 import BlogHeader from "~/components/BlogHeader";
 
 type Props = {
+  containerWidth: Breakpoint;
   children: ReactElement;
 };
 
@@ -33,11 +34,14 @@ const siteTitle = "drumato.com";
 const year = 2022;
 const author = "Drumato";
 
-const MainLayout = ({ children }: Props): JSX.Element => {
+const MainLayout = (props: Props): JSX.Element => {
   return (
     <ThemeProvider theme={theme}>
       <BlogHeader siteTitle={siteTitle} />
-      {children}
+      <Container maxWidth={props.containerWidth}>
+
+        {props.children}
+      </Container>
       <BlogFooter year={year} author={author} />
     </ThemeProvider>
   );

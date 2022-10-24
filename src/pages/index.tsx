@@ -6,7 +6,7 @@ const Home: NextPageWithLayout<{}> = (): JSX.Element => {
 };
 
 Home.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="lg">{page}</MainLayout>;
 };
 
 export default Home;

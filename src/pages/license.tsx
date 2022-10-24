@@ -34,7 +34,7 @@ const License: NextPageWithLayout<LicenseProps> = (props: LicenseProps) => {
 };
 
 License.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="lg">{page}</MainLayout>;
 };
 
 export default License;

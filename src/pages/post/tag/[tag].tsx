@@ -97,7 +97,7 @@ const Tag: NextPageWithLayout<TagProps> = (props) => {
 };
 
 Tag.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="xl">{page}</MainLayout>;
 };
 
 export default Tag;
