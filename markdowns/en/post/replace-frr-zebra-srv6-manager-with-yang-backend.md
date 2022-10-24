@@ -2,7 +2,7 @@
 title: "Replace FRR Zebra SRv6 Manager with YANG Backend"
 description: "Introducing my PoC for supporting YANG backend in FRR Zebra."
 createdAt: "2022-01-04"
-tags: []
+tags: ["frr", "srv6"]
 imageLink: "/Drumato.png"
 ---
 

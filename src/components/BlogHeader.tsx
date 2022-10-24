@@ -8,6 +8,7 @@ import { Stack } from "@mui/material";
 import useMobileMode from "~/hooks/useMobileMode";
 import BlogHeaderInMobile from "./BlogHeaderInMobile";
 import { categoryPath } from "~/utils/siteLink";
+import { japanese } from "~/locales/supported";
 
 type BlogHeaderProps = {
   siteTitle: string;
@@ -54,6 +55,11 @@ const BlogHeader = (props: BlogHeaderProps): JSX.Element => {
                 ></BlogCategory>
               );
             })}
+
+            <BlogCategory
+              categoryName={loc.rawLocale === japanese ? "ENGLISH" : "日本語"}
+              categoryPath={loc.rawLocale === japanese ? "/en" : "/ja"}
+            ></BlogCategory>
           </Stack>
         </Toolbar>
       </AppBar>

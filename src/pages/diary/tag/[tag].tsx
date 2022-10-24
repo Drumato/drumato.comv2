@@ -9,7 +9,7 @@ import {
   sortMarkdownEntriesAsFresh,
 } from "~/utils/markdown";
 import path from "path";
-import BlogCardGrid from "~/components/entries/BlogCardGrid";
+import BlogCardGrid from "~/components/entries/BlogEntryList";
 import BlogEntriesHead from "~/components/entries/BlogEntriesHead";
 import useLocale from "~/hooks/useLocale";
 import { categoryDiary } from "~/locales/category";
@@ -98,7 +98,7 @@ const Tag: NextPageWithLayout<TagProps> = (props) => {
 };
 
 Tag.getLayout = (page) => {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout containerWidth="xl">{page}</MainLayout>;
 };
 
 export default Tag;
