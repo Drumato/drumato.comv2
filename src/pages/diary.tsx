@@ -16,6 +16,7 @@ import {
   entryContentPath,
   entryKindDiary,
 } from "~/utils/siteLink";
+import { Typography } from "@mui/material";
 
 type DiaryItem = {
   path: string;
@@ -58,6 +59,10 @@ const DiaryList: NextPageWithLayout<DiaryItemProps> = (
   return (
     <>
       <BlogEntriesHead title={title} link={url}></BlogEntriesHead>
+
+      <Typography variant="h2" fontFamily={"Klee One"}>
+        {title}
+      </Typography>
       <BlogCardGrid cards={props.diaries} />
     </>
   );

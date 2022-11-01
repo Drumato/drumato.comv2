@@ -16,6 +16,7 @@ import {
   entryKindPost,
 } from "~/utils/siteLink";
 import BlogEntryList from "~/components/entries/BlogEntryList";
+import { Typography } from "@mui/material";
 
 type PostItem = {
   path: string;
@@ -49,9 +50,7 @@ export const getStaticProps: GetStaticProps<PostListProps> = async ({
   };
 };
 
-const PostList: NextPageWithLayout<PostListProps> = (
-  props: PostListProps
-) => {
+const PostList: NextPageWithLayout<PostListProps> = (props: PostListProps) => {
   const loc = useLocale();
   const title = loc.categories.get(categoryPost) ?? entryKindPost;
   const url = categoryLink(loc.rawLocale, entryKindPost);
@@ -59,6 +58,10 @@ const PostList: NextPageWithLayout<PostListProps> = (
   return (
     <>
       <BlogEntriesHead title={title} link={url}></BlogEntriesHead>
+
+      <Typography variant="h2" fontFamily={"Klee One"}>
+        {title}
+      </Typography>
       <BlogEntryList cards={props.posts} />
     </>
   );
