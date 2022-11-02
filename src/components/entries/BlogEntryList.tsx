@@ -1,10 +1,19 @@
-import { Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
+import {
+  Link,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { BlogMarkdownCardProps } from "./BlogMarkdownCard";
 
 type Props = {
   cards: BlogMarkdownCardProps[];
 };
-
 
 const BlogEntryList = (props: Props): JSX.Element => {
   return (
@@ -22,18 +31,30 @@ const BlogEntryList = (props: Props): JSX.Element => {
           {props.cards.map((card) => (
             <TableRow
               key={card.frontmatter.title}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
                 <Link href={card.path} color="#000000">
-                  <b>
-                    {card.frontmatter.title}
-                  </b>
+                  <Typography fontFamily={"Klee One"}>
+                    <b>{card.frontmatter.title}</b>
+                  </Typography>
                 </Link>
               </TableCell>
-              <TableCell >{card.frontmatter.description}</TableCell>
-              <TableCell >{`${card.frontmatter.tags.join(", ")}`}</TableCell>
-              <TableCell >{card.frontmatter.createdAt}</TableCell>
+              <TableCell>
+                <Typography fontFamily={"Klee One"}>
+                  {card.frontmatter.description}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography fontFamily={"Klee One"}>
+                  {`${card.frontmatter.tags.join(", ")}`}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography fontFamily={"Klee One"}>
+                  {card.frontmatter.createdAt}
+                </Typography>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
