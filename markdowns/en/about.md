@@ -95,6 +95,9 @@ programmingLanguages:
 
 ## Other Posts
 
+- as an SRE in SAKURA Internet Inc.
+  - Japanese
+    - [社内のKubernetesクラスタ運用を効率化する基盤について](https://knowledge.sakura.ad.jp/31773/)
 - as a part-timer of LINE Corporation
   - Japanese
     - [仮想ルータクラスタを自動でローリングアップデートする仕組みの検討と実装](https://engineering.linecorp.com/ja/blog/rollingupdate-vrouter-cluster/)
