@@ -68,7 +68,7 @@ const PostList: NextPageWithLayout<PostListProps> = (props: PostListProps) => {
 };
 
 PostList.getLayout = (page) => {
-  return <MainLayout containerWidth="xl">{page}</MainLayout>;
+  return <MainLayout containerWidth="lg">{page}</MainLayout>;
 };
 
 export default PostList;
