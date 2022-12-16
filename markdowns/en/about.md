@@ -64,9 +64,12 @@ programmingLanguages:
 ## Slides
 
 - Japanese
-  - [x64/aarch64コンパイラを含むミニツールチェーン+αの開発 - Cybozu Labs Youth 10th](https://speakerdeck.com/drumato/cybozu-labs-youth-10th)
-  - [an incremental approach to implement an admission controller](https://speakerdeck.com/drumato/an-incremental-approach-to-implement-an-admission-controller)
-  - [eBPF disassemblerを作る](https://speakerdeck.com/drumato/writing-an-experimental-ebpf-disassembler)
+  - as an SRE in SAKURA Internet Inc.
+    - [社内のKubernetes運用状況の改善活動について](https://speakerdeck.com/drumato/activities-about-kubernetes-operation-improvements-as-an-sre)
+  - indivisual
+    - [x64/aarch64コンパイラを含むミニツールチェーン+αの開発 - Cybozu Labs Youth 10th](https://speakerdeck.com/drumato/cybozu-labs-youth-10th)
+    - [an incremental approach to implement an admission controller](https://speakerdeck.com/drumato/an-incremental-approach-to-implement-an-admission-controller)
+    - [eBPF disassemblerを作る](https://speakerdeck.com/drumato/writing-an-experimental-ebpf-disassembler)
 - English
   - [Components of Kubernetes Cluster](https://speakerdeck.com/drumato/components-of-kubernetes-cluster)
 
