@@ -237,7 +237,7 @@ theme = "DoIt"
 [outputs]
   # DoIt CHANGED | 0.2.0
   home = ["HTML", "RSS", "JSON"]
-  page = ["HTML", "MarkDown"]
+  page = ["HTML"]
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
   taxonomyTerm = ["HTML"]
