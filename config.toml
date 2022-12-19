@@ -233,3 +233,19 @@ theme = "DoIt"
   [markup.tableOfContents]
     startLevel = 2
     endLevel = 6
+
+[outputs]
+  # DoIt CHANGED | 0.2.0
+  home = ["HTML", "RSS", "JSON"]
+  page = ["HTML", "MarkDown"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML", "RSS"]
+  taxonomyTerm = ["HTML"]
+
+# Options for taxonomies
+[taxonomies]
+author = "authors"
+category = "categories"
+tag = "tags"
+series = "series"
+
