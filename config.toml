@@ -1,90 +1,130 @@
 baseURL = "http://drumato.com/"
-# [en, zh-cn, fr, ...] determines default content language
 defaultContentLanguage = "en"
-# language code
 languageCode = "en"
-title = "drumato.com"
+title = "My New Hugo Site"
 
-# Change the default theme to be use when building the site with Hugo
 theme = "DoIt"
-# whether to use robots.txt
-enableRobotsTXT = true
-# whether to use git commit log
-enableGitInfo = true
-# whether to use emoji code
-enableEmoji = true
+[author]
+  name = "Drumato"
 
 [params]
   # DoIt theme version
   version = "0.2.X"
-[params.page]
-  # whether to hide a page from home page
-  hiddenFromHomePage = false
-  # whether to hide a page from search results
-  hiddenFromSearch = false
-  # whether to enable twemoji
-  twemoji = false
-  # whether to enable lightgallery
-  lightgallery = false
-  # whether to enable the ruby extended syntax
-  ruby = true
-  # whether to enable the fraction extended syntax
-  fraction = true
-  # whether to enable the fontawesome extended syntax
-  fontawesome = true
-  # whether to show link to Raw Markdown content of the content
-  linkToMarkdown = true
-  # configure the link to view source the post
-  linkToSource = "https://github.com/HEIGE-PCloud/DoIt/blob/main/exampleSite/content/{path}"
-  # "https://github.com/user/repo/blob/main/{path}"
-  # configure the link to edit the post
-  linkToEdit = "https://github.com/HEIGE-PCloud/DoIt/edit/main/exampleSite/content/{path}"
-  # https://github.com/user/repo/edit/main/{path}
-  # https://gitlab.com/user/repo/-/edit/main/{path}
-  # https://bitbucket.org/user/repo/src/main/{path}?mode=edit
-  # configure the link to report issue for the post
-  linkToReport = "https://github.com/HEIGE-PCloud/DoIt/issues/new?title=[bug]%20{title}&body=|Field|Value|%0A|-|-|%0A|Title|{title}|%0A|Url|{url}|%0A|Filename|https://github.com/HEIGE-PCloud/DoIt/blob/main/exampleSite/content/{path}|"
-  # https://github.com/user/repo/issues/new?title=[bug]%20{title}&body=|Field|Value|%0A|-|-|%0A|Title|{title}|%0A|Url|{url}|%0A|Filename|https://github.com/user/repo/blob/main/{path}|"
-  # https://gitlab.com/user/repo/-/issues/new?issue[title]=[bug]%20{title}&issue[description]=|Field|Value|%0A|-|-|%0A|Title|{title}|%0A|Url|{url}|%0A|Filename|https://gitlab.com/user/repo/-/edit/main/{path}|
-  # whether to show the full text content in RSS
-  rssFullText = false
-  # Page style ("normal", "wide")
-  pageStyle = "normal"
-  # whether to enable series navigation
-  seriesNavigation = true
-  # Display a message at the beginning of an article to warn the reader that its content might be outdated.
+  [params.app]
+    title = "drumato.com"
+    noFavicon = false
+    svgFavicon = ""
+    iconColor = "#5bbad5"
+    tileColor = "#da532c"
 
-[params.search]
-  enable = true
-  # type of search engine ("lunr", "algolia", "fuse")
-  type = "fuse"
-  # max index length of the chunked content
-  contentLength = 4000
-  # placeholder of the search bar
-  placeholder = ""
-  # DoIt NEW | 0.2.1 max number of results length
-  maxResultLength = 10
-  # DoIt NEW | 0.2.3 snippet length of the result
-  snippetLength = 30
-  # DoIt NEW | 0.2.1 HTML tag name of the highlight part in results
-  highlightTag = "em"
-  # DoIt NEW | 0.2.4 whether to use the absolute URL based on the baseURL in search index
-  absoluteURL = false
-  [params.search.algolia]
-    index = ""
-    appID = ""
-    searchKey = ""
-  [params.search.fuse]
-    # DoIt NEW | 0.2.12 https://fusejs.io/api/options.html
-    isCaseSensitive = false
-    minMatchCharLength = 2
-    findAllMatches = false
-    location = 0
-    threshold = 0.3
-    distance = 100
-    ignoreLocation = false
-    useExtendedSearch = false
-    ignoreFieldNorm = false
+  # Section (all posts) page config
+  [params.section]
+    # special amount of posts in each section page
+    paginate = 20
+    # date format (month and day)
+    dateFormat = "01-02"
+    # amount of RSS pages
+    rss = 10
+    # recently updated posts settings
+    [params.section.recentlyUpdated]
+      enable = true
+      rss = true
+      days = 30
+      maxCount = 10
+
+  [params.header]
+    [params.header.title]
+      name = "drumato.com"
+      typeit = true 
+  [params.page]
+    [params.page.header]
+      # whether to enable auto header numbering
+      # 是否开启标题自动编号
+      [params.page.header.number]
+        enable = true
+        [params.page.header.number.format]
+          h2 = "{h2} {title}"
+          h3 = "{h2}.{h3} {title}"
+          h4 = "{h2}.{h3}.{h4} {title}"
+          h5 = "{h2}.{h3}.{h4}.{h5} {title}"
+          h6 = "{h2}.{h3}.{h4}.{h5}.{h6} {title}"
+    [params.page.toc]
+      enable = true
+      keepStatic = false 
+      auto = true
+    [params.page.share]
+      enable = true
+      Twitter = true
+      Facebook = true
+      Linkedin = false
+      Whatsapp = false 
+      Pinterest = false
+      Tumblr = false
+      HackerNews = true 
+      Reddit = true  
+      VK = false
+      Buffer = false
+      Xing = false
+      Line = true
+      Instapaper = false
+      Pocket =true  
+      Digg = false
+      Stumbleupon = false
+      Flipboard = false
+      Weibo = false
+      Renren = false
+      Myspace = false
+      Blogger = false
+      Baidu = false
+      Odnoklassniki = false
+      Evernote = false
+      Skype = false
+      Trello = false
+      Mix = false
+    # DoIt CHANGED | 0.2.0 Comment config
+    [params.page.math]
+      enable = true
+      # default block delimiter is $$ ... $$ and \\[ ... \\]
+      blockLeftDelimiter = ""
+      blockRightDelimiter = ""
+      # default inline delimiter is $ ... $ and \\( ... \\)
+      inlineLeftDelimiter = ""
+      inlineRightDelimiter = ""
+      # KaTeX extension copy_tex
+      copyTex = true
+      # KaTeX extension mhchem
+      mhchem = true
+  [params.search]
+    enable = true
+    # type of search engine ("lunr", "algolia", "fuse")
+    type = "fuse"
+    # max index length of the chunked content
+    contentLength = 4000
+    # placeholder of the search bar
+    placeholder = ""
+    # DoIt NEW | 0.2.1 max number of results length
+    maxResultLength = 10
+    # DoIt NEW | 0.2.3 snippet length of the result
+    snippetLength = 30
+    # DoIt NEW | 0.2.1 HTML tag name of the highlight part in results
+    highlightTag = "em"
+    # DoIt NEW | 0.2.4 whether to use the absolute URL based on the baseURL in search index
+    absoluteURL = false
+    [params.search.algolia]
+      index = ""
+      appID = ""
+      searchKey = ""
+    [params.search.fuse]
+      # DoIt NEW | 0.2.12 https://fusejs.io/api/options.html
+      isCaseSensitive = false
+      minMatchCharLength = 2
+      findAllMatches = false
+      location = 0
+      threshold = 0.3
+      distance = 100
+      ignoreLocation = false
+      useExtendedSearch = false
+      ignoreFieldNorm = false
 
 [languages]
   [languages.en]
@@ -92,31 +132,47 @@ enableEmoji = true
     title = "drumato.com"
     languageCode = "en"
     languageName = "English"
-    copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License."
+    [languages.en.params.home.posts]
+      enable = false
+    [languages.en.params.home.profile]
+      enable = true
+      title = "Drumato"
+      subtitle = "A software engineer loves 🍑"
+      avatarURL = "/images/drumato.png"
+      typeit = true
+      social = true
+    [[languages.en.menu.main]]
+      identifier = "about"
+      pre = ""
+      post = ""
+      name = "About"
+      url = "/about/"
+      title = ""
+      weight = 1
     [[languages.en.menu.main]]
       identifier = "posts"
       pre = ""
       post = ""
-      name = "Posts"
+      name = "Post"
       url = "/posts/"
       title = ""
-      weight = 1
+      weight = 2
     [[languages.en.menu.main]]
       identifier = "diaries"
       pre = ""
       post = ""
-      name = "Diaries"
+      name = "Diary"
       url = "/diaries/"
       title = ""
-      weight = 2
+      weight = 3
     [[languages.en.menu.main]]
-      identifier = "tags"
+      identifier = "thissite"
       pre = ""
       post = ""
-      name = "Tags"
-      url = "/tags/"
+      name = "This Site"
+      url = "/thissite/"
       title = ""
-      weight = 3
+      weight = 4
 
   [languages.ja]
     weight = 2
@@ -124,7 +180,25 @@ enableEmoji = true
     # language code, CN only here
     languageCode = "ja"
     languageName = "Japanese"
+    # whether to include Chinese/Japanese/Korean
     hasCJKLanguage = true
+    [languages.ja.params.home.posts]
+      enable = false
+    [languages.ja.params.home.profile]
+      enable = true
+      title = "Drumato"
+      subtitle = "A software engineer loves 🍑"
+      avatarURL = "/images/drumato.png"
+      typeit = true
+      social = true
+    [[languages.en.menu.main]]
+      identifier = "about"
+      pre = ""
+      post = ""
+      name = "About"
+      url = "/about/"
+      title = ""
+      weight = 1
     [[languages.ja.menu.main]]
       identifier = "posts"
       pre = ""
@@ -132,7 +206,7 @@ enableEmoji = true
       name = "記事一覧"
       url = "/posts/"
       title = ""
-      weight = 1
+      weight = 2
     [[languages.ja.menu.main]]
       identifier = "diaries"
       pre = ""
@@ -140,15 +214,15 @@ enableEmoji = true
       name = "日記一覧"
       url = "/diaries/"
       title = ""
-      weight = 2
+      weight = 3
     [[languages.ja.menu.main]]
-      identifier = "tags"
+      identifier = "thissite"
       pre = ""
       post = ""
-      name = "タグ"
-      url = "/tags/"
+      name = "このサイトについて"
+      url = "/thissite/"
       title = ""
-      weight = 3
+      weight = 4
 
 # Markup related configuration in Hugo
 [markup]
@@ -156,3 +230,6 @@ enableEmoji = true
   [markup.highlight]
     # false is a necessary configuration (https://github.com/dillonzq/LoveIt/issues/158)
     noClasses = false
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 6
