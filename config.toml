@@ -23,12 +23,10 @@ theme = "DoIt"
     paginate = 20
     # date format (month and day)
     dateFormat = "01-02"
-    # amount of RSS pages
-    rss = 10
     # recently updated posts settings
     [params.section.recentlyUpdated]
       enable = true
-      rss = true
+      rss = false
       days = 30
       maxCount = 10
 
@@ -236,10 +234,10 @@ theme = "DoIt"
 
 [outputs]
   # DoIt CHANGED | 0.2.0
-  home = ["HTML", "RSS", "JSON"]
+  home = ["HTML", "JSON"]
   page = ["HTML"]
-  section = ["HTML", "RSS"]
-  taxonomy = ["HTML", "RSS"]
+  section = ["HTML", ]
+  taxonomy = ["HTML"]
   taxonomyTerm = ["HTML"]
 
 # Options for taxonomies

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Go GenericsでつくるParser Combinator - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Go GenericsでつくるParser Combinator" />
+<meta property="og:description" content="現在も活発に開発しているため，仕様が大きく変更される場合があります． お久しぶりです． 最近は新卒社員として研修を頑張ったり，趣味時間には自分に" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/parsecomb/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-04-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-04-10T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go GenericsでつくるParser Combinator"/>
+<meta name="twitter:description" content="現在も活発に開発しているため，仕様が大きく変更される場合があります． お久しぶりです． 最近は新卒社員として研修を頑張ったり，趣味時間には自分に"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/parsecomb/" /><link rel="prev" href="http://drumato.com/ja/posts/srv6-manager/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go GenericsでつくるParser Combinator",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/parsecomb\/"
+        },"genre": "posts","keywords": "go, parser","wordcount":  4463 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/parsecomb\/","datePublished": "2022-04-10T00:00:00+00:00","dateModified": "2022-04-10T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/parsecomb/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/parsecomb/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#概要">概要</a></li>
+    <li><a href="#仕組み">仕組み</a>
+      <ul>
+        <li><a href="#parser-signature">Parser Signature</a></li>
+        <li><a href="#type-resolving">Type Resolving</a></li>
+        <li><a href="#custom-input-types">Custom Input Types</a></li>
+      </ul>
+    </li>
+    <li><a href="#実装で妥協した点">実装で妥協した点</a>
+      <ul>
+        <li><a href="#string-を受け取れない"><code>string</code> を受け取れない</a></li>
+      </ul>
+    </li>
+    <li><a href="#終わりに">終わりに</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Go GenericsでつくるParser Combinator</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-04-10">2022-04-10</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2022-04-10">2022-04-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;4463 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;9 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#概要">概要</a></li>
+    <li><a href="#仕組み">仕組み</a>
+      <ul>
+        <li><a href="#parser-signature">Parser Signature</a></li>
+        <li><a href="#type-resolving">Type Resolving</a></li>
+        <li><a href="#custom-input-types">Custom Input Types</a></li>
+      </ul>
+    </li>
+    <li><a href="#実装で妥協した点">実装で妥協した点</a>
+      <ul>
+        <li><a href="#string-を受け取れない"><code>string</code> を受け取れない</a></li>
+      </ul>
+    </li>
+    <li><a href="#終わりに">終わりに</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>現在も活発に開発しているため，仕様が大きく変更される場合があります．</p>
+<p>お久しぶりです．
+最近は新卒社員として研修を頑張ったり，趣味時間には自分に足りていない技術のcatch upを行っているDrumatoです．<br>
+<a href="https://go.dev/doc/go1.18" target="_blank" rel="noopener noreferrer">Go 1.18からGenericsが導入</a> されましたね，皆さん使ってますか?
+私は最近になってようやく仕様を勉強し始めたのですが，
+そもそも楽しかったGo Programmingが更に楽しくなって，私はとても嬉しいです．
+私のGo Generics Debutは<a href="https://scrapbox.io/drumato-medley/Simple_Singly-Linked-List_in_Go1.18_with_Generics" target="_blank" rel="noopener noreferrer">Singly-Linked-Listの実装</a>でした．凄い簡略化したものですが．</p>
+<p>より高度に扱いたくなってきた私にとって，Parser Combinatorは非常に良い練習の題材だったのですが，
+作っていくうちに，練習に限らず普通に便利なlibraryができているんじゃないか，とうぬぼれ始めています．
+そこで今回は，私が作って遊んでいるParser Combinatorの紹介をしたいと思います．RepositoryとDocumentはこちら．</p>
+<p><a href="https://github.com/Drumato/peachcomb" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/peachcomb</a><br>
+<a href="https://pkg.go.dev/github.com/Drumato/peachcomb" target="_blank" rel="noopener noreferrer">https://pkg.go.dev/github.com/Drumato/peachcomb</a></p>
+<p>idea自体はGo Genericsのtutorialを見た段階である程度思いついていて，あとはそれをある日の朝適当に実装してみた，というのが始まりです．
+ちなみにGo Genericsの説明は既に多くのGopherさん達が書いてくださっているので，そちらを参照されるのがよいと思います．
+私はofficial tutorial以外の資料を読まずに作れたので，この記事を読む上でそれら資料の内容を完全に理解している必要はないかもしれません．</p>
+<p><a href="https://go.dev/doc/tutorial/generics" target="_blank" rel="noopener noreferrer">https://go.dev/doc/tutorial/generics</a></p>
+<hr>
+<h2 id="概要" class="headerLink">
+    <a href="#%e6%a6%82%e8%a6%81" class="header-mark"></a>1 概要</h2><p>peachcombは， <strong>parserを初期化</strong> して 呼び出すだけで使える，というような原始的な機能を提供します．
+ということで，早速使用例をお見せしたいと思います．
+次のsampleは， <code>|</code> 記号で区切られた数列をparseするものです．</p>
+<p><a href="https://go.dev/play/p/qIbzx_IWxbr" target="_blank" rel="noopener noreferrer">https://go.dev/play/p/qIbzx_IWxbr</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/strparse&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/combinator&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">element</span> <span class="o">:=</span> <span class="nx">strparse</span><span class="p">.</span><span class="nf">Digit1</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">separator</span> <span class="o">:=</span> <span class="nx">strparse</span><span class="p">.</span><span class="nf">Rune</span><span class="p">(</span><span class="sc">&#39;|&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">combinator</span><span class="p">.</span><span class="nf">Separated1</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">separator</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">p</span><span class="p">([]</span><span class="nb">rune</span><span class="p">(</span><span class="s">&#34;123|456|789Drumato&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s\n&#34;</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ go run main.go
+</span></span><span class="line"><span class="cl">Drumato
+</span></span><span class="line"><span class="cl"><span class="o">[</span><span class="m">123</span> <span class="m">456</span> 789<span class="o">]</span>
+</span></span><span class="line"><span class="cl">&lt;nil&gt;
+</span></span></code></pre></div><p><code>i</code> は入力全体から，parser <code>p</code> によって消費された文字列を除いた残りの入力が格納されています．
+<code>o</code> はparser <code>p</code> の成果物が含まれます．ここでは <code>[]string{&quot;123&quot;, &quot;456&quot;, &quot;789&quot;}</code> のようになっています．
+使い方は以上です．特に難しい点はないと思います．</p>
+<h2 id="仕組み" class="headerLink">
+    <a href="#%e4%bb%95%e7%b5%84%e3%81%bf" class="header-mark"></a>2 仕組み</h2><p>設計は基本的にRust製のParser Libraryである <a href="https://github.com/Geal/nom" target="_blank" rel="noopener noreferrer">Geal/nom</a> をかなり参考にしています．
+<a href="https://www.drumato.com/ja/posts/dive-into-nom-internals/" target="_blank" rel="noopener noreferrer">こちらの記事</a>で解説していますが，dynamic dispatchをほぼ使わずにgeneralなparserを構成できる点が魅力で，
+私がRust applicationでなにかparserを書くとき，基本的にnomを使っています．
+nomの仕組みを簡単に説明すると，&ldquo;trait boundsでゴリゴリに強制することで高速かつ汎用的にparserを組み合わせられる&quot;ように頑張っているlibraryです．
+<strong>parser inputに要求するtrait</strong> を細かく分けることで，基本的にほぼすべてのparserがtype-parametricに扱えるようになっています．</p>
+<p>一方peachcombは，nomよりだいぶlooseではあるものの，近いものを実現しようと頑張っています．
+ここではその仕組みを簡潔に説明します．code base自体はそこまで大きくないので，
+私の説明が分かりづらかったらcodeを読んでいただければと思います．</p>
+<h3 id="parser-signature" class="headerLink">
+    <a href="#parser-signature" class="header-mark"></a>2.1 Parser Signature</h3><p>まずはじめに，peachcomb内のすべてのparserは <code>type Parser[E comparable, O parser.ParseOutput]</code> を満たすようになっています．
+つまり，このsignatureを理解できればほぼ勝ったも同然です．
+具体的には，以下のように定義されています．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Parser</span><span class="p">[</span><span class="nx">E</span> <span class="nx">comparable</span><span class="p">,</span> <span class="nx">O</span> <span class="nx">ParseOutput</span><span class="p">]</span> <span class="kd">func</span><span class="p">(</span><span class="nx">input</span> <span class="nx">ParseInput</span><span class="p">[</span><span class="nx">E</span><span class="p">])</span> <span class="p">(</span><span class="nx">ParseInput</span><span class="p">[</span><span class="nx">E</span><span class="p">],</span> <span class="nx">O</span><span class="p">,</span> <span class="nx">ParseError</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">ParseInput</span><span class="p">[</span><span class="nx">E</span> <span class="nx">comparable</span><span class="p">]</span> <span class="p">[]</span><span class="nx">E</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">ParseOutput</span> <span class="kd">interface</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">ParseError</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">error</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>特に難しくないですね．現状parsecomb parsersは <code>[]E</code> というsliceを受け取るに過ぎません．
+これは実装の妥協点の一つです．詳しくは後述します．
+このようにparser typeを定義する利点は数多く存在しますが，
+特に利益を実感してもらいやすい点を説明します．</p>
+<p>まずはじめに，peachcombを利用するある時点において， もしpeachcombに機能が足りなくても，
+自分で <code>Parser[E, O]</code> を満たすparserを作れば，それを <code>Map()</code> などの汎用関数に引き渡すことができます．
+ある良いparserを作ったら，それをpeachcombにcontributionしつつ，mergeされるまでは自分のprojectで定義したものを代用してもうまく動作します．</p>
+<p>次に，ほとんどのparserをgenericに作ることができます．ただのhigher order functionですね．
+先述したように， <code>package combinator</code> にあるparser関数はすべて <strong><code>Parser[E, O]</code>を満たすすべてのparserを受け取る</strong> ことができます．
+これによって文字列やbyte列など，入力の種類ごとに <code>Map()</code> などを実装する必要がなくなります．
+<code>package strparse</code> や <code>package byteparse</code> にあるのは，それぞれの入力でのみ必要な特殊関数のみ置くようになっています．</p>
+<p>最後に，userはparserの使い方を一貫して理解することができるようになっています．ただの関数なので．</p>
+<h3 id="type-resolving" class="headerLink">
+    <a href="#type-resolving" class="header-mark"></a>2.2 Type Resolving</h3><p>実際に型が解決される様子を見てみましょう．
+ここで，次のようなparserを構築します．
+わかりやすさのために型を明示していますが，明示しなくてももちろん使えます．
+ちなみにGo Playgroundを用意したので，そちらで実行することもできます．</p>
+<p><a href="https://go.dev/play/p/oiZCn732MOh" target="_blank" rel="noopener noreferrer">https://go.dev/play/p/oiZCn732MOh</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/combinator&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/parser&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/strparse&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">element</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="kt">rune</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="p">=</span> <span class="nx">strparse</span><span class="p">.</span><span class="nf">Digit1</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">separator</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="kt">rune</span><span class="p">,</span> <span class="kt">rune</span><span class="p">]</span> <span class="p">=</span> <span class="nx">strparse</span><span class="p">.</span><span class="nf">Rune</span><span class="p">(</span><span class="sc">&#39;|&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">p</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="kt">rune</span><span class="p">,</span> <span class="p">[]</span><span class="kt">string</span><span class="p">]</span> <span class="p">=</span> <span class="nx">combinator</span><span class="p">.</span><span class="nf">Separated1</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">separator</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">i</span> <span class="p">[]</span><span class="kt">rune</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">o</span> <span class="p">[]</span><span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">p</span><span class="p">([]</span><span class="nb">rune</span><span class="p">(</span><span class="s">&#34;123|456|789Drumato&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%d\n&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s %s %s\n&#34;</span><span class="p">,</span> <span class="nx">o</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">o</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">o</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>それぞれ，</p>
+<ul>
+<li><code>element</code> &hellip; <code>[]rune</code> を受け取り <code>string</code> を成果物とするparser</li>
+<li><code>separator</code> &hellip; <code>[]rune</code> を受け取り <code>rune</code> を成果物とするparser</li>
+<li><code>p</code> &hellip; <code>[]rune</code> を受け取り <code>[]string</code> を成果物とするparser</li>
+</ul>
+<p>という感じです．
+ではこれに対し，genericなfunction signatureを照らし合わせて考えてみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Digit1</span><span class="p">()</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="kt">rune</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Rune</span><span class="p">(</span><span class="nx">expected</span> <span class="kt">rune</span><span class="p">)</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="kt">rune</span><span class="p">,</span> <span class="kt">rune</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nx">Separated1</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">E</span> <span class="nx">comparable</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">EO</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">ParseOutput</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">SO</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">ParseOutput</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">](</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">element</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="nx">E</span><span class="p">,</span> <span class="nx">EO</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">separator</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="nx">E</span><span class="p">,</span> <span class="nx">SO</span><span class="p">])</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">Parser</span><span class="p">[</span><span class="nx">E</span><span class="p">,</span> <span class="p">[]</span><span class="nx">EO</span><span class="p">]</span>
+</span></span></code></pre></div><p><code>Digit1()</code> によって <code>element</code> は <code>[]rune</code> を入力し <code>string</code> を返すものとわかり，
+<code>Rune()</code> によって <code>separator</code> は <code>[]rune</code> を入力し <code>rune</code> を返すものだとわかります．</p>
+<p>これによって <code>Separated1()</code> のtype parameterは次のようになります．</p>
+<ul>
+<li><code>E</code> &hellip; <code>rune</code></li>
+<li><code>EO</code> &hellip; <code>string</code></li>
+<li><code>SO</code> &hellip; <code>rune</code></li>
+</ul>
+<p><code>Separated1()</code> は <code>SO</code> 型の成果物をparser内部で捨てて， <code>[]EO</code> を構築します．
+ということで， <code>p</code> が無事 <code>parser.Parser[rune, []string]</code> を満たすことがcompile時にわかります．</p>
+<hr>
+<p>次に，compileが失敗する例を紹介します．
+実用的には型を明示しないで使いたいので，次は推論させつつ使ってみます．
+<strong>実行時ではなくcompile timeで警告されるのがGenericsを使用している最大の利点</strong> なので，
+ここは丁寧に説明したいと思います．</p>
+<p><a href="https://go.dev/play/p/J0pRsPk4_Pf" target="_blank" rel="noopener noreferrer">https://go.dev/play/p/J0pRsPk4_Pf</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/byteparse&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/combinator&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sub</span> <span class="o">:=</span> <span class="nx">byteparse</span><span class="p">.</span><span class="nf">UInt8</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">combinator</span><span class="p">.</span><span class="nf">Many1</span><span class="p">(</span><span class="nx">sub</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">p</span><span class="p">([]</span><span class="nb">rune</span><span class="p">(</span><span class="s">&#34;aaaabaa&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>pkg devを見ていただければわかりますが，それぞれのparserは次のように解決されます．</p>
+<ul>
+<li><code>sub</code> &hellip; <code>parser.Parser[byte, uint8]</code></li>
+<li><code>p</code> &hellip; <code>parser.Parser[byte, []uint8]</code></li>
+</ul>
+<p>Go Playgroundで実行してみるとわかりますが，これはcompileが失敗します．
+error messageを以下に示します．
+内容を要約すると， <code>p.Parse()</code> は <code>[]byte</code> を要求するが， <code>[]rune</code> を受け取っている，というものです．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">./prog.go:13:23: cannot use []rune(&#34;aaaabaa&#34;) (value of type []rune) as type parser.ParseInput[byte] in argument to p
+</span></span></code></pre></div><p>今回は入力が間違っている例を紹介しましたが，parser間に不整合がある場合も同様にcompile errorが発生します．</p>
+<p><a href="https://go.dev/play/p/Zssq5aSvheM" target="_blank" rel="noopener noreferrer">https://go.dev/play/p/Zssq5aSvheM</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/combinator&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/Drumato/peachcomb/pkg/strparse&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sub</span> <span class="o">:=</span> <span class="nx">strparse</span><span class="p">.</span><span class="nf">Digit1</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">combinator</span><span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="nx">sub</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">v</span> <span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">v</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">nil</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">p</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;11112222abc&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>実行しようとすると，以下のようなcompile errorが起こります．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">./prog.go:12:27: type func(v byte) (bool, error) of func(v byte) (bool, error) {…} does not match inferred type func(string) (O, error) for func(SO) (O, error)
+</span></span></code></pre></div><p>めちゃくちゃ長くて読みづらいですが，これも簡単にまとめると，
+<code>combinator.Map()</code> が推論した型と <code>func(v byte) (bool, error)</code> の内容が一致しません，的なあれです．
+まず，例によってparser関数は以下のように解決されます．</p>
+<ul>
+<li><code>sub</code> &hellip; <code>parser.Parser[rune, string]</code></li>
+<li><code>p</code> &hellip; <code>parser.Parser[rune, bool]</code>
+<ul>
+<li><code>Map()</code> は簡略化すると <code>Map[E, SO, O](sub Parser[E, SO], fn SO -&gt; (O, error))</code> です</li>
+</ul>
+</li>
+</ul>
+<p>ここで <code>Map()</code> は <code>E: rune, SO: string</code> から， <code>func (v string) -&gt; (O, error)</code> なfn literalを求めますが，
+実際には <code>func(v byte) -&gt; (bool, error)</code> が来たので怒った．という感じです．</p>
+<h3 id="custom-input-types" class="headerLink">
+    <a href="#custom-input-types" class="header-mark"></a>2.3 Custom Input Types</h3><p>user interfaceに注力した結果， <code>[]rune</code> や <code>[]byte</code> などの想定された入力にかぎらず，ある制約を満たしたいかなる型も受け入れられるようになりました．
+これによって， <code>[]myToken</code> のような独自の型を入力できるようになります．
+実際にcustom input typeを扱うexampleを用意しているので，よろしければそちらをご覧ください．</p>
+<p><a href="https://github.com/Drumato/peachcomb/blob/v0.2.0/examples/custominput/main.go" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/peachcomb/blob/v0.2.0/examples/custominput/main.go</a></p>
+<p>compiler開発などではよくあるのですが，tokenizerが各tokenにsource code上の位置情報を付与して， errorを詳細にする，ということがあります．
+この場合，普通に <code>[]rune</code> を使ったり <code>[]byte</code> の入力を受け取るとそれらを扱うことができません．
+このようなneedsを満たすためにも，interfaceを公開するmotivationが存在します．</p>
+<p>ちなみに, peachcombでは <code>[]rune</code> や <code>[]byte</code> を受け取るようにしていても，
+positionを保持する構造体のmethod内でそれぞれpeachcombのparserを呼ぶようにすれば，custom input typeを使用しなくても位置情報を取り回すことはできます．</p>
+<h2 id="実装で妥協した点" class="headerLink">
+    <a href="#%e5%ae%9f%e8%a3%85%e3%81%a7%e5%a6%a5%e5%8d%94%e3%81%97%e3%81%9f%e7%82%b9" class="header-mark"></a>3 実装で妥協した点</h2><p>ここでは今後やりたいことや，現在の実装で妥協している点をお話します．</p>
+<h3 id="string-を受け取れない" class="headerLink">
+    <a href="#string-%e3%82%92%e5%8f%97%e3%81%91%e5%8f%96%e3%82%8c%e3%81%aa%e3%81%84" class="header-mark"></a>3.1 <code>string</code> を受け取れない</h3><p>Goでは，<code>strings</code> などによって <code>string</code> に対する便利関数がたくさん提供されています．
+また，userからも直感的に扱えるので，こちらとしてはぜひ <code>string</code> を入力できるようにしたいところです．
+実際，実装当初はそれを想定して開発していました．</p>
+<p>super genericに実装しようとしたところ，<code>string</code> と <code>rune</code> の親子関係( <code>string</code> は <code>rune</code> の集合と考えることができる)を表現する必要が出てきます．
+これは， <code>Satisfy()</code> などが入力の先頭を切り出す操作を実行するときに切り出されたものの型を把握する必要があるためです．
+しかし，Goは <code>string</code> と <code>rune</code> に親子関係を見出すようにはなっていません．
+よって <code>parser.Parser</code> にその対応関係を外部から渡すようにしたいのですが，こうなると煩雑になるだけでなく，以下のような問題が起こります．</p>
+<p>Goでは <code>string</code> に対するindex accessを行うと <code>byte</code> が切り出されます．
+つまり明示的に <code>[]E()</code> のようなcastを行って <code>[]rune</code> として切り出すなどの仕組みが必要です．</p>
+<p>これは私があと少しGo Genericsに詳しくなったり，頭を捻れば解決できそうな問題なので，とりあえず <code>[]rune</code> を受け取ることで妥協しました．
+いずれ対応したいと思っているので，以下のようなissueを立てています．</p>
+<p><a href="https://github.com/Drumato/peachcomb/issues/7" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/peachcomb/issues/7</a></p>
+<hr>
+<h2 id="終わりに" class="headerLink">
+    <a href="#%e7%b5%82%e3%82%8f%e3%82%8a%e3%81%ab" class="header-mark"></a>4 終わりに</h2><p>今回はGo Genericsを使って遊んでいたら意外と使えそうなものができているかも，みたいな話をしました．
+新しい言語機能に触ることで知識のupdateが発生し，最新の技術にもついていけるようになるので，積極的に取り組んでいきたいところです．
+一方，言語自体も色々触ることで見えてくるものがあるので，RustとGoだけしか書かない私ですが，最近はNimを触っています．
+ここらへんの話題は先日投稿したpodcastでも触れているので，よかったらお聞きください．</p>
+<p><a href="https://youtu.be/mwW8i0pHaAU" target="_blank" rel="noopener noreferrer">https://youtu.be/mwW8i0pHaAU</a></p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-04-10</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/parsecomb/" data-title="Go GenericsでつくるParser Combinator" data-hashtags="go,parser"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/parsecomb/" data-hashtag="go"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/parsecomb/" data-title="Go GenericsでつくるParser Combinator"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/parsecomb/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/parsecomb/" data-title="Go GenericsでつくるParser Combinator"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/parsecomb/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/go/">go</a>,&nbsp;<a href="/ja/tags/parser/">parser</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/srv6-manager/" class="prev" rel="prev" title="Replace FRR Zebra SRv6 Manager with YANG Backend"><i class="fas fa-angle-left fa-fw"></i>Replace FRR Zebra SRv6 Manager with YANG Backend</a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Kubectl Plugin Builder - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Kubectl Plugin Builder" />
+<meta property="og:description" content="この記事は IPFactory Advent Calendar 2021 の11日目です． 私がIPFactoryとして活動するのは今年度が最後なので，何かしら技術的知見が残せればと思って執筆してい" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/kubectl-plugin-builder/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-06T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubectl Plugin Builder"/>
+<meta name="twitter:description" content="この記事は IPFactory Advent Calendar 2021 の11日目です． 私がIPFactoryとして活動するのは今年度が最後なので，何かしら技術的知見が残せればと思って執筆してい"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/kubectl-plugin-builder/" /><link rel="prev" href="http://drumato.com/ja/posts/bgpd-bestpath/" /><link rel="next" href="http://drumato.com/ja/posts/srv6-manager/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Kubectl Plugin Builder",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/kubectl-plugin-builder\/"
+        },"genre": "posts","keywords": "kubernetes, go, kubectl","wordcount":  5206 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/kubectl-plugin-builder\/","datePublished": "2021-12-06T00:00:00+00:00","dateModified": "2021-12-06T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/posts/kubectl-plugin-builder/">English</option><option value="/ja/posts/kubectl-plugin-builder/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/posts/kubectl-plugin-builder/">English</option><option value="/ja/posts/kubectl-plugin-builder/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li><a href="#kubectl-pluginとは">kubectl pluginとは</a></li>
+        <li><a href="#kubectl-pluginの作り方">kubectl pluginの作り方</a></li>
+        <li><a href="#goでkubectl-pluginを作ることで見えてくる問題">Goでkubectl pluginを作ることで見えてくる問題</a></li>
+      </ul>
+    </li>
+    <li><a href="#kubectl-plugin-builder">kubectl-plugin-builder</a>
+      <ul>
+        <li><a href="#簡単な使い方">簡単な使い方</a></li>
+        <li><a href="#今後の展望">今後の展望</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubectl Plugin Builder</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-06">2021-12-06</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2021-12-06">2021-12-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;5206 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;11 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li><a href="#kubectl-pluginとは">kubectl pluginとは</a></li>
+        <li><a href="#kubectl-pluginの作り方">kubectl pluginの作り方</a></li>
+        <li><a href="#goでkubectl-pluginを作ることで見えてくる問題">Goでkubectl pluginを作ることで見えてくる問題</a></li>
+      </ul>
+    </li>
+    <li><a href="#kubectl-plugin-builder">kubectl-plugin-builder</a>
+      <ul>
+        <li><a href="#簡単な使い方">簡単な使い方</a></li>
+        <li><a href="#今後の展望">今後の展望</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>この記事は <a href="https://qiita.com/advent-calendar/2021/ipfactory" target="_blank" rel="noopener noreferrer">IPFactory Advent Calendar 2021</a> の11日目です．
+私がIPFactoryとして活動するのは今年度が最後なので，何かしら技術的知見が残せればと思って執筆しています．</p>
+<p>ご存知の通り，Kubernetesはたくさんの拡張性をuserに提供しています．
+これは <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/" target="_blank" rel="noopener noreferrer">公式document</a> でも紹介されています．</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Extensibility</th>
+<th style="text-align:center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Custom Controller</td>
+<td style="text-align:center">独自にresource reconcilerを記述できる仕組み</td>
+</tr>
+<tr>
+<td style="text-align:center">CRD</td>
+<td style="text-align:center">OpenAPI Schemaをもとに，新たなresourceを定義できるような機能で，CRD自体が組み込みresource</td>
+</tr>
+<tr>
+<td style="text-align:center">Admission Webhook</td>
+<td style="text-align:center">API request時にValidation/Mutationを行えるようなWebhook Serverを建てられる仕組み</td>
+</tr>
+<tr>
+<td style="text-align:center">Kubernetes Scheduler Plugin</td>
+<td style="text-align:center">NodeのScoring/Filtering algorithmに影響を与え，Pod Schedulingの挙動を変更する機能</td>
+</tr>
+<tr>
+<td style="text-align:center">CNI Plugin</td>
+<td style="text-align:center">flannelやCalicoに代表される，Container Networkingを実現するためのPluggable機構</td>
+</tr>
+</tbody>
+</table>
+<p>これと同じように，Kubernetes運用者のほとんどが使用する <strong>kubectl</strong> でも拡張性が提供されています．
+それを <strong>kubectl plugin</strong> といい，それを開発/利用することで運用を効率化できます．</p>
+<p>本記事ではこのkubectl pluginについて紹介しつつ，
+kubectl plugin開発に関連する話題を取り上げて，
+最終的に私が開発しているcode generatorを解説します．</p>
+<hr>
+<h2 id="background" class="headerLink">
+    <a href="#background" class="header-mark"></a>1 Background</h2><h3 id="kubectl-pluginとは" class="headerLink">
+    <a href="#kubectl-plugin%e3%81%a8%e3%81%af" class="header-mark"></a>1.1 kubectl pluginとは</h3><p>ここではkubectl pluginについて復習します．
+kubectl pluginとはその実ただの実行形式です．
+kubectl本体が認識できるpathに置かれ， <code>kubectl-*</code> という命名がされていればkubectl pluginとして扱われます．
+<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/" target="_blank" rel="noopener noreferrer">公式document</a>ではShell Scriptで実装する例が紹介されています．
+kubectl pluginの利点はいくつかありますが，Kubernetes運用者にとって，kubectl本体のcommandと自作のoperation toolを統一的に扱えるのは非常に便利です．
+<code>kubectl plugin list</code> でどのようなpluginがinstallされているか確認することもできます．</p>
+<p>著名なkubectl pluginの一つに，<strong><a href="https://github.com/postfinance/kubectl-ns" target="_blank" rel="noopener noreferrer">postfinance/kubectl-ns</a></strong> があります．
+<a href="https://github.com/kubernetes/sample-cli-plugin" target="_blank" rel="noopener noreferrer">kubernetes/sample-cli-plugin</a>の題材でもありますし，
+<a href="https://github.com/ishantanu/awesome-kubectl-plugins" target="_blank" rel="noopener noreferrer">awesome-kubectl-plugins</a>でも紹介されています．
+kubeconfigにはcontextを埋め込めるfieldが存在しますが，
+そのうちnamespaceの情報を簡単に扱うためのpluginです．</p>
+<p>kubectl-nsは多くのことを成し遂げないtoolに見えますが，
+個人的には， <strong>小さな仕事を実現するpluginを組み合わせる</strong> という作り方がとても良いと思っています．
+この理由は後述します．</p>
+<h3 id="kubectl-pluginの作り方" class="headerLink">
+    <a href="#kubectl-plugin%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" class="header-mark"></a>1.2 kubectl pluginの作り方</h3><p>先程述べたように，kubectl plugin自体はただのexecutableであるため，
+shell scriptやPythonにGoなど，特定の言語に限らず実装することができます．
+よってここでは，私が考える <strong>kubectl pluginをうまく実装する方法</strong> にfocusしたいと思います．
+私はGoで，かつ <a href="https://github.com/spf13/cobra" target="_blank" rel="noopener noreferrer">spf13/cobra</a> などのCLI application builderを使用して開発するのを強くおすすめします．</p>
+<p>第一に，Kubernetesの運用者にとっての最も大きな関心は <strong>Kubernetesの運用を簡単に便利にする</strong> というものであり，
+それをどのように構築するかについてはあんまりcostを割きたくないからです．これは <strong>本当に小さなpluginはshell script等でサクッと作るべき</strong> という主張にも見えますが，どちらかというと <strong>小さくても，scaleしても管理しやすい言語でやったほうが良い</strong> ということを意味しています．
+この発想から， <strong>小さなpluginを組み合わせる</strong> 方法の利点も見えてくると思います．</p>
+<p>第二に，GoはKubernetes Ecosystemのほとんどすべてが採用している言語であり，
+Kubernetes Engineerにとって親しい言語だと言えるからです．
+kube-apiserverやkube-scheduler, kubectl本体などのcore componentなどもGoで書かれています．
+operation toolであると考えたとき，新しくteamに入ってきたmemberがすぐに使えるほうが便利です．
+これは，その分野でmainstreamとなっている言語で開発する利点を活かした形です．</p>
+<p>最後に，kubectl pluginのほとんどが実際にGoで開発されており，
+更にそれら殆どがcobraを使用している，という点です．
+kubectl pluginは <strong>case by caseで必要なものが異なる</strong> という点から実例を起点とした文献がほとんどですが，
+多くの実装は公開されているため，それらを参照して書くということがやりやすくなります．</p>
+<h3 id="goでkubectl-pluginを作ることで見えてくる問題" class="headerLink">
+    <a href="#go%e3%81%a7kubectl-plugin%e3%82%92%e4%bd%9c%e3%82%8b%e3%81%93%e3%81%a8%e3%81%a7%e8%a6%8b%e3%81%88%e3%81%a6%e3%81%8f%e3%82%8b%e5%95%8f%e9%a1%8c" class="header-mark"></a>1.3 Goでkubectl pluginを作ることで見えてくる問題</h3><p>いざGoでkubectl pluginを書こうとしたとき，いくつかのboilerplateが必要であることがわかります．</p>
+<ul>
+<li>client-goの初期化処理</li>
+<li>cli-runtimeの初期化処理
+<ul>
+<li><code>-n/--namespace</code> などに代表される汎用的なcli flagの利用</li>
+</ul>
+</li>
+<li><code>Complete/Validate/Run</code> という，kubectl plugin implsで頻出するpractice</li>
+</ul>
+<p>これらは一度書くだけなら特に難しくないですが，
+やはり何度も書くと退屈な部分になってきますし，
+この書き方が微妙に異なることで素早く理解/改修できないと困ります．
+また，kubectl pluginも一般的にAPI clientを初期化して使用しますが，
+maintainabilityの高いpluginを開発するためにはいい感じにinterfaceを整備して，
+testableに開発する，みたいなことが必要になってきます．
+しかし，これをきれいに設計して，というのも一種のcostとして考えられます．</p>
+<hr>
+<h2 id="kubectl-plugin-builder" class="headerLink">
+    <a href="#kubectl-plugin-builder" class="header-mark"></a>2 kubectl-plugin-builder</h2><p>そこで，私はkubebuilder(本記事では解説しません)の思想や実績を参考にして，
+kubectl pluginの開発をサクッと始められるものを作り始めました．
+kubebuilderほどKubernetes communityで認められるものにできるかはわかりませんが，
+少なくともidea自体はだいぶ便利な自負があるので，これからも開発は継続していきます．
+実装は <a href="https://github.com/Drumato/kubectl-plugin-builder" target="_blank" rel="noopener noreferrer">GitHub</a> においてあります．
+また，かんたんな使い方については<a href="https://github.com/Drumato/kubectl-plugin-builder/blob/main/docs/introduction.md" target="_blank" rel="noopener noreferrer">Document</a>を書いています．
+主な機能は次のとおりです．</p>
+<ul>
+<li>project初期化機能</li>
+<li>cli application architectureをyamlから宣言的に生成する機能
+<ul>
+<li>flag</li>
+<li>command alias</li>
+</ul>
+</li>
+<li>yamlに新しいcommand definitionを追加する機能</li>
+<li>pluginの出力formatを制御する機構</li>
+</ul>
+<p>高々数k行の実装なのですぐ理解できると思いますし，
+実装を読まなくても適当にcommand打って生成されたfile眺めてたらわかります．</p>
+<h3 id="簡単な使い方" class="headerLink">
+    <a href="#%e7%b0%a1%e5%8d%98%e3%81%aa%e4%bd%bf%e3%81%84%e6%96%b9" class="header-mark"></a>2.1 簡単な使い方</h3><p>まずは適当なdirectoryでprojectを初期化します．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ mkdir kubectl-demo <span class="o">&amp;&amp;</span> <span class="nb">cd</span> kubectl-demo
+</span></span><span class="line"><span class="cl">$ kubectl-plugin-builder new github.com/Drumato/kubectl-demo
+</span></span><span class="line"><span class="cl">Initialization Complete!
+</span></span><span class="line"><span class="cl">Run <span class="sb">`</span>go mod tidy<span class="sb">`</span> to install third-party modules.
+</span></span></code></pre></div><p>するといくつかのfileが生成されます．
+<code>kubectl-plugin-builder new</code> 実行直後のprojectは以下のような構成になっています．</p>
+<pre tabindex="0"><code class="language-shel" data-lang="shel">$ tree
+.
+├── cli.yaml
+├── cmd
+│   └── kubectl-demo
+│       └── main.go
+├── go.mod
+├── internal
+│   └── cmd
+│       ├── demo
+│       │   ├── command.go
+│       │   └── handler.go
+│       └── node.go
+├── LICENSE
+└── Makefile
+
+5 directories, 8 file
+</code></pre><ul>
+<li><code>cli.yaml</code> &hellip; pluginのCLI app architectureを定義するspec
+<ul>
+<li><code>make generate(kubectl-plugin-builder generate)</code> で使用される</li>
+</ul>
+</li>
+<li><code>LICENSE</code> &hellip; 現在はMITのみ対応している</li>
+<li><code>Makefile</code> &hellip; 開発に便利なtaskを持つtask runner
+<ul>
+<li><code>format</code> &hellip; すべてのGo packageのformat</li>
+<li><code>test</code> &hellip; すべてのGo packageのtest</li>
+<li><code>build</code> &hellip; plugin build</li>
+<li><code>generate</code> &hellip; 宣言的にGo filesを生成する</li>
+<li><code>install</code> &hellip; pluginを <code>INSTALL_DIR</code> にinstallする(defaultだと <code>/usr/bin</code>)</li>
+</ul>
+</li>
+<li><code>internal/cmd/node.go</code> &hellip; <code>CLINodeOptions</code> interfaceを定義するfile
+<ul>
+<li>plugin内のすべてのcommandがこのinterfaceを実装していることを仮定する</li>
+</ul>
+</li>
+<li><code>internal/cmd/demo</code> &hellip; root commandの定義</li>
+<li><code>cmd/kubectl-demo/main.go</code> &hellip; the plugin&rsquo;s entrypoint</li>
+</ul>
+<p>もちろんこの段階でbuildすることができます．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ go mod tidy
+</span></span><span class="line"><span class="cl">$ make &gt; /dev/null
+</span></span><span class="line"><span class="cl">$ ./kubectl-demo -h
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">  demo <span class="o">[</span>flags<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Flags:
+</span></span><span class="line"><span class="cl">  -h, --help            <span class="nb">help</span> <span class="k">for</span> demo
+</span></span><span class="line"><span class="cl">  -o, --output string   the command<span class="err">&#39;</span>s output mode <span class="o">(</span>default <span class="s2">&#34;normal&#34;</span><span class="o">)</span>
+</span></span></code></pre></div><p>さて，それぞれのfileについて紹介します．
+まず <code>cmd/kubectl-demo/main.go</code> からです．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Code generated by kubectl-plugin-builder.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;github.com/Drumato/kubectl-demo/internal/cmd/demo&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;os&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;k8s.io/cli-runtime/pkg/genericclioptions&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">streams</span> <span class="o">:=</span> <span class="nx">genericclioptions</span><span class="p">.</span><span class="nx">IOStreams</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">In</span><span class="p">:</span>     <span class="nx">os</span><span class="p">.</span><span class="nx">Stdin</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">Out</span><span class="p">:</span>    <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">ErrOut</span><span class="p">:</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">demo</span><span class="p">.</span><span class="nf">NewCommand</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">streams</span><span class="p">).</span><span class="nf">Execute</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="s">&#34;ERROR: %+v\n&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>ここで <code>genericclioptions.IOStreams</code> のinstanceを渡します．
+これは各commandがtestを書く場合を想定して，I/O Captureのために渡している感じです．
+testの際には <code>IOSTreams.Out</code> に <code>bytes.Buffer</code> などを渡せば，出力結果をtestすることができます．
+次に <code>internal/cmd/node.go</code> です．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Code generated by kubectl-plugin-builder.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="cm">/* MIT License
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Copyright (c) 2021 you
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Permission is hereby granted, free of charge, to any person obtaining a copy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * of this software and associated documentation files (the &#34;Software&#34;), to deal
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * in the Software without restriction, including without limitation the rights
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * copies of the Software, and to permit persons to whom the Software is
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * furnished to do so, subject to the following conditions:
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * The above copyright notice and this permission notice shall be included in all
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * copies or substantial portions of the Software.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * THE SOFTWARE IS PROVIDED &#34;AS IS&#34;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * SOFTWARE.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">cmd</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;github.com/spf13/cobra&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">CLINodeOptions</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Complete</span><span class="p">(</span><span class="nx">cmd</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">,</span> <span class="nx">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Validate</span><span class="p">()</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Run</span><span class="p">()</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">OutputMode</span> <span class="p">=</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">OutputModeNormal</span> <span class="nx">OutputMode</span> <span class="p">=</span> <span class="s">&#34;normal&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// OutputModeJSON
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// OutputModeYAML
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">)</span>
+</span></span></code></pre></div><p>ここでは <code>CLINodeOptions</code> interfaceの定義と，
+<code>OutputMode</code> と呼ばれる，各commandの出力結果を制御するための型が出力されます．
+すべてのcommandがこのinterfaceを実装するようになっているので，
+自動的に <code>Complete/Validate/Run</code> modelを踏襲することができる，というわけです．
+<code>Code generated by kubectl-plugin-builder.</code> と <code>// Code generated by kubectl-plugin-builder; DO NOT EDIT.</code> の区別があり，
+前者の場合はuserによる更新を許容していて，後者は宣言的にreplaceされ続けます．
+実際のcommand定義である <code>internal/cmd/demo/command.go</code> を見てみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="err">$</span> <span class="nx">cat</span> <span class="nx">internal</span><span class="o">/</span><span class="nx">cmd</span><span class="o">/</span><span class="nx">demo</span><span class="o">/</span><span class="nx">command</span><span class="p">.</span><span class="k">go</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Code generated by kubectl-plugin-builder; DO NOT EDIT.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="cm">/* MIT License
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Copyright (c) 2021 you
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Permission is hereby granted, free of charge, to any person obtaining a copy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * of this software and associated documentation files (the &#34;Software&#34;), to deal
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * in the Software without restriction, including without limitation the rights
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * copies of the Software, and to permit persons to whom the Software is
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * furnished to do so, subject to the following conditions:
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * The above copyright notice and this permission notice shall be included in all
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * copies or substantial portions of the Software.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * THE SOFTWARE IS PROVIDED &#34;AS IS&#34;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * SOFTWARE.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">demo</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;github.com/spf13/cobra&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;github.com/Drumato/kubectl-demo/internal/cmd&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;k8s.io/cli-runtime/pkg/genericclioptions&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// demoOutputModeFlag provides
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// user-passed option to options.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">demoOutputModeFlag</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// WARNING: don&#39;t rename this function.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">NewCommand</span><span class="p">(</span><span class="nx">streams</span> <span class="o">*</span><span class="nx">genericclioptions</span><span class="p">.</span><span class="nx">IOStreams</span><span class="p">)</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">Use</span><span class="p">:</span> <span class="s">&#34;demo&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">Aliases</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">RunE</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">cmd</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">,</span> <span class="nx">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="nx">o</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">options</span><span class="p">{</span><span class="nx">streams</span><span class="p">:</span> <span class="nx">streams</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">o</span><span class="p">.</span><span class="nf">Complete</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                                <span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">                        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">o</span><span class="p">.</span><span class="nf">Validate</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                                <span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">                        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="nx">o</span><span class="p">.</span><span class="nf">Run</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nf">hangChildrenOnCommand</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">streams</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">defineCommandFlags</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// hangChildrenOnCommand enumerates command&#39;s children and attach them into it.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">hangChildrenOnCommand</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">,</span> <span class="nx">streams</span> <span class="o">*</span><span class="nx">genericclioptions</span><span class="p">.</span><span class="nx">IOStreams</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// defineCommandFlags declares primitive flags.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">defineCommandFlags</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nf">Flags</span><span class="p">().</span><span class="nf">StringVarP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="o">&amp;</span><span class="nx">demoOutputModeFlag</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;output&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">cmd</span><span class="p">.</span><span class="nx">OutputModeNormal</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;the command&#39;s output mode&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>*cobra.Command</code> を返す関数を定義しています． <code>cmd/kubectl-demo/main.go</code> で呼び出されるものです．
+このGo fileの内容は <code>cli.yaml</code> によって決まります．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">license</span><span class="p">:</span><span class="w"> </span><span class="l">MIT</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">packageName</span><span class="p">:</span><span class="w"> </span><span class="l">github.com/Drumato/kubectl-demo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">root</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">demo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="m">2021</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="l">you</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">defPath</span><span class="p">:</span><span class="w"> </span><span class="l">internal/cmd/demo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">children</span><span class="p">:</span><span class="w">
+</span></span></span></code></pre></div><p>最後に <code>internal/cmd/demo/handler.go</code> を紹介します．
+これは <code>internal/cmd/demo/command.go</code> で呼び出される <code>Complete/Validate/Run</code> の実装がおいてあり，
+userが好きに変更することを想定しています．inplaceに書き換わってしまうことはありません．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Code generated by kubectl-plugin-builder.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="cm">/* MIT License
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Copyright (c) 2021 you
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Permission is hereby granted, free of charge, to any person obtaining a copy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * of this software and associated documentation files (the &#34;Software&#34;), to deal
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * in the Software without restriction, including without limitation the rights
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * copies of the Software, and to permit persons to whom the Software is
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * furnished to do so, subject to the following conditions:
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * The above copyright notice and this permission notice shall be included in all
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * copies or substantial portions of the Software.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * THE SOFTWARE IS PROVIDED &#34;AS IS&#34;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * SOFTWARE.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">demo</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;github.com/Drumato/kubectl-demo/internal/cmd&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;github.com/spf13/cobra&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;k8s.io/cli-runtime/pkg/genericclioptions&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// this assignment ensures
+</span></span></span><span class="line"><span class="cl"><span class="c1">// options struct must implement CLINodeOptions interface.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">_</span> <span class="nx">cmd</span><span class="p">.</span><span class="nx">CLINodeOptions</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">options</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">options</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">cmd</span>        <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">args</span>       <span class="p">[]</span><span class="kt">string</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">streams</span>    <span class="o">*</span><span class="nx">genericclioptions</span><span class="p">.</span><span class="nx">IOStreams</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">outputMode</span> <span class="nx">cmd</span><span class="p">.</span><span class="nx">OutputMode</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Complete implements CLINodeOptions interface.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <span class="o">*</span><span class="nx">options</span><span class="p">)</span> <span class="nf">Complete</span><span class="p">(</span><span class="nx">cmd</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">,</span> <span class="nx">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">o</span><span class="p">.</span><span class="nx">cmd</span> <span class="p">=</span> <span class="nx">cmd</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">o</span><span class="p">.</span><span class="nx">args</span> <span class="p">=</span> <span class="nx">args</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">o</span><span class="p">.</span><span class="nx">outputMode</span> <span class="p">=</span> <span class="nx">demoOutputModeFlag</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Validate implements CLINodeOptions interface.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <span class="o">*</span><span class="nx">options</span><span class="p">)</span> <span class="nf">Validate</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Run implements CLINodeOptions interface.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <span class="o">*</span><span class="nx">options</span><span class="p">)</span> <span class="nf">Run</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">switch</span> <span class="nx">o</span><span class="p">.</span><span class="nx">outputMode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// case cmd.OutputModeJSON:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// case cmd.OutputModeYAML:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">case</span> <span class="nx">cmd</span><span class="p">.</span><span class="nx">OutputModeNormal</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">streams</span><span class="p">.</span><span class="nx">Out</span><span class="p">,</span> <span class="s">&#34;%s\n&#34;</span><span class="p">,</span> <span class="nx">o</span><span class="p">.</span><span class="nx">cmd</span><span class="p">.</span><span class="nx">Use</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unsupported output format &#39;%s&#39; found&#34;</span><span class="p">,</span> <span class="nx">o</span><span class="p">.</span><span class="nx">outputMode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>次に <code>cli.yaml</code> を書き換えて宣言的に生成してみます．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">license</span><span class="p">:</span><span class="w"> </span><span class="l">MIT</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">packageName</span><span class="p">:</span><span class="w"> </span><span class="l">github.com/Drumato/kubectl-demo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">root</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">demo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="m">2021</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="l">you</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">defPath</span><span class="p">:</span><span class="w"> </span><span class="l">internal/cmd/demo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">flags</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">flag1</span><span class="w"> </span><span class="c"># added</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">string</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">controls root command behavior</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">flag2</span><span class="w"> </span><span class="c"># added</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">string</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">controls root command behavior</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">children</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subcmd1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="m">2021</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="l">you</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">defPath</span><span class="p">:</span><span class="w"> </span><span class="l">internal/cmd/demo/subcmd1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subcmd2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="m">2021</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="l">you</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">defPath</span><span class="p">:</span><span class="w"> </span><span class="l">internal/cmd/demo/subcmd2</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ make &gt; /dev/null
+</span></span><span class="line"><span class="cl">$ ./kubectl-demo -h
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">  demo <span class="o">[</span>flags<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  demo <span class="o">[</span>command<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Available Commands:
+</span></span><span class="line"><span class="cl">  completion  generate the autocompletion script <span class="k">for</span> the specified shell
+</span></span><span class="line"><span class="cl">  <span class="nb">help</span>        Help about any <span class="nb">command</span>
+</span></span><span class="line"><span class="cl">  subcmd1
+</span></span><span class="line"><span class="cl">  subcmd2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Flags:
+</span></span><span class="line"><span class="cl">      --flag1 string    controls root <span class="nb">command</span> behavior
+</span></span><span class="line"><span class="cl">      --flag2 string    controls root <span class="nb">command</span> behavior
+</span></span><span class="line"><span class="cl">  -h, --help            <span class="nb">help</span> <span class="k">for</span> demo
+</span></span><span class="line"><span class="cl">  -o, --output string   the command<span class="err">&#39;</span>s output mode <span class="o">(</span>default <span class="s2">&#34;normal&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Use <span class="s2">&#34;demo [command] --help&#34;</span> <span class="k">for</span> more information about a command.
+</span></span></code></pre></div><p>このように，cobra CLI applicationのconstruction，つまりcommand同士の親子関係もうまく扱ってくれます．</p>
+<h3 id="今後の展望" class="headerLink">
+    <a href="#%e4%bb%8a%e5%be%8c%e3%81%ae%e5%b1%95%e6%9c%9b" class="header-mark"></a>2.2 今後の展望</h3><p>ここまでで基盤となるbuilder部分は作れたと思うので，
+あとはcmd argを自動でparseしてくれるようにしたり，<code>client-go/pkg/clientset</code> の初期化をしてくれたりという，
+開発する上で便利な細々としたcode生成，
+そして <code>tests/spec.yaml</code> に書いた期待出力からそれをtestする <code>internal/cmd/&lt;CMD_NAME&gt;/handler_test.go</code> を自動生成するといった機能を作ろうと思っています．</p>
+<hr>
+<h2 id="conclusion" class="headerLink">
+    <a href="#conclusion" class="header-mark"></a>3 Conclusion</h2><p>本日はkubectl pluginについての関心事から紹介しつつ，
+私が開発しているkubectl-plugin-builderを紹介しました．
+よろしかったらこれを使って遊んでみてください!</p>
+<h2 id="references" class="headerLink">
+    <a href="#references" class="header-mark"></a>4 References</h2><ul>
+<li><a href="https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/" target="_blank" rel="noopener noreferrer">Extend kubectl with plugins</a></li>
+</ul>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-12-06</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/kubectl-plugin-builder/" data-title="Kubectl Plugin Builder" data-hashtags="kubernetes,go,kubectl"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/kubectl-plugin-builder/" data-hashtag="kubernetes"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/kubectl-plugin-builder/" data-title="Kubectl Plugin Builder"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/kubectl-plugin-builder/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/kubectl-plugin-builder/" data-title="Kubectl Plugin Builder"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/kubectl-plugin-builder/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/ja/tags/go/">go</a>,&nbsp;<a href="/ja/tags/kubectl/">kubectl</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/bgpd-bestpath/" class="prev" rel="prev" title="FRR BGPdのbestpath selectionの3番までを動かして検証する"><i class="fas fa-angle-left fa-fw"></i>FRR BGPdのbestpath selectionの3番までを動かして検証する</a>
+            <a href="/ja/posts/srv6-manager/" class="next" rel="next" title="Replace FRR Zebra SRv6 Manager with YANG Backend">Replace FRR Zebra SRv6 Manager with YANG Backend<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

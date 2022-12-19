@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Cybozu Labs Youth 10thとして一年間活動しました - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Cybozu Labs Youth 10thとして一年間活動しました" />
+<meta property="og:description" content="こんにちは． 2020年の4月から1年間，the 10th of Cybozu Labs Youthとして活動しました． その活動についてまとめたいと思います． 本日行われた成果発" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-03-30T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-03-30T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Cybozu Labs Youth 10thとして一年間活動しました"/>
+<meta name="twitter:description" content="こんにちは． 2020年の4月から1年間，the 10th of Cybozu Labs Youthとして活動しました． その活動についてまとめたいと思います． 本日行われた成果発"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" /><link rel="prev" href="http://drumato.com/ja/posts/recap-linux-open-syscall/" /><link rel="next" href="http://drumato.com/ja/posts/bgpd-bestpath/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Cybozu Labs Youth 10thとして一年間活動しました",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/cybozu-labs-youth-10th\/"
+        },"genre": "posts","keywords": "cybozu-labs-youth, rust","wordcount":  2530 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/cybozu-labs-youth-10th\/","datePublished": "2021-03-30T00:00:00+00:00","dateModified": "2021-03-30T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/cybozu-labs-youth-10th/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/cybozu-labs-youth-10th/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#cybozu-labs-youthとは">Cybozu Labs Youthとは</a></li>
+    <li><a href="#採択当初の目標">採択当初の目標</a></li>
+    <li><a href="#活動を通じての感想">活動を通じての感想</a>
+      <ul>
+        <li><a href="#ソフトウェアの設計は難しい">ソフトウェアの設計は難しい</a></li>
+        <li><a href="#やっぱりツールチェーン開発は楽しい">やっぱりツールチェーン開発は楽しい</a></li>
+      </ul>
+    </li>
+    <li><a href="#おわりに">おわりに</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Cybozu Labs Youth 10thとして一年間活動しました</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-03-30">2021-03-30</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2021-03-30">2021-03-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2530 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;6 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#cybozu-labs-youthとは">Cybozu Labs Youthとは</a></li>
+    <li><a href="#採択当初の目標">採択当初の目標</a></li>
+    <li><a href="#活動を通じての感想">活動を通じての感想</a>
+      <ul>
+        <li><a href="#ソフトウェアの設計は難しい">ソフトウェアの設計は難しい</a></li>
+        <li><a href="#やっぱりツールチェーン開発は楽しい">やっぱりツールチェーン開発は楽しい</a></li>
+      </ul>
+    </li>
+    <li><a href="#おわりに">おわりに</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>こんにちは．<br>
+2020年の4月から1年間，the 10th of Cybozu Labs Youthとして活動しました．<br>
+その活動についてまとめたいと思います．</p>
+<p><a href="https://speakerdeck.com/drumato/cybozu-labs-youth-10th" target="_blank" rel="noopener noreferrer">本日行われた成果発表会での発表資料はこちら</a>に．</p>
+<p>labs youth活動で行ったことについては上記資料で説明しているので，<br>
+ここではlabs youth活動の感想をつらつらと述べていきます．</p>
+<h2 id="cybozu-labs-youthとは" class="headerLink">
+    <a href="#cybozu-labs-youth%e3%81%a8%e3%81%af" class="header-mark"></a>1 Cybozu Labs Youthとは</h2><p>公式ページの文言をそのまま引用します．</p>
+<blockquote>
+<p>サイボウズ・ラボユースは、<br>
+世界に通用する日本の若手エンジニアの発掘と育成を目指すことを目的とし、<br>
+学生の若手クリエイターに研究開発の機会を提供する場として、<br>
+2011年3月31日に設立されました。<br>
+引用: <a href="https://labs.cybozu.co.jp/youth.html" target="_blank" rel="noopener noreferrer">https://labs.cybozu.co.jp/youth.html</a></p>
+</blockquote>
+<p>これについては多くの卒業生(先輩)方が既にブログを上げていらっしゃいますので，<br>
+そちらをご覧いただければと思います．</p>
+<h2 id="採択当初の目標" class="headerLink">
+    <a href="#%e6%8e%a1%e6%8a%9e%e5%bd%93%e5%88%9d%e3%81%ae%e7%9b%ae%e6%a8%99" class="header-mark"></a>2 採択当初の目標</h2><p>まず背景として，<br>
+私は専門学校2年生の時(ちょうど2年前)，<br>
+SecHack365という人材育成プロジェクトに参加していました．</p>
+<p>それについては，<a href="https://drumato.com/ja/posts/execution-program-infra-at-sechack365/" target="_blank" rel="noopener noreferrer">SecHack365自体のレポ</a>と，<br>
+<a href="https://drumato.com/ja/posts/execution-program-infra-in-rust/" target="_blank" rel="noopener noreferrer">作った実装を解説する記事</a>を上げています．</p>
+<p>上記記事からわかるように，<br>
+初めてコンパイラ/アセンブラ/リンカを作った私ですが，<br>
+一年間の活動で感じたことは&quot;もっとちゃんと作りたい&quot;というものでした．<br>
+というのも，</p>
+<ul>
+<li>コンパイラ(自作言語)は&quot;整数演算ができる手続き型言語&quot;をサポートするに過ぎなかった
+<ul>
+<li>言語機能はほぼなかった</li>
+</ul>
+</li>
+<li>x86_64についての勉強しかできなかった
+<ul>
+<li>おかげでx86_64 instructionについてはわずかに詳しくなった</li>
+<li>しかし，他アーキテクチャの勉強もしたくなった</li>
+<li>そもそもコンパイラの学術書には <strong>frontend/backendを分離する&quot;きれいなコンパイラ&quot;</strong> の設計法が書いてある</li>
+</ul>
+</li>
+<li>全部が一つのバイナリだった
+<ul>
+<li>コンパイラ/アセンブラ/リンカ/ローダ/readelf/checksecが全て一つのバイナリで動く</li>
+<li>正直中身はぐちゃぐちゃで，<strong>二度と触りたくないもの</strong>になってしまった</li>
+</ul>
+</li>
+</ul>
+<p>という問題点があるからです．<br>
+そこで，labs youthの活動では次の目標を掲げました．</p>
+<ul>
+<li>自作言語の機能をもっと充実させよう</li>
+<li>コンパイラは複数アーキテクチャに対応しよう</li>
+<li>アセンブラやリンカはそれぞれ別プロジェクトとしよう
+<ul>
+<li>ELFに関するライブラリはそれまた分離しよう</li>
+</ul>
+</li>
+</ul>
+<p>ここまでが，採択当初に掲げていた目標になります．</p>
+<h2 id="活動を通じての感想" class="headerLink">
+    <a href="#%e6%b4%bb%e5%8b%95%e3%82%92%e9%80%9a%e3%81%98%e3%81%a6%e3%81%ae%e6%84%9f%e6%83%b3" class="header-mark"></a>3 活動を通じての感想</h2><h3 id="ソフトウェアの設計は難しい" class="headerLink">
+    <a href="#%e3%82%bd%e3%83%95%e3%83%88%e3%82%a6%e3%82%a7%e3%82%a2%e3%81%ae%e8%a8%ad%e8%a8%88%e3%81%af%e9%9b%a3%e3%81%97%e3%81%84" class="header-mark"></a>3.1 ソフトウェアの設計は難しい</h3><p>ラボユース活動で一番勉強になったポイントです．</p>
+<p>今回作ったものを&quot;設計&quot;という観点から再分類してみます．</p>
+<ul>
+<li>コンパイラ &hellip; 先述するfrontend/backendの分離が単純に課題</li>
+<li>elf-utilities, py-linkage &hellip; Rust/Pythonライブラリ
+<ul>
+<li>何を公開して，何を公開しないのか</li>
+<li>どうすれば&quot;汎用的&quot;になるのか
+<ul>
+<li>自分のプロジェクトから使いたい =&gt; 注意しないとユースケースに依存する実装になってしまう</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>アセンブラ/リンカ/elfpeach &hellip; そのライブラリを使う側
+<ul>
+<li>どこまでの機能をライブラリに閉じ込めるのか，どこからはユーザ実装にするのか</li>
+</ul>
+</li>
+</ul>
+<p>というように，<br>
+ざっと並べても上記問題が見えてきます．</p>
+<p>私にとって <strong>&ldquo;汎用的なライブラリ&rdquo;</strong> を作る経験は初めてだったので，<br>
+&ldquo;使いやすく，コード拡張がしやすい設計&quot;について考え続け，悩み続ける一年でした．<br>
+そして，その答えが出ることはありませんでした．</p>
+<p>SecHack365参加当時よりもレベルの高いことに手を出している自覚はあったので，<br>
+強いやりがいを感じて作業していたものの，<br>
+**&ldquo;ドメイン知識の前にソフトウェアエンジニアリングの力が不足している&rdquo;**感覚がありました．</p>
+<p>&ldquo;設計が悪いかも&quot;と不安になってプロジェクト全体を削除し，<br>
+また1k~2k行書いたぐらいで&quot;あれ，もしかして賢くないやり方してるかも&quot;と思って削除，<br>
+また作り直す，みたいなことを繰り返していました．</p>
+<p>結局，発表資料に書いてあるように，<br>
+本来やりたかった実装のいくつかを保留する結果となってしまったわけです．</p>
+<p>そして，<br>
+<strong>&ldquo;これSecHack365でも同じ過ちをしていたな&quot;と気づきました(遅い)</strong>．</p>
+<h3 id="やっぱりツールチェーン開発は楽しい" class="headerLink">
+    <a href="#%e3%82%84%e3%81%a3%e3%81%b1%e3%82%8a%e3%83%84%e3%83%bc%e3%83%ab%e3%83%81%e3%82%a7%e3%83%bc%e3%83%b3%e9%96%8b%e7%99%ba%e3%81%af%e6%a5%bd%e3%81%97%e3%81%84" class="header-mark"></a>3.2 やっぱりツールチェーン開発は楽しい</h3><p>発表資料に書いてあるとおり，私はコンパイラについての専門知識を十分に持っているわけではありません．<br>
+コンパイラの最新論文を読んでいるわけでも，<br>
+一般的な最適化手法を論理的に説明でき，実装しているわけでもありません．</p>
+<p>アセンブラについても同様で，<br>
+x64のすべての命令に対応しているわけではありません．</p>
+<p>リンカも全くLTOしないですし，<br>
+複数ファイルにも対応していません．</p>
+<p>でも，やっぱり楽しいです．<br>
+実行ファイルに関する全てを制御している感じがして，<br>
+考えることが多いですし，&ldquo;実装が終わらない&quot;というところに楽しさがあると思っています．</p>
+<p><a href="#%e3%81%8a%e3%82%8f%e3%82%8a%e3%81%ab" rel="">おわりに</a> でも話しますが，<br>
+私は現在network分野についてspecialityを持つ為の勉強をやり始めています．<br>
+最近GoBGPの記事とか上げてるのでご存知かもしれませんが．</p>
+<p>もしかしたらこの成果物にコードを書き加えることがないかもしれないけど，<br>
+また何かのタイミングでツールチェーンに関するプログラミングやりたいな，と思いました．</p>
+<h2 id="おわりに" class="headerLink">
+    <a href="#%e3%81%8a%e3%82%8f%e3%82%8a%e3%81%ab" class="header-mark"></a>4 おわりに</h2><p>上記感想にある通り，<br>
+&ldquo;ソフトウェアエンジニアリング&quot;について深く考える一年になりました．<br>
+改めて，cybozu labsの皆さんにはお礼を述べておきます．</p>
+<p>現在はnetwork developmentやprivate cloud designに興味を持っていて，<br>
+また知識0の状態からコツコツ勉強する形になりますが，<br>
+ほそぼそと頑張っています．<br>
+ソフトウェアエンジニアリングについてはこの領域にも役立つと思っているので，<br>
+今回の経験を活かして勉強するつもりです．</p>
+<p>言語処理系やツールチェーンについての活動は趣味レベルで，少し優先度は低くなってしまいますが，<br>
+labs youthの経験は必ずどこかで活きると思っています．</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-03-30</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" data-title="Cybozu Labs Youth 10thとして一年間活動しました" data-hashtags="cybozu-labs-youth,rust"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" data-hashtag="cybozu-labs-youth"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" data-title="Cybozu Labs Youth 10thとして一年間活動しました"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/cybozu-labs-youth-10th/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" data-title="Cybozu Labs Youth 10thとして一年間活動しました"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/cybozu-labs-youth-10th/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/cybozu-labs-youth/">cybozu-labs-youth</a>,&nbsp;<a href="/ja/tags/rust/">rust</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/recap-linux-open-syscall/" class="prev" rel="prev" title="Linuxのopen(2) syscallをもう一度復習する"><i class="fas fa-angle-left fa-fw"></i>Linuxのopen(2) syscallをもう一度復習する</a>
+            <a href="/ja/posts/bgpd-bestpath/" class="next" rel="next" title="FRR BGPdのbestpath selectionの3番までを動かして検証する">FRR BGPdのbestpath selectionの3番までを動かして検証する<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

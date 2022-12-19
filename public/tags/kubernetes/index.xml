@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>kubernetes - Tag - drumato.com</title>
+        <link>http://drumato.com/tags/kubernetes/</link>
+        <description>kubernetes - Tag - drumato.com</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 06 Dec 2021 00:00:00 &#43;0000</lastBuildDate><atom:link href="http://drumato.com/tags/kubernetes/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubectl Plugin Builder</title>
+    <link>http://drumato.com/posts/kubectl-plugin-builder/</link>
+    <pubDate>Mon, 06 Dec 2021 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/posts/kubectl-plugin-builder/</guid>
+    <description><![CDATA[As you know Kubernetes provides many extensibilities to users. These extensibilities are explained in the official docs.
+Custom Controller CRD Admission Webhook Kubernetes Scheduler Plugin CNI Plugin In the same way, kubectl that is used by almost k8s operators, provides an extensibility to us. That is called kubectl plugin, we use the extensibility and utilize our operations.
+In this post I&rsquo;ll describe you the overview of kubectl plugin. I&rsquo;ll take up some subject about kubectl plugin, and finally I&rsquo;ll introduce my project that is called kubectl-plugin-builder.]]></description>
+</item></channel>
+</rss>

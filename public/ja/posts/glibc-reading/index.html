@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">glibc wrapperから読み始めてsystem call handlerまで - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="glibc wrapperから読み始めてsystem call handlerまで" />
+<meta property="og:description" content="IPFactory Advent Calendar 2019 一日目. 急遽開いた弊サークルのカレンダー,既に一日目が終わろうとしている. 私は日頃から勉強した内容をMarkdownにまとめ, Git" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/glibc-reading/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-12-01T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="glibc wrapperから読み始めてsystem call handlerまで"/>
+<meta name="twitter:description" content="IPFactory Advent Calendar 2019 一日目. 急遽開いた弊サークルのカレンダー,既に一日目が終わろうとしている. 私は日頃から勉強した内容をMarkdownにまとめ, Git"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/glibc-reading/" /><link rel="prev" href="http://drumato.com/ja/posts/seccamp2019/" /><link rel="next" href="http://drumato.com/ja/posts/toolchain-in-rust/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "glibc wrapperから読み始めてsystem call handlerまで",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/glibc-reading\/"
+        },"genre": "posts","keywords": "c, linux","wordcount":  1642 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/glibc-reading\/","datePublished": "2019-12-01T00:00:00+00:00","dateModified": "2019-12-01T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/glibc-reading/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/glibc-reading/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#システムコールの流れ">システムコールの流れ</a>
+      <ul>
+        <li><a href="#glibcでのシステムコールラッパーの処理">glibcでのシステムコールラッパーの処理</a></li>
+        <li><a href="#syscall-命令の実行"><code>syscall</code> 命令の実行</a></li>
+        <li><a href="#linuxのシステムコールハンドラ">Linuxのシステムコールハンドラ</a></li>
+      </ul>
+    </li>
+    <li><a href="#おわりに">おわりに</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">glibc wrapperから読み始めてsystem call handlerまで</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-12-01">2019-12-01</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2019-12-01">2019-12-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1642 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#システムコールの流れ">システムコールの流れ</a>
+      <ul>
+        <li><a href="#glibcでのシステムコールラッパーの処理">glibcでのシステムコールラッパーの処理</a></li>
+        <li><a href="#syscall-命令の実行"><code>syscall</code> 命令の実行</a></li>
+        <li><a href="#linuxのシステムコールハンドラ">Linuxのシステムコールハンドラ</a></li>
+      </ul>
+    </li>
+    <li><a href="#おわりに">おわりに</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><a href="https://qiita.com/advent-calendar/2019/ipfactory" target="_blank" rel="noopener noreferrer">IPFactory Advent Calendar 2019</a> 一日目.<br>
+急遽開いた弊サークルのカレンダー,既に一日目が終わろうとしている.</p>
+<p>私は日頃から勉強した内容をMarkdownにまとめ,<br>
+Gitリポジトリに保存するようにしている.</p>
+<p>ここではそのリポジトリから,<br>
+Linuxにおけるシステムコールの流れのメモを取り出して紹介しよう.</p>
+<p>誰も投稿しないよりよっぽどマシだし,<br>
+おそらく誰かの何かになれると思う.</p>
+<blockquote>
+<p>要は急にやることになったので何もなかった.</p>
+</blockquote>
+<h2 id="システムコールの流れ" class="headerLink">
+    <a href="#%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%82%b3%e3%83%bc%e3%83%ab%e3%81%ae%e6%b5%81%e3%82%8c" class="header-mark"></a>1 システムコールの流れ</h2><p>アプリケーションプログラムがシステムコールを発行した時,<br>
+内部ではどのようなフローをたどるのかについて解説する.<br>
+これを一度理解しておくことで,<br>
+ユーザランドとカーネルランドのインタフェースについて理解を深められる.</p>
+<h3 id="glibcでのシステムコールラッパーの処理" class="headerLink">
+    <a href="#glibc%e3%81%a7%e3%81%ae%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%82%b3%e3%83%bc%e3%83%ab%e3%83%a9%e3%83%83%e3%83%91%e3%83%bc%e3%81%ae%e5%87%a6%e7%90%86" class="header-mark"></a>1.1 glibcでのシステムコールラッパーの処理</h3><p>まず,ユーザアプリケーションでシステムコールを呼び出す時,<br>
+往々にして <strong>glibc等で定義されたシステムコールラッパー</strong> を利用する.<br>
+後々実際に見ていくが,<br>
+このラッパーは内部で <strong><code>syscall</code>命令</strong> を実行している.</p>
+<p>例えば <strong><a href="https://code.woboq.org/userspace/glibc/sysdeps/unix/sysv/linux/x86_64/brk.c.html#31" target="_blank" rel="noopener noreferrer">brk(2)</a></strong> は以下のようなラッパーが定義されている.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* This must be initialized data because commons can&#39;t have aliases.  */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="o">*</span><span class="n">__curbrk</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="nf">__brk</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="o">*</span><span class="n">newbrk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">__curbrk</span> <span class="o">=</span> <span class="n">newbrk</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span> <span class="nf">INLINE_SYSCALL</span> <span class="p">(</span><span class="n">brk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">newbrk</span> <span class="o">&lt;</span> <span class="n">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">__set_errno</span> <span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">weak_alias</span> <span class="p">(</span><span class="n">__brk</span><span class="p">,</span> <span class="n">brk</span><span class="p">)</span>
+</span></span></code></pre></div><p>このコードで重要なのは,<br>
+<code>INLINE_SYSCALL (brk, 1, addr);</code> マクロの実行である.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp"># define INLINE_SYSCALL(name, nr, args...) \
+</span></span></span><span class="line"><span class="cl"><span class="cp">  ({                                                                              \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    unsigned long int resultvar = INTERNAL_SYSCALL (name, , nr, args);              \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (resultvar, )))              \
+</span></span></span><span class="line"><span class="cl"><span class="cp">      {                                                                              \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        __set_errno (INTERNAL_SYSCALL_ERRNO (resultvar, ));                      \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        resultvar = (unsigned long int) -1;                                      \
+</span></span></span><span class="line"><span class="cl"><span class="cp">      }                                                                              \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    (long int) resultvar; })
+</span></span></span></code></pre></div><p>少し見づらいが,簡単にまとめる.</p>
+<ul>
+<li><code>INTERNAL_SYSCALL</code> マクロでシステムコールを実行する
+<ul>
+<li>このマクロについては後述</li>
+<li><code>INLINE_SYSCALL</code> の第一引数を直接受け取る( 上記例なら <code>brk</code> )</li>
+<li><code>INTERNAL_SYSCALL</code> の第三引数に引数の個数が渡る( 仮引数名 -&gt; <code>nr</code> )</li>
+</ul>
+</li>
+<li><code>INTERNAL_SYSCALL_ERROR_P</code> はエラーチェック</li>
+</ul>
+<p><code>INTERNAL_SYSCALL</code> 内部について見てみる.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define INTERNAL_SYSCALL(name, err, nr, args...)                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        internal_syscall##nr (SYS_ify (name), err, args)
+</span></span></span></code></pre></div><p>引数で渡された <code>nr</code> と <code>internal_syscall</code> が結合される.<br>
+つまり, <code>1</code> が渡されれば <code>internal_syscall1()</code> という関数マクロの呼び出しになる.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define SYS_ify(syscall_name)        __NR_##syscall_name
+</span></span></span></code></pre></div><p>と定義されているので,brk(2)における <code>INTERNAL_SYSCALL</code> の呼び出しは次のようになる.<br>
+(<code>__NR_brk</code> は 12 とマクロ定数で定義されている).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">internal_syscall1</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#undef internal_syscall1
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define internal_syscall1(number, err, arg1)                                \
+</span></span></span><span class="line"><span class="cl"><span class="cp">({                                                                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    unsigned long int resultvar;                                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    TYPEFY (arg1, __arg1) = ARGIFY (arg1);                                 \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    register TYPEFY (arg1, _a1) asm (&#34;rdi&#34;) = __arg1;                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    asm volatile (                                                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    &#34;syscall\n\t&#34;                                                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    : &#34;=a&#34; (resultvar)                                                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    : &#34;0&#34; (number), &#34;r&#34; (_a1)                                                \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    : &#34;memory&#34;, REGISTERS_CLOBBERED_BY_SYSCALL);                        \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    (long int) resultvar;                                                \
+</span></span></span><span class="line"><span class="cl"><span class="cp">})
+</span></span></span></code></pre></div><p><code>syscall</code> 命令の実行が確認できる.</p>
+<h3 id="syscall-命令の実行" class="headerLink">
+    <a href="#syscall-%e5%91%bd%e4%bb%a4%e3%81%ae%e5%ae%9f%e8%a1%8c" class="header-mark"></a>1.2 <code>syscall</code> 命令の実行</h3><p>Intel x64 SDM を読むと,<br>
+<code>syscall</code> 命令時には <code>IA32_LSTAR</code> というレジスタの値を <code>RIP</code> に入れていることが分かる.<br>
+なんとなくこの <code>IA32_LSTAR</code> にLinuxカーネルのシステムコールハンドラ(のアドレス)が入っていそうだなあ,という予感がする</p>
+<p><a href="https://github.com/torvalds/linux/blob/master/arch/x86/kernel/cpu/common.c" target="_blank" rel="noopener noreferrer">linux/arch/x86/kernel/cpu/common.c</a> を見ると,<br>
+<code>syscall_init()</code> 関数を発見できる.<br>
+この関数は <a href="https://github.com/torvalds/linux/blob/master/arch/x86/kernel/cpu/common.c" target="_blank" rel="noopener noreferrer">linux/arch/x86/kernel/cpu/common.c</a>  の <code>cpu_init()</code> で呼ばれている.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* May not be marked __init: used by software suspend */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">syscall_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">wrmsr</span><span class="p">(</span><span class="n">MSR_STAR</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">__USER32_CS</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="n">__KERNEL_CS</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">wrmsrl</span><span class="p">(</span><span class="n">MSR_LSTAR</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">entry_SYSCALL_64</span><span class="p">);</span>
+</span></span></code></pre></div><h3 id="linuxのシステムコールハンドラ" class="headerLink">
+    <a href="#linux%e3%81%ae%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%82%b3%e3%83%bc%e3%83%ab%e3%83%8f%e3%83%b3%e3%83%89%e3%83%a9" class="header-mark"></a>1.3 Linuxのシステムコールハンドラ</h3><p><code>MSR_LSTAR</code> に <code>entry_SYSCALL_64</code> というアドレスを格納している.<br>
+このシンボルが <strong>システムコールハンドラ</strong> だと推測できる.<br>
+<a href="https://github.com/torvalds/linux/blob/master/arch/x86/entry/entry_64.S" target="_blank" rel="noopener noreferrer">linux/arch/x86/entry/entry_64.S</a> を見てみる.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="nf">SYM_CODE_START</span><span class="p">(</span><span class="no">entry_SYSCALL_64</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">UNWIND_HINT_EMPTY</span>
+</span></span><span class="line"><span class="cl">	<span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * Interrupts are off on entry.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * We do not frame this tiny irq-off block with TRACE_IRQS_OFF/ON,
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * it is too small to ever cause noticeable irq latency.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">swapgs</span>
+</span></span></code></pre></div><p><code>swapgs</code> 命令によって, <code> IA32_KERNEL_GS_BASE;</code> に格納されたカーネルデータ構造へのポインタを<br>
+<code>gs</code> レジスタに格納できる.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="cm">/* Construct struct pt_regs on stack */</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">pushq</span>	<span class="no">$__USER_DS</span>				<span class="cm">/* pt_regs-&gt;ss */</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">pushq</span>	<span class="no">PER_CPU_VAR</span><span class="p">(</span><span class="no">cpu_tss_rw</span> <span class="err">+</span> <span class="no">TSS_sp2</span><span class="p">)</span>	<span class="cm">/* pt_regs-&gt;sp */</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">pushq</span>	<span class="nv">%r11</span>					<span class="cm">/* pt_regs-&gt;flags */</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">pushq</span>	<span class="no">$__USER_CS</span>				<span class="cm">/* pt_regs-&gt;cs */</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">pushq</span>	<span class="nv">%rcx</span>					<span class="cm">/* pt_regs-&gt;ip */</span>
+</span></span><span class="line"><span class="cl"><span class="nf">SYM_INNER_LABEL</span><span class="p">(</span><span class="no">entry_SYSCALL_64_after_hwframe</span><span class="p">,</span> <span class="no">SYM_L_GLOBAL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">pushq</span>	<span class="nv">%rax</span>					<span class="cm">/* pt_regs-&gt;orig_ax */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">PUSH_AND_CLEAR_REGS</span> <span class="no">rax</span><span class="err">=</span><span class="no">$-ENOSYS</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">TRACE_IRQS_OFF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cm">/* IRQs are off. */</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">movq</span>	<span class="nv">%rax</span><span class="p">,</span> <span class="nv">%rdi</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">movq</span>	<span class="nv">%rsp</span><span class="p">,</span> <span class="nv">%rsi</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">call</span>	<span class="no">do_syscall_64</span>		<span class="cm">/* returns with IRQs disabled */</span>
+</span></span></code></pre></div><p>LinuxにおけるC言語の呼び出し規約として,<br>
+第一引数は <code>rdi</code> , 第二引数は <code>rsi</code> レジスタを用いる.<br>
+つまり <code>rax</code> (先程のインラインアセンブリによるシステムコール番号)が第一引数,<br>
+<code>rsp</code> ( <code>pt_regs</code> 構造体がスタックにつまれていて,そのアドレス) が第二引数ということになる.
+そして呼ばれる <code>do_syscall_64</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_X86_64
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="n">__visible</span> <span class="kt">void</span> <span class="nf">do_syscall_64</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">nr</span><span class="p">,</span> <span class="k">struct</span> <span class="n">pt_regs</span> <span class="o">*</span><span class="n">regs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">thread_info</span> <span class="o">*</span><span class="n">ti</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">enter_from_user_mode</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">local_irq_enable</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ti</span> <span class="o">=</span> <span class="nf">current_thread_info</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nf">READ_ONCE</span><span class="p">(</span><span class="n">ti</span><span class="o">-&gt;</span><span class="n">flags</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_TIF_WORK_SYSCALL_ENTRY</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nr</span> <span class="o">=</span> <span class="nf">syscall_trace_enter</span><span class="p">(</span><span class="n">regs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nf">likely</span><span class="p">(</span><span class="n">nr</span> <span class="o">&lt;</span> <span class="n">NR_syscalls</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nr</span> <span class="o">=</span> <span class="nf">array_index_nospec</span><span class="p">(</span><span class="n">nr</span><span class="p">,</span> <span class="n">NR_syscalls</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">regs</span><span class="o">-&gt;</span><span class="n">ax</span> <span class="o">=</span> <span class="n">sys_call_table</span><span class="p">[</span><span class="n">nr</span><span class="p">](</span><span class="n">regs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_X86_X32_ABI
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nf">likely</span><span class="p">((</span><span class="n">nr</span> <span class="o">&amp;</span> <span class="n">__X32_SYSCALL_BIT</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">			  <span class="p">(</span><span class="n">nr</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">__X32_SYSCALL_BIT</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">X32_NR_syscalls</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">nr</span> <span class="o">=</span> <span class="nf">array_index_nospec</span><span class="p">(</span><span class="n">nr</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">__X32_SYSCALL_BIT</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">					<span class="n">X32_NR_syscalls</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">regs</span><span class="o">-&gt;</span><span class="n">ax</span> <span class="o">=</span> <span class="n">x32_sys_call_table</span><span class="p">[</span><span class="n">nr</span><span class="p">](</span><span class="n">regs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">syscall_return_slowpath</span><span class="p">(</span><span class="n">regs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span></code></pre></div><p><code>sys_call_table</code> から該当するシステムコールの番号で検索し,<br>
+対応する <code>__x64_sys_name()</code>  の関数ポインタを取得, <code>rax</code> に入れる.</p>
+<h2 id="おわりに" class="headerLink">
+    <a href="#%e3%81%8a%e3%82%8f%e3%82%8a%e3%81%ab" class="header-mark"></a>2 おわりに</h2><p>取り敢えずここまでで,</p>
+<ul>
+<li>システムコールラッパー</li>
+<li><code>syscall</code> 命令
+<ul>
+<li>内部で <code>RIP</code> に <code>MSR_LSTAR</code> の値を格納していることが分かる</li>
+</ul>
+</li>
+<li>システムコールハンドラ</li>
+</ul>
+<p>までの流れが確認できた.<br>
+ユーザランドとカーネルランドの切り替わり部分が理解出来たので,良しとする.</p>
+<p>後で更に深くまで書き足すかもしれないが,<br>
+<del>急にやることになった記事としては</del> 悪くない.</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2019-12-01</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/glibc-reading/" data-title="glibc wrapperから読み始めてsystem call handlerまで" data-hashtags="c,linux"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/glibc-reading/" data-hashtag="c"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/glibc-reading/" data-title="glibc wrapperから読み始めてsystem call handlerまで"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/glibc-reading/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/glibc-reading/" data-title="glibc wrapperから読み始めてsystem call handlerまで"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/glibc-reading/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/c/">c</a>,&nbsp;<a href="/ja/tags/linux/">linux</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/seccamp2019/" class="prev" rel="prev" title="seccamp2019のCコンパイラゼミに参加しました"><i class="fas fa-angle-left fa-fw"></i>seccamp2019のCコンパイラゼミに参加しました</a>
+            <a href="/ja/posts/toolchain-in-rust/" class="next" rel="next" title="実行プログラム作成基盤をスクラッチで書いた">実行プログラム作成基盤をスクラッチで書いた<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

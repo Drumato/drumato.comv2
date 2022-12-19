@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">The 1st TypeScript output - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="The 1st TypeScript output" />
+<meta property="og:description" content="Blogを移行したのをきっかけに, ときどき日記みたいなのを投稿していくことにした. 今日はその, Blogを移行した話をつらつらと. reposi" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/diaries/myblog/" /><meta property="article:section" content="diaries" />
+<meta property="article:published_time" content="2022-06-07T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-07T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="The 1st TypeScript output"/>
+<meta name="twitter:description" content="Blogを移行したのをきっかけに, ときどき日記みたいなのを投稿していくことにした. 今日はその, Blogを移行した話をつらつらと. reposi"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/diaries/myblog/" /><link rel="next" href="http://drumato.com/ja/diaries/network-automation-and-programability/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "The 1st TypeScript output",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/diaries\/myblog\/"
+        },"genre": "diaries","keywords": "typescript","wordcount":  2059 ,
+        "url": "http:\/\/drumato.com\/ja\/diaries\/myblog\/","datePublished": "2022-06-07T00:00:00+00:00","dateModified": "2022-06-07T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/diaries/myblog/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/diaries/myblog/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="page single special"><h1 class="single-title animate__animated animate__pulse animate__faster">The 1st TypeScript output</h1><div class="content" id="content"><p>Blogを移行したのをきっかけに, ときどき日記みたいなのを投稿していくことにした.
+今日はその, Blogを移行した話をつらつらと.
+repositoryはこちら.</p>
+<p><a href="https://github.com/Drumato/drumato.comv2" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/drumato.comv2</a></p>
+<h2 id="経緯" class="headerLink">
+    <a href="#%e7%b5%8c%e7%b7%af" class="header-mark"></a>1 経緯</h2><p>まず, そもそもなんでBlogを移行しようと思っていたのか, みたいな話だけど, 理由は特にない.
+ある日新卒同期に,
+｢鈴木僚太さんが執筆されている<a href="https://gihyo.jp/book/2022/978-4-297-12747-3" target="_blank" rel="noopener noreferrer">ブルーベリー本</a> と呼ばれる本が欲しいんだよね｣って話をしてたら,
+なんと恵んでくれることになった.
+それを機にTypeScriptに入門したので, <strong>せっかくならなにか作らないと</strong> と思って手を出したのが自作Blogだった.
+ちなみにTypeScriptのcodeを初めて書いた日から1週間ぐらいしか経ってないので,
+今考えると普通に無茶だと思う.</p>
+<p>以前運用していたBlogは <strong>Hugo</strong> と呼ばれるGo製のSSG frameworkで, すごいお手軽にtemplateを利用するだけでBlogを作り上げられる優れもの.
+当時私が書いたのはblog templateに設定を注ぎ込むtomlと, ちょっと好みでstyleを書き換えたぐらい.
+それでとてもきれいなBlogが動いていたので, UI/Frontend を書いたことがない私にはうってつけだった.</p>
+<p>しかし今, 新卒engineerとして色々な分野の知識をcatch upしていると, Web Programmingに対する興味というか,
+<strong>｢これはinfra engineerとして活躍していきたいとしても, 身につけておかなければいけない&quot;引き出し&quot;だな｣</strong> と感じる機会が増えてきた.
+なので自作Blogを作ろうと思ったと, そういう感じ.</p>
+<h2 id="対応している機能" class="headerLink">
+    <a href="#%e5%af%be%e5%bf%9c%e3%81%97%e3%81%a6%e3%81%84%e3%82%8b%e6%a9%9f%e8%83%bd" class="header-mark"></a>2 対応している機能</h2><ul>
+<li>あるdirectoryにmarkdownを置いておくと, build時に頑張ってcontentsを作ってくれる</li>
+<li>記事/日記一覧機能が一応ある(paginationはまだない)
+<ul>
+<li>tagで検索することもできる</li>
+</ul>
+</li>
+<li>code snippetはsyntax highlightが効くようになっている</li>
+<li>ToCだけvscodeの拡張機能で作れば, heading idは勝手に作ってくれる</li>
+<li>一応頑張ってPC/mobileで最低限見れるものを作る</li>
+<li>英語と日本語に対応している</li>
+</ul>
+<p>こうしてみると, Frontendのcodingを一切したことがない私にしては頑張ったんじゃないかと思えてくる.
+<code>yarn create next-app</code> は実行したけど, それ以外は基本的に全部自分で書いたし.</p>
+<p>実際の記事画面を下に.
+fontはKlee Oneというもので統一してる. 可愛い.</p>
+<p><a class="lightgallery" href="/images/the-1st-typescript/screenshot1.png" title="img1" data-thumbnail="/images/the-1st-typescript/screenshot1.png">
+        <img
+            class="lazyload"
+            data-src="/images/the-1st-typescript/screenshot1.png"
+            data-srcset="/images/the-1st-typescript/screenshot1.png, /images/the-1st-typescript/screenshot1.png 1.5x, /images/the-1st-typescript/screenshot1.png 2x"
+            data-sizes="auto"
+            alt="/images/the-1st-typescript/screenshot1.png">
+    </a></p>
+<p>Chromeの検証機能を使ってmobile画面を想定してみた.
+こちらもそれなりに見やすいんじゃないかなーって思っている.
+ずっとheaderが崩れる問題に直面してたんだけど, hamburger menuにすることで解決した.</p>
+<p><a class="lightgallery" href="/images/the-1st-typescript/screenshot2.png" title="img2" data-thumbnail="/images/the-1st-typescript/screenshot2.png">
+        <img
+            class="lazyload"
+            data-src="/images/the-1st-typescript/screenshot2.png"
+            data-srcset="/images/the-1st-typescript/screenshot2.png, /images/the-1st-typescript/screenshot2.png 1.5x, /images/the-1st-typescript/screenshot2.png 2x"
+            data-sizes="auto"
+            alt="/images/the-1st-typescript/screenshot2.png">
+    </a></p>
+<h2 id="使った技術" class="headerLink">
+    <a href="#%e4%bd%bf%e3%81%a3%e3%81%9f%e6%8a%80%e8%a1%93" class="header-mark"></a>3 使った技術</h2><p>さて, どのように作ろうかと思っていたのだけれど, 特段comment機能みたいなものも求めていなかったし,
+これ結局SSGで完結しそうだなー, みたいな感覚があった.
+なので結局は以下のような構成に.
+Material UIを採用した理由は特になくて, 名前を知っていたから.</p>
+<ul>
+<li>language: TypeScript</li>
+<li>framework: Next.js(only SSG mode)</li>
+<li>UI library: MUI(Material UI)</li>
+<li>markdown rendering: react-markdown</li>
+</ul>
+<h2 id="まだ作り込みたい部分" class="headerLink">
+    <a href="#%e3%81%be%e3%81%a0%e4%bd%9c%e3%82%8a%e8%be%bc%e3%81%bf%e3%81%9f%e3%81%84%e9%83%a8%e5%88%86" class="header-mark"></a>4 まだ作り込みたい部分</h2><ul>
+<li>dark mode</li>
+<li>月別で記事を表示する機能</li>
+<li>SNS share</li>
+</ul>
+<h2 id="感想" class="headerLink">
+    <a href="#%e6%84%9f%e6%83%b3" class="header-mark"></a>5 感想</h2><p>TypeScript自体はかなり好きな言語だと思う.
+私はtype systemに乗っかってcodingするのが大好きだし, script languageならではの軽快さもある.
+GoやRustばかり書いているしそれらも大好きだけれど, TypeScriptはそれに続くぐらい好きな言語になるかもしれない.</p>
+<p>Next.js自体はかなり入門しやすいんじゃないかなって思った.
+少なくとも今回実装する上で必要になった機能については特に苦労しなかった.
+もちろんperformanceの観点で最適化するべき部分はたくさんあるのかもしれないし,
+SSG onlyだったから簡単だったんだよって話もあるかもしれないけど.
+次はISRを触ってみたい.</p>
+<p>強いて苦労した点をあげるなら, library云々というよりもstyling全般だと思う.
+特にstyleが崩れる問題とかを解決するのはそれなりに時間がかかった.
+あとはreact-markdownの仕様とか使い方かな.</p>
+<h2 id="これから" class="headerLink">
+    <a href="#%e3%81%93%e3%82%8c%e3%81%8b%e3%82%89" class="header-mark"></a>6 これから</h2><p>個人的な趣味で2022年4月からbackend開発みたいな分野にはちょくちょく手を出していたんだけど,
+今回ついにTypeScriptでなにかものを作ってみて, Web Programmingに真剣に挑戦してみる動機が十分にあると再確認できた.
+私はinfra software engineeringの分野で活躍していきたいと思っているし, それは変わらないのだけれど,
+そもそもCloud Technologyをどんどん使っていかないと持つことのできない視点があると思うし,
+いずれuser friendlyなものを作る必要があると思う. そのためにWeb UIを作る経験が役立つと思う.</p>
+<p>ということで, 次はもう少し仕様が大きく, 動的に色々扱うWeb Applicationを作って見ようと思う.
+serviceとして公開するかはわからないけど, 必ずoutputはする予定.</p>
+</div></div></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

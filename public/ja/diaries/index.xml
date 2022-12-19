@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Diaries on drumato.com</title>
+    <link>http://drumato.com/ja/diaries/</link>
+    <description>Recent content in Diaries on drumato.com</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sun, 18 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://drumato.com/ja/diaries/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PromQL Linterをつくった</title>
+      <link>http://drumato.com/ja/diaries/promqlinter/</link>
+      <pubDate>Sun, 18 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://drumato.com/ja/diaries/promqlinter/</guid>
+      <description>1 概要 promqlinterというlinterを作った 構文検査を行ってくれる デフォルトで組み込むべきLintルールを募集しています GitHub Acti</description>
+    </item>
+    
+    <item>
+      <title>｢ネットワーク自動化とプログラマビリティ｣を読んで</title>
+      <link>http://drumato.com/ja/diaries/network-automation-and-programability/</link>
+      <pubDate>Tue, 11 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://drumato.com/ja/diaries/network-automation-and-programability/</guid>
+      <description>久しぶりに更新。 最近も変わらず、Kubernetesのことばかりやっている。 特にCluster APIの検証とか、それに関わるエコシステムの実</description>
+    </item>
+    
+    <item>
+      <title>The 1st TypeScript output</title>
+      <link>http://drumato.com/ja/diaries/myblog/</link>
+      <pubDate>Tue, 07 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://drumato.com/ja/diaries/myblog/</guid>
+      <description>Blogを移行したのをきっかけに, ときどき日記みたいなのを投稿していくことにした. 今日はその, Blogを移行した話をつらつらと. reposi</description>
+    </item>
+    
+  </channel>
+</rss>

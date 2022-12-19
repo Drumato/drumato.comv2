@@ -1,0 +1,79 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>drumato.com</title>
+        <link>http://drumato.com/ja/</link>
+        <description>drumato.com</description>
+        <generator>Hugo -- gohugo.io</generator><language>ja</language><lastBuildDate>Sun, 18 Dec 2022 00:00:00 &#43;0000</lastBuildDate>
+            <atom:link href="http://drumato.com/ja/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>Go GenericsでつくるParser Combinator</title>
+    <link>http://drumato.com/ja/posts/parsecomb/</link>
+    <pubDate>Sun, 10 Apr 2022 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/parsecomb/</guid>
+    <description><![CDATA[現在も活発に開発しているため，仕様が大きく変更される場合があります． お久しぶりです． 最近は新卒社員として研修を頑張ったり，趣味時間には自分に]]></description>
+</item><item>
+    <title>Replace FRR Zebra SRv6 Manager with YANG Backend</title>
+    <link>http://drumato.com/ja/posts/srv6-manager/</link>
+    <pubDate>Tue, 04 Jan 2022 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/srv6-manager/</guid>
+    <description><![CDATA[私は現在趣味で FRRouting の開発に手を出しており， ちょこちょこ遊んだり，contribution chanceを狙っているのですが(mainstream]]></description>
+</item><item>
+    <title>Kubectl Plugin Builder</title>
+    <link>http://drumato.com/ja/posts/kubectl-plugin-builder/</link>
+    <pubDate>Mon, 06 Dec 2021 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/kubectl-plugin-builder/</guid>
+    <description><![CDATA[この記事は IPFactory Advent Calendar 2021 の11日目です． 私がIPFactoryとして活動するのは今年度が最後なので，何かしら技術的知見が残せればと思って執筆してい]]></description>
+</item><item>
+    <title>FRR BGPdのbestpath selectionの3番までを動かして検証する</title>
+    <link>http://drumato.com/ja/posts/bgpd-bestpath/</link>
+    <pubDate>Mon, 04 Oct 2021 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/bgpd-bestpath/</guid>
+    <description><![CDATA[BGPでは複数のneighborから同じprefixに対する経路を受け取ることがあります． それに対して bestpath selection というalgorithmを適用し，]]></description>
+</item><item>
+    <title>Cybozu Labs Youth 10thとして一年間活動しました</title>
+    <link>http://drumato.com/ja/posts/cybozu-labs-youth-10th/</link>
+    <pubDate>Tue, 30 Mar 2021 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/cybozu-labs-youth-10th/</guid>
+    <description><![CDATA[こんにちは． 2020年の4月から1年間，the 10th of Cybozu Labs Youthとして活動しました． その活動についてまとめたいと思います． 本日行われた成果発]]></description>
+</item><item>
+    <title>Linuxのopen(2) syscallをもう一度復習する</title>
+    <link>http://drumato.com/ja/posts/recap-linux-open-syscall/</link>
+    <pubDate>Sun, 24 Jan 2021 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/recap-linux-open-syscall/</guid>
+    <description><![CDATA[お久しぶりです． 最近は自作コンパイラや， YouTubeでのアウトプット活動 をやってたりしました． 現在インフラ部門での就職活動に取り組んでおり]]></description>
+</item><item>
+    <title>Rustでつくる単相型システムもどき</title>
+    <link>http://drumato.com/ja/posts/type-system1/</link>
+    <pubDate>Sun, 20 Dec 2020 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/type-system1/</guid>
+    <description><![CDATA[この記事は IPFactory Advent Calendar 2020 の20日目です． このネタを 言語実装 Advent Calendar 2020 の記事に採用すればよかったかもしれない． 私は1日目にも記事を上げていますので，興味]]></description>
+</item><item>
+    <title>Rust製のパーサコンビネータcombine v4.4.0を覗き見する</title>
+    <link>http://drumato.com/ja/posts/dive-into-combine/</link>
+    <pubDate>Thu, 10 Dec 2020 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/dive-into-combine/</guid>
+    <description><![CDATA[この記事は 言語実装 Advent Calendar 2020 の10日目です． 昨日は @kimiyuki さんの記事でした． 明日は @fukkun さんの記事です． Twitter等で rustcのコードリーディングを]]></description>
+</item><item>
+    <title>Rust製のパーサコンビネータnom v6.0.0を解剖する</title>
+    <link>http://drumato.com/ja/posts/dive-into-nom/</link>
+    <pubDate>Tue, 01 Dec 2020 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/dive-into-nom/</guid>
+    <description><![CDATA[この記事は IPFactory Advent Calendar 2020 の1日目です． IPFactoryという技術サークルについては 余談 を御覧ください． 普段コンパイラ自作をしていて，LLパーサを]]></description>
+</item><item>
+    <title>TUI Based ELF Analyzer in Rust</title>
+    <link>http://drumato.com/ja/posts/tuipeach/</link>
+    <pubDate>Sat, 10 Oct 2020 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/ja/posts/tuipeach/</guid>
+    <description><![CDATA[私は 2020年4月に サイボウズ･ラボユース という人材育成プロジェクトに採択されてから, 複数アーキテクチャを対象にするコンパイラドライバのスク]]></description>
+</item></channel>
+</rss>

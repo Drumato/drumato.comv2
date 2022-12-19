@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">TUI Based ELF Analyzer in Rust - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="TUI Based ELF Analyzer in Rust" />
+<meta property="og:description" content="私は 2020年4月に サイボウズ･ラボユース という人材育成プロジェクトに採択されてから, 複数アーキテクチャを対象にするコンパイラドライバのスク" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/tuipeach/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-10-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-10-10T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TUI Based ELF Analyzer in Rust"/>
+<meta name="twitter:description" content="私は 2020年4月に サイボウズ･ラボユース という人材育成プロジェクトに採択されてから, 複数アーキテクチャを対象にするコンパイラドライバのスク"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/tuipeach/" /><link rel="prev" href="http://drumato.com/ja/posts/linter-internship/" /><link rel="next" href="http://drumato.com/ja/posts/dive-into-nom/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "TUI Based ELF Analyzer in Rust",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/tuipeach\/"
+        },"genre": "posts","keywords": "elf, rust","wordcount":  3155 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/tuipeach\/","datePublished": "2020-10-10T00:00:00+00:00","dateModified": "2020-10-10T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/tuipeach/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/tuipeach/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#elfpeachの主な機能">elfpeachの主な機能</a>
+      <ul>
+        <li><a href="#elfヘッダについて">ELFヘッダについて</a></li>
+        <li><a href="#セクションヘッダテーブルについて">セクションヘッダテーブルについて</a></li>
+        <li><a href="#プログラムヘッダテーブルについて">プログラムヘッダテーブルについて</a></li>
+        <li><a href="#シンボルテーブルについて">シンボルテーブルについて</a></li>
+        <li><a href="#動的情報について">動的情報について</a></li>
+      </ul>
+    </li>
+    <li><a href="#今後実装しようと思っている機能">今後実装しようと思っている機能</a>
+      <ul>
+        <li><a href="#テーブル構造のフィルタリング機能">テーブル構造のフィルタリング機能</a></li>
+        <li><a href="#32bit-elfの読み込み">32bit ELFの読み込み</a></li>
+        <li><a href="#hexdump">hexdump</a></li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">TUI Based ELF Analyzer in Rust</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-10-10">2020-10-10</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2020-10-10">2020-10-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3155 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#elfpeachの主な機能">elfpeachの主な機能</a>
+      <ul>
+        <li><a href="#elfヘッダについて">ELFヘッダについて</a></li>
+        <li><a href="#セクションヘッダテーブルについて">セクションヘッダテーブルについて</a></li>
+        <li><a href="#プログラムヘッダテーブルについて">プログラムヘッダテーブルについて</a></li>
+        <li><a href="#シンボルテーブルについて">シンボルテーブルについて</a></li>
+        <li><a href="#動的情報について">動的情報について</a></li>
+      </ul>
+    </li>
+    <li><a href="#今後実装しようと思っている機能">今後実装しようと思っている機能</a>
+      <ul>
+        <li><a href="#テーブル構造のフィルタリング機能">テーブル構造のフィルタリング機能</a></li>
+        <li><a href="#32bit-elfの読み込み">32bit ELFの読み込み</a></li>
+        <li><a href="#hexdump">hexdump</a></li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>私は 2020年4月に <strong>サイボウズ･ラボユース</strong> という人材育成プロジェクトに採択されてから,<br>
+<strong>複数アーキテクチャを対象にするコンパイラドライバのスクラッチ開発</strong> に挑戦しています.</p>
+<p>その過程で,Rustで便利に使えるELF周辺のユーティリティがほしいなと思って,<br>
+<a href="https://github.com/Drumato/elf-utilities" target="_blank" rel="noopener noreferrer">このようなライブラリ</a>を作り始めました.</p>
+<p>ELFの読み込みやその他操作が簡単に,Rustのコア機能を使って行えるもので,<br>
+イメージとしては <code>/usr/include/elf.h</code> のRust実装+αみたいな感じです.</p>
+<p>このような <strong>純粋なライブラリ</strong> を作っていると,<br>
+やはり <strong>ライブラリを使うツール</strong> を作る必要が出てきます.<br>
+実装しているライブラリのバグや完成度,使いやすさを自分の手で確かめられるからです.</p>
+<p>そのために作り始めたのが,<br>
+<strong>TUIベースのELF解析ツール</strong> , <a href="https://github.com/Drumato/elfpeach" target="_blank" rel="noopener noreferrer"><strong>elfpeach</strong></a> です.</p>
+<ul>
+<li>既存のTUIのELF解析ツールが見受けられなかった</li>
+<li>GNU readelfの出力に不満があった(後述)</li>
+</ul>
+<p>という点から開発を決意しました.<br>
+結果として,良いものを作れているのではないかと考えています.</p>
+<p>本記事では,elfpeachの解説と今後の展望をベースに,<br>
+ELF解析ツールについての考えを取り上げたいと思います.</p>
+<h2 id="elfpeachの主な機能" class="headerLink">
+    <a href="#elfpeach%e3%81%ae%e4%b8%bb%e3%81%aa%e6%a9%9f%e8%83%bd" class="header-mark"></a>1 elfpeachの主な機能</h2><p>ELF解析の標準ツールである GNU readelfで <code>-a</code> オプションを渡した時に表示される情報と,<br>
+現在のelfpeachで実装されている機能を比較してみます..<br>
+<code>x</code> が実装済み, <code>-</code> が未実装を表します.</p>
+<table>
+<thead>
+<tr>
+<th>機能</th>
+<th>readelf</th>
+<th>elfpeach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>64bit ELF</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td>32bit ELF</td>
+<td>x</td>
+<td>- ( <code>elf-utilities</code> の不備)</td>
+</tr>
+<tr>
+<td>x86_64以外のアーキテクチャ</td>
+<td>x</td>
+<td>- ( <code>elf-utilities</code> の不備)</td>
+</tr>
+<tr>
+<td>ELFヘッダ</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td>セクションヘッダテーブル</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td><code>sh_link/sh_info</code> のより詳細な情報</td>
+<td>-</td>
+<td>x</td>
+</tr>
+<tr>
+<td>プログラムヘッダテーブル</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td>セクションとセグメントのマッピング表示</td>
+<td>x</td>
+<td>-</td>
+</tr>
+<tr>
+<td>動的情報</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td><code>d_un</code> のより詳細な情報</td>
+<td>-</td>
+<td>x</td>
+</tr>
+<tr>
+<td>再配置テーブル</td>
+<td>x</td>
+<td>-</td>
+</tr>
+<tr>
+<td>セクショングループ</td>
+<td>x</td>
+<td>-</td>
+</tr>
+<tr>
+<td>バージョン</td>
+<td>x</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ヒストグラム</td>
+<td>x</td>
+<td>-</td>
+</tr>
+<tr>
+<td>note</td>
+<td>x</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>こうしてみると,まだまだ実装すべき部分が残っていることがわかりますが,<br>
+一番のコア機能であるヘッダ/セクション/セグメント/シンボルが解析できるので,<br>
+ここで一区切りとして,記事にすることにしました.</p>
+<p>それぞれの概要と,特徴的な機能について触れます.</p>
+<h3 id="elfヘッダについて" class="headerLink">
+    <a href="#elf%e3%83%98%e3%83%83%e3%83%80%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>1.1 ELFヘッダについて</h3><p>実際に解析したスクショを載せます.</p>
+<p><a class="lightgallery" href="/images/elfpeach/scshot1.png" title="scshot1" data-thumbnail="/images/elfpeach/scshot1.png">
+        <img
+            class="lazyload"
+            data-src="/images/elfpeach/scshot1.png"
+            data-srcset="/images/elfpeach/scshot1.png, /images/elfpeach/scshot1.png 1.5x, /images/elfpeach/scshot1.png 2x"
+            data-sizes="auto"
+            alt="/images/elfpeach/scshot1.png">
+    </a></p>
+<p>殆どの出力はGNU readelfに似ていますが,<br>
+<strong>GNU readelf</strong> よりこだわった部分の紹介をします.</p>
+<p>どのような種類のELFであれ,ELFヘッダは必ず存在します.<br>
+ELFヘッダから得られる情報はかなり多いですが,<br>
+多くの人が見るのは <strong><code>Ehdr.e_entry</code></strong> の情報でしょう.<br>
+プログラムのエントリポイントとなるアドレスが格納されているフィールドですが,<br>
+<code>/bin/ls</code> のようにシンボルテーブルがstripされていなければ,<br>
+<code>Sym.st_value</code> の値から,エントリポイントとなるシンボルが見つかるはずです.</p>
+<p>そこでelfpeachでは,<br>
+<code>Ehdr.e_entry</code> の値でシンボルテーブルを探索し,<br>
+該当するシンボルがあれば,そのシンボル名を表示するようにしています.<br>
+(上記例では <code>_start</code> が表示されていますね. )</p>
+<p>一般的に用いられるコンパイラドライバを使っている場合,<br>
+大体固定のシンボルが指定されていますし,気にする必要はありません.<br>
+しかし,組み込みやベアメタル,その他特殊な状況ではこのエントリポイントを気にする必要が出てきます.</p>
+<p>実際私はコンパイラドライバを自作しており,スタートアップルーチンも <a href="https://github.com/Drumato/peachili/blob/master/lib/startup_x64.go" target="_blank" rel="noopener noreferrer">独自のもの</a> を使用しているので,<br>
+この機能がELF解析ツールにあると非常に助かります.<br>
+自作アセンブラやリンカのデバッグに役立つからですね.</p>
+<p>また, <code>Ehdr.e_shstrndx</code> というメンバには,<br>
+セクションヘッダテーブルが用いる <strong>セクション名テーブル</strong> のインデックスを指定しますが,<br>
+これも同様にセクション名を表示するようにしました.<br>
+ほぼすべての場合で <code>.shstrtab</code> が指定されていると思いますが.</p>
+<h3 id="セクションヘッダテーブルについて" class="headerLink">
+    <a href="#%e3%82%bb%e3%82%af%e3%82%b7%e3%83%a7%e3%83%b3%e3%83%98%e3%83%83%e3%83%80%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>1.2 セクションヘッダテーブルについて</h3><p><a class="lightgallery" href="/images/elfpeach/scshot2.png" title="scshot2" data-thumbnail="/images/elfpeach/scshot2.png">
+        <img
+            class="lazyload"
+            data-src="/images/elfpeach/scshot2.png"
+            data-srcset="/images/elfpeach/scshot2.png, /images/elfpeach/scshot2.png 1.5x, /images/elfpeach/scshot2.png 2x"
+            data-sizes="auto"
+            alt="/images/elfpeach/scshot2.png">
+    </a></p>
+<p>これも殆どreadelfに即したものになっています.</p>
+<p>elfpeachのこだわった点として,<br>
+<strong>readelfよりリッチな情報を提供する</strong> というものがあります.</p>
+<p>セクションヘッダには, <code>sh_link/sh_info</code> というフィールドが存在します.<br>
+これらは <code>Shdr.sh_type</code> によって異なる意味を持ち,<br>
+その意味はフィールドの数値だけを見てもすぐにわかりません.<br>
+しかしreadelfでは単にその値が出力されているだけです.</p>
+<p>elfpeachでは数値をそのまま出力するのに加えて,<br>
+<strong><code>sh_type</code> ごとに異なる出力</strong> をするようにしました.</p>
+<p>例えば上記画像であれば,<br>
+<code>Shdr.sh_type == SHT_RELA</code> より,</p>
+<ul>
+<li><code>sh_link</code> &hellip; 対応するシンボルテーブルのセクションインデックス</li>
+<li><code>sh_info</code> &hellip; 再配置対象となるセクションのインデックス</li>
+</ul>
+<p>というような情報が格納されているはずです.<br>
+これらをより見やすくするための工夫を施しています.<br>
+実装をお見せします.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">fn</span> <span class="nf">section_information</span><span class="o">&lt;&#39;</span><span class="na">a</span><span class="o">&gt;</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">elf_file</span>: <span class="kp">&amp;</span><span class="o">&#39;</span><span class="na">a</span> <span class="nc">file</span>::<span class="n">ELF64</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">sct</span>: <span class="kp">&amp;</span><span class="o">&#39;</span><span class="na">a</span> <span class="nc">section</span>::<span class="n">Section64</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">Paragraph</span><span class="o">&lt;&#39;</span><span class="na">a</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">sct_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">sct</span><span class="p">.</span><span class="n">header</span><span class="p">.</span><span class="n">get_type</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">Dynamic</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">dynamic_info</span><span class="p">(</span><span class="n">elf_file</span><span class="p">,</span><span class="w"> </span><span class="n">sct</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">Hash</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">SymTabShNdx</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">hash_info</span><span class="p">(</span><span class="n">elf_file</span><span class="p">,</span><span class="w"> </span><span class="n">sct</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">SymTab</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">DynSym</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">symtab_info</span><span class="p">(</span><span class="n">elf_file</span><span class="p">,</span><span class="w"> </span><span class="n">sct</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">Group</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">group_info</span><span class="p">(</span><span class="n">elf_file</span><span class="p">,</span><span class="w"> </span><span class="n">sct</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">Rel</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">section</span>::<span class="n">Type</span>::<span class="n">Rela</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">relocation_info</span><span class="p">(</span><span class="n">elf_file</span><span class="p">,</span><span class="w"> </span><span class="n">sct</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">common_section_info</span><span class="p">(</span><span class="n">sct</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Paragraph</span>::<span class="n">new</span><span class="p">(</span><span class="n">sct_info</span><span class="p">).</span><span class="n">block</span><span class="p">(</span><span class="n">Block</span>::<span class="n">default</span><span class="p">().</span><span class="n">borders</span><span class="p">(</span><span class="n">Borders</span>::<span class="n">ALL</span><span class="p">).</span><span class="n">title</span><span class="p">(</span><span class="s">&#34;Sections&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>このようにして描画する情報を区別しています.</p>
+<h3 id="プログラムヘッダテーブルについて" class="headerLink">
+    <a href="#%e3%83%97%e3%83%ad%e3%82%b0%e3%83%a9%e3%83%a0%e3%83%98%e3%83%83%e3%83%80%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>1.3 プログラムヘッダテーブルについて</h3><p><a class="lightgallery" href="/images/elfpeach/scshot3.png" title="scshot3" data-thumbnail="/images/elfpeach/scshot3.png">
+        <img
+            class="lazyload"
+            data-src="/images/elfpeach/scshot3.png"
+            data-srcset="/images/elfpeach/scshot3.png, /images/elfpeach/scshot3.png 1.5x, /images/elfpeach/scshot3.png 2x"
+            data-sizes="auto"
+            alt="/images/elfpeach/scshot3.png">
+    </a></p>
+<p>現状はGNU readelfと同等の機能しか提供できていませんが,<br>
+これも <code>INTERP</code> ならファイルパスを表示する等の機能を作成してもいいかもしれません.</p>
+<h3 id="シンボルテーブルについて" class="headerLink">
+    <a href="#%e3%82%b7%e3%83%b3%e3%83%9c%e3%83%ab%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>1.4 シンボルテーブルについて</h3><p><a class="lightgallery" href="/images/elfpeach/scshot4.png" title="scshot4" data-thumbnail="/images/elfpeach/scshot4.png">
+        <img
+            class="lazyload"
+            data-src="/images/elfpeach/scshot4.png"
+            data-srcset="/images/elfpeach/scshot4.png, /images/elfpeach/scshot4.png 1.5x, /images/elfpeach/scshot4.png 2x"
+            data-sizes="auto"
+            alt="/images/elfpeach/scshot4.png">
+    </a></p>
+<p>基本情報の出力は問題なく実装できています.<br>
+お気づきの通り <strong>重大な欠陥</strong> が存在するのですが,<br>
+それは <a href="#%e4%bb%8a%e5%be%8c%e5%ae%9f%e8%a3%85%e3%81%97%e3%82%88%e3%81%86%e3%81%a8%e6%80%9d%e3%81%a3%e3%81%a6%e3%81%84%e3%82%8b%e6%a9%9f%e8%83%bd" rel="">今後の展望</a> でお話したいと思います.</p>
+<h3 id="動的情報について" class="headerLink">
+    <a href="#%e5%8b%95%e7%9a%84%e6%83%85%e5%a0%b1%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>1.5 動的情報について</h3><p>これも基本的には同様ですが,<br>
+<code>Dyn.d_un</code> の情報をreadelfよりリッチに提供しています.<br>
+非常に長いので,<a href="https://github.com/Drumato/elfpeach/blob/a3e057f921b64f51333f1530082ed8a7774334e6/src/dynamic_widget.rs#L112" target="_blank" rel="noopener noreferrer">詳細はこちらをご覧ください</a>.</p>
+<h2 id="今後実装しようと思っている機能" class="headerLink">
+    <a href="#%e4%bb%8a%e5%be%8c%e5%ae%9f%e8%a3%85%e3%81%97%e3%82%88%e3%81%86%e3%81%a8%e6%80%9d%e3%81%a3%e3%81%a6%e3%81%84%e3%82%8b%e6%a9%9f%e8%83%bd" class="header-mark"></a>2 今後実装しようと思っている機能</h2><h3 id="テーブル構造のフィルタリング機能" class="headerLink">
+    <a href="#%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e6%a7%8b%e9%80%a0%e3%81%ae%e3%83%95%e3%82%a3%e3%83%ab%e3%82%bf%e3%83%aa%e3%83%b3%e3%82%b0%e6%a9%9f%e8%83%bd" class="header-mark"></a>2.1 テーブル構造のフィルタリング機能</h3><p>ELFには多くの <strong>テーブル形式</strong> が存在します.<br>
+ヘッダテーブルやシンボルテーブル,再配置情報に動的情報などがその例です.<br>
+これらは大きなバイナリであれば非常に多くのエントリ数を持つでしょう.</p>
+<p>readelfだと <code>grep &lt;address&gt;</code> とかで見たいシンボルのみ見れるというのに対して,<br>
+現状 <strong>ひたすら <code>↓</code> を入力するしかない</strong> という残念な仕様になっています.<br>
+よって,このままでは使い物になりません.</p>
+<p>これをTUIツールっぽく解決するために,<br>
+<strong>フィルタリング機能</strong> を導入しようと考えています.<br>
+イメージとしては次のような感じ.</p>
+<ul>
+<li>あるキーの入力でウィンドウがポップアップ(modal windowというんだったかな)</li>
+<li>構造体のメンバと検索したい値を指定する</li>
+<li>合致するエントリのみ表示される</li>
+</ul>
+<p>これにより多くの問題は解決すると思います.</p>
+<h3 id="32bit-elfの読み込み" class="headerLink">
+    <a href="#32bit-elf%e3%81%ae%e8%aa%ad%e3%81%bf%e8%be%bc%e3%81%bf" class="header-mark"></a>2.2 32bit ELFの読み込み</h3><p>これはelf-utilitiesの問題になりますが,<br>
+現状32bit版のELFに関わるAPIが全く存在しない,という欠点が存在します.<br>
+readelfでは問題なく解析可能なので,これは早急に取り組む必要がありそうです.</p>
+<p>elf-utilitiesに沢山のトレイトを実装すれば,キレイな感じで実装できそうな感じはします.<br>
+のでやるだけなんですが,やっていないので,やらなければいけませんね.</p>
+<h3 id="hexdump" class="headerLink">
+    <a href="#hexdump" class="header-mark"></a>2.3 hexdump</h3><p><a href="#%e3%82%bb%e3%82%af%e3%82%b7%e3%83%a7%e3%83%b3%e3%83%98%e3%83%83%e3%83%80%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" rel="">セクションの部</a> を見て頂ければわかりますが,<br>
+右下に余らせているスペースがありますよね.<br>
+このスペースを使用して,セクション内部のhexdumpを表示したら便利なんじゃないかと思っています.</p>
+<p>例えば <code>.interp</code> など, <code>sh_type</code> は <code>SHT_PROGBITS</code> であるが,<br>
+内容はファイルパスのascii文字列であり,hexdumpによって簡単に解析可能である場合,<br>
+それが表示されていると結構便利です.<br>
+あとは <code>.comment</code> とかもそうですね.</p>
+<p>なんかRustでいい感じのツールあるんでしょうか.<br>
+教えて頂ければ助かります.</p>
+<h2 id="まとめ" class="headerLink">
+    <a href="#%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>3 まとめ</h2><p>まだまだ発展途上のelfpeachですが,<br>
+ELF解析ツールの選択肢の一つに入れるようなものを目指して,これからもほそぼそと続けていきます.</p>
+<p>一応サイボウズ･ラボユースの成果物に含まれているので基本的には一人で開発していきますが,<br>
+OSS活動の範囲内であれば支援していただけると大変助かります.</p>
+<p>是非使って,あら探しして,Issueに上げてください.</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-10-10</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/tuipeach/" data-title="TUI Based ELF Analyzer in Rust" data-hashtags="elf,rust"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/tuipeach/" data-hashtag="elf"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/tuipeach/" data-title="TUI Based ELF Analyzer in Rust"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/tuipeach/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/tuipeach/" data-title="TUI Based ELF Analyzer in Rust"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/tuipeach/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/elf/">elf</a>,&nbsp;<a href="/ja/tags/rust/">rust</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/linter-internship/" class="prev" rel="prev" title="Online Summer Internship for Gophers 2020に参加しました"><i class="fas fa-angle-left fa-fw"></i>Online Summer Internship for Gophers 2020に参加しました</a>
+            <a href="/ja/posts/dive-into-nom/" class="next" rel="next" title="Rust製のパーサコンビネータnom v6.0.0を解剖する">Rust製のパーサコンビネータnom v6.0.0を解剖する<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>drumato.com</title>
+        <link>http://drumato.com/</link>
+        <description>drumato.com</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 10 Apr 2022 00:00:00 &#43;0000</lastBuildDate>
+            <atom:link href="http://drumato.com/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>Go Parser Combinator with Go Generics</title>
+    <link>http://drumato.com/posts/peachcomb/</link>
+    <pubDate>Sun, 10 Apr 2022 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/posts/peachcomb/</guid>
+    <description><![CDATA[Maybe this post will be old cuz I&rsquo;m developing peachcomb actively!
+This post introduces a Go parser-library that is being developed by me, called peachcomb . this library is aimed to reduce overhead with dynamically dispatching, and notify mismatching among parsers. To achieve them, I use Go Generics in peachcomb. Go Generics was released in Go 1.18.
+https://github.com/Drumato/peachcomb
+https://pkg.go.dev/github.com/Drumato/peachcomb
+This post won&rsquo;t describe the detail of Go Generics. I&rsquo;ll recommend you this tutorial to understand Go Generics briefly.]]></description>
+</item><item>
+    <title>Replace FRR Zebra SRv6 Manager with YANG Backend</title>
+    <link>http://drumato.com/posts/srv6-manager/</link>
+    <pubDate>Tue, 04 Jan 2022 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/posts/srv6-manager/</guid>
+    <description><![CDATA[Now I&rsquo;m playing with FRRouting and contributing with tiny PRs(my PRs have merged twice). Today I&rsquo;ll introduce my recent PoC that achieves replacement SRv6 Manager with YANG backend. This PoC is related with FRR Northbound API so I&rsquo;m interesting in it. This PoC is incomplete but it&rsquo;s maybe helpful if you want to know about the FRR&rsquo;s mechanism of Northbound API. You can see the PoC in here .
+1 Prerequisites 1.]]></description>
+</item><item>
+    <title>Kubectl Plugin Builder</title>
+    <link>http://drumato.com/posts/kubectl-plugin-builder/</link>
+    <pubDate>Mon, 06 Dec 2021 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/posts/kubectl-plugin-builder/</guid>
+    <description><![CDATA[As you know Kubernetes provides many extensibilities to users. These extensibilities are explained in the official docs.
+Custom Controller CRD Admission Webhook Kubernetes Scheduler Plugin CNI Plugin In the same way, kubectl that is used by almost k8s operators, provides an extensibility to us. That is called kubectl plugin, we use the extensibility and utilize our operations.
+In this post I&rsquo;ll describe you the overview of kubectl plugin. I&rsquo;ll take up some subject about kubectl plugin, and finally I&rsquo;ll introduce my project that is called kubectl-plugin-builder.]]></description>
+</item></channel>
+</rss>

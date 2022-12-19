@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">実行プログラム作成基盤をスクラッチで書いた - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="実行プログラム作成基盤をスクラッチで書いた" />
+<meta property="og:description" content="この記事は 言語実装 Advent Calendar 2019 の8日目です. 言語処理系の理論,自作言語の実装については既に他の方が記事を出してくださると思うので, 私は 実行可能なプ" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/toolchain-in-rust/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-12-08T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="実行プログラム作成基盤をスクラッチで書いた"/>
+<meta name="twitter:description" content="この記事は 言語実装 Advent Calendar 2019 の8日目です. 言語処理系の理論,自作言語の実装については既に他の方が記事を出してくださると思うので, 私は 実行可能なプ"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/toolchain-in-rust/" /><link rel="prev" href="http://drumato.com/ja/posts/glibc-reading/" /><link rel="next" href="http://drumato.com/ja/posts/sechack365/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "実行プログラム作成基盤をスクラッチで書いた",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/toolchain-in-rust\/"
+        },"genre": "posts","keywords": "compiler, assembler, linker, rust","wordcount":  5760 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/toolchain-in-rust\/","datePublished": "2019-12-08T00:00:00+00:00","dateModified": "2019-12-08T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/toolchain-in-rust/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/toolchain-in-rust/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#自己紹介">自己紹介</a></li>
+    <li><a href="#本題">本題</a>
+      <ul>
+        <li><a href="#motivation">Motivation</a></li>
+        <li><a href="#motivationまとめ">motivationまとめ</a></li>
+      </ul>
+    </li>
+    <li><a href="#実装の歴史">実装の歴史</a></li>
+    <li><a href="#今できること">今できること</a>
+      <ul>
+        <li><a href="#コンパイラ">コンパイラ</a></li>
+        <li><a href="#アセンブラ">アセンブラ</a></li>
+        <li><a href="#リンカ">リンカ</a></li>
+        <li><a href="#追記2019124ローダ">追記:2019/12/4:ローダ</a></li>
+        <li><a href="#困ったこと">困ったこと</a>
+          <ul>
+            <li><a href="#elfに蔓延るnull三姉妹">ELFに蔓延るNULL三姉妹</a></li>
+            <li><a href="#そもそもやっている人がいない">そもそもやっている人がいない</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">実行プログラム作成基盤をスクラッチで書いた</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-12-08">2019-12-08</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2019-12-08">2019-12-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;5760 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;12 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#自己紹介">自己紹介</a></li>
+    <li><a href="#本題">本題</a>
+      <ul>
+        <li><a href="#motivation">Motivation</a></li>
+        <li><a href="#motivationまとめ">motivationまとめ</a></li>
+      </ul>
+    </li>
+    <li><a href="#実装の歴史">実装の歴史</a></li>
+    <li><a href="#今できること">今できること</a>
+      <ul>
+        <li><a href="#コンパイラ">コンパイラ</a></li>
+        <li><a href="#アセンブラ">アセンブラ</a></li>
+        <li><a href="#リンカ">リンカ</a></li>
+        <li><a href="#追記2019124ローダ">追記:2019/12/4:ローダ</a></li>
+        <li><a href="#困ったこと">困ったこと</a>
+          <ul>
+            <li><a href="#elfに蔓延るnull三姉妹">ELFに蔓延るNULL三姉妹</a></li>
+            <li><a href="#そもそもやっている人がいない">そもそもやっている人がいない</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>この記事は <strong><a href="https://qiita.com/advent-calendar/2019/lang_dev" target="_blank" rel="noopener noreferrer">言語実装 Advent Calendar 2019</a></strong> の8日目です.</p>
+<p>言語処理系の理論,自作言語の実装については既に他の方が記事を出してくださると思うので,<br>
+私は <strong>実行可能なプログラム</strong> に変換する部分を主軸に置きながら自作言語のお話をさせていただければと思います.</p>
+<p>実装自体は<a href="https://github.com/drumato/depth" target="_blank" rel="noopener noreferrer">こちら</a>に置いてあります.</p>
+<h2 id="自己紹介" class="headerLink">
+    <a href="#%e8%87%aa%e5%b7%b1%e7%b4%b9%e4%bb%8b" class="header-mark"></a>1 自己紹介</h2><ul>
+<li>screenName: <strong>Drumato</strong></li>
+<li>よく使う言語: Rust/Go</li>
+<li>エディタ: Neovim</li>
+<li>年齢: 19</li>
+<li>職業: 学生</li>
+<li>興味のあること: コンパイラ/アセンブラ/リンカ/OS/<strong>全ての低レイヤに関するなにか</strong></li>
+</ul>
+<p>技術の勉強を 2018年5月から始めました.<br>
+言語処理系に興味を持ったのは2019年の2月からですね.</p>
+<h2 id="本題" class="headerLink">
+    <a href="#%e6%9c%ac%e9%a1%8c" class="header-mark"></a>2 本題</h2><h3 id="motivation" class="headerLink">
+    <a href="#motivation" class="header-mark"></a>2.1 Motivation</h3><p>一般的に(自作言語をサポートする)言語処理系を実装しようと思った時,以下のような方法が考えられます.</p>
+<ul>
+<li><strong><code>自作言語 -&gt; LLVM IR</code></strong> のコンパイラを実装する
+<ul>
+<li>この場合,吐き出したLLVM IR( <code>*.ll</code> )を <code>clang</code> 等に入力する必要がある</li>
+<li><code>lli</code> 等,簡単に実行結果をチェックできるツールも</li>
+</ul>
+</li>
+<li><strong><code>自作言語 -&gt; assembly</code></strong> のコンパイラを実装する
+<ul>
+<li>同様に吐かれたアセンブリコードを別のツールに入力することで初めて実行結果が得られる</li>
+<li><code>GNU binutils</code> 等を用いる事が多い</li>
+</ul>
+</li>
+<li><strong>インタプリタ</strong> を実装する
+<ul>
+<li>プログラムを生成する必要がないため,外部ツールを用いる必要が無くなる</li>
+<li>JIT機能を追加して実行速度を早める方法もある</li>
+<li>最近の主流はタダのTree-walkedなインタプリタより <strong>VM型</strong> かも?</li>
+</ul>
+</li>
+<li>etc</li>
+</ul>
+<p>特に最近よく見るのは一番上の方法ですね.<br>
+<strong>LLVM</strong> を用いることでかなり高速なプログラムを生成することができるし,<br>
+各言語にLLVMバインディングが存在する為,それを用いることで比較的カジュアルに実装できます.</p>
+<p>しかし,私は <strong>フルスクラッチ( from scratch )病</strong> にかかっています.<br>
+なので,</p>
+<ul>
+<li>LLVMは凄い,実際に使ってもみたい</li>
+<li>でも <strong>外部ライブラリはできる限り使いたくない</strong></li>
+<li>LLVM自体も <strong>超巨大なコンパイラ実装ライブラリ</strong> ということができる(?)</li>
+<li>フロントエンド,バックエンド <strong>全て自分で作って</strong> こそ勉強になるんじゃないか!</li>
+</ul>
+<p>という事で,</p>
+<p><strong>完全にフルスクラッチな実行プログラム生成基盤(コンパイラドライバ)</strong> の実装にチャレンジすることにしました.<br>
+具体的なアーキテクチャ(これは初期,今年の5月頃に考えていたもので現在とは異なります)を以下に示します.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure1.jpg" title="figure1" data-thumbnail="/images/sechack365/figure1.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure1.jpg"
+            data-srcset="/images/sechack365/figure1.jpg, /images/sechack365/figure1.jpg 1.5x, /images/sechack365/figure1.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure1.jpg">
+    </a></p>
+<h3 id="motivationまとめ" class="headerLink">
+    <a href="#motivation%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>2.2 motivationまとめ</h3><p>つまりまとめると,実行可能プログラムを生成したくなった理由は以下の通りになります.</p>
+<ul>
+<li>コンパイラの勉強を始める -&gt; <strong>外部ライブラリは使いたくない!</strong></li>
+<li>低レイヤーが好きだ -&gt; <strong>アセンブリ吐くところで終わりたくない!</strong>
+<ul>
+<li>なのでアセンブラ作ってオブジェクトファイル吐いたりリンカ作ったりしました</li>
+</ul>
+</li>
+<li>自作言語が実行可能な機械語に変換できる -&gt; <strong>単純にお気持ちが満たされる!</strong></li>
+</ul>
+<p>ここまでで読者の皆さんと意識を共有できたと思うので,<br>
+ここから先は実装の流れ,そして今できる事を話していきたいと思います.</p>
+<h2 id="実装の歴史" class="headerLink">
+    <a href="#%e5%ae%9f%e8%a3%85%e3%81%ae%e6%ad%b4%e5%8f%b2" class="header-mark"></a>3 実装の歴史</h2><table>
+<thead>
+<tr>
+<th>時期</th>
+<th>やったこと</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2019年5月</td>
+<td>Golangで実装開始</td>
+</tr>
+<tr>
+<td>2019年5月下旬</td>
+<td>Goで書いたコード全削除 &amp; Rustで再実装始め</td>
+</tr>
+<tr>
+<td>2019年8月18日</td>
+<td>再度ソースコード全削除</td>
+</tr>
+<tr>
+<td>2019年9月</td>
+<td>x64アセンブラ実装に着手</td>
+</tr>
+<tr>
+<td>2019年9月10日</td>
+<td>GNU ldでリンク可能なオブジェクトファイルの生成</td>
+</tr>
+<tr>
+<td>2019年9月下旬</td>
+<td>スタティックリンカ実装に着手</td>
+</tr>
+<tr>
+<td>2019年9月21日</td>
+<td>実行可能バイナリの生成に成功</td>
+</tr>
+<tr>
+<td>2019年9月26日</td>
+<td>コンパイラバックエンド部全削除</td>
+</tr>
+<tr>
+<td>2019年10月15日</td>
+<td>コンパイラフロントエンド部全削除</td>
+</tr>
+</tbody>
+</table>
+<p>こうしてみると <strong>コード削除しすぎだろ</strong> という感じがしますね.<br>
+コード削除の主な理由は</p>
+<ul>
+<li>単純にコードが汚い</li>
+<li>モジュールの分け方がうまくなかった,やり直したくなった</li>
+<li><strong>IRを適当なものから3番地コードに変換</strong></li>
+</ul>
+<p>等の理由があります.<br>
+8/18にソースコードを全削除してから 9/26に(外部ツールを用いない)実行可能バイナリを生成するまで<br>
+<strong>約一ヶ月間</strong> かかっています.<br>
+この間はもう日常生活のうち自由時間を全てこの実装に費やしていましたね.</p>
+<p><a href="https://twitter.com/drumato/status/1175248437513637888?s=20" target="_blank" rel="noopener noreferrer">初めて自作バイナリが実行できた時の様子がこちら</a>になります.</p>
+<p>発狂していますが,私のTwitterは大体こんな感じです.<br>
+本記事の執筆時点( <code>2019/11/24</code> )では,以下のような規模のプログラムになっています.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure2.jpg" title="figure2" data-thumbnail="/images/sechack365/figure2.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure2.jpg"
+            data-srcset="/images/sechack365/figure2.jpg, /images/sechack365/figure2.jpg 1.5x, /images/sechack365/figure2.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure2.jpg">
+    </a></p>
+<p>全てRustで実装されています.<br>
+実はこのプロジェクトを書く過程でRustを勉強したので,<br>
+<strong>Rust自体の勉強時間はほぼ0</strong> なんですよね.<br>
+<strong>コンパイルエラーが優しい言語</strong> はこういう勉強方法ができるので好きです.</p>
+<h2 id="今できること" class="headerLink">
+    <a href="#%e4%bb%8a%e3%81%a7%e3%81%8d%e3%82%8b%e3%81%93%e3%81%a8" class="header-mark"></a>4 今できること</h2><p>コンパイラ,アセンブラ,リンカの各コンポーネントに分けて,<br>
+それぞれができることを解説していきます.</p>
+<h3 id="コンパイラ" class="headerLink">
+    <a href="#%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9" class="header-mark"></a>4.1 コンパイラ</h3><ul>
+<li>式
+<ul>
+<li>二項演算
+<ul>
+<li>加算</li>
+<li>減算</li>
+<li>乗算</li>
+<li>除算</li>
+<li>剰余算</li>
+<li><code>==,!=</code></li>
+<li><code>&lt;,&lt;=,&gt;,&gt;=</code></li>
+<li><code>&lt;&lt;,&gt;&gt;</code></li>
+</ul>
+</li>
+<li>変数式 <code>x</code></li>
+<li>括弧 <code>(1+2)*3</code></li>
+<li>アドレス式 <code>&amp;x</code></li>
+<li>負の数 <code>-x</code></li>
+<li>逆参照 <code>*x</code></li>
+<li>関数呼び出し <code>function(arg1,arg2)</code></li>
+<li>インデックス <code>ary[10]</code></li>
+<li>メンバ式 <code>Struct.member</code></li>
+<li>配列リテラル <code>[10,20,30+40]</code></li>
+<li>構造体リテラル <code>Name{foo:30,bar:50}</code></li>
+</ul>
+</li>
+<li>文
+<ul>
+<li>if <code>if (condition) statement</code></li>
+<li>if-else <code>if (condition) statement else statement</code></li>
+<li>return <code>return expression</code></li>
+<li>assign <code>mutable_ident = expression</code></li>
+<li>compound-statement <code>{ statement * n }</code></li>
+<li>構造体定義 <code>struct Name { foo : i64, bar : i64 }</code></li>
+<li>while的なやつ <code>condloop(condition) statement</code></li>
+<li>let <code>let ident_name : type_name = expression</code>
+<ul>
+<li>ミュータブルなやつ <code>let mut ident_name : type_name = expression</code></li>
+</ul>
+</li>
+<li>引数定義 <code>func add(x:i64, y:i64)</code></li>
+<li>ラベル <code>:fin</code></li>
+<li>goto文 <code>goto :fin</code></li>
+<li>type-alias <code>type type_name = target_type</code></li>
+</ul>
+</li>
+<li>組み込み型
+<ul>
+<li><code>i64</code> … 符号付き64bit整数</li>
+<li><code>Pointer&lt;T&gt;</code> …スタック上に置かれるポインタ</li>
+<li><code>Array&lt;T,N&gt;</code> … 固定長 ( <code>N</code> 個 ) の配列,これもスタック上</li>
+</ul>
+</li>
+<li>ユーザ定義型 … <code>type-alias</code> したものとか, 構造体とか</li>
+<li>その他
+<ul>
+<li><code>--dump-cfg</code> … <strong>制御フローグラフをDOT言語に変換して吐き出す</strong></li>
+<li><code>--dump-tac</code> … 3番地コードを出力</li>
+<li><code>--emit-llvm</code> … <strong>LLVM IRを吐くパス(鋭意製作中)</strong></li>
+</ul>
+</li>
+</ul>
+<p>実際にデモをいくつか見せます.</p>
+<p>まず,これは自作言語で書いた <strong>6重ポインタ</strong> (?) です.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="n">func</span><span class="w"> </span><span class="n">main</span><span class="p">(){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span>: <span class="kt">i64</span> <span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span>: <span class="nc">Pointer</span><span class="o">&lt;</span><span class="kt">i64</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span>: <span class="nc">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="kt">i64</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">d</span><span class="w"> </span>: <span class="nc">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="kt">i64</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">c</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">e</span><span class="w"> </span>: <span class="nc">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="kt">i64</span><span class="o">&gt;&gt;&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">d</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">f</span><span class="w"> </span>: <span class="nc">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="kt">i64</span><span class="o">&gt;&gt;&gt;&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">e</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="o">*****</span><span class="n">f</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>めちゃくちゃ冗長なんですが, <code>type-alias</code> 実装しているのでまぁ良しとしましょう.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ depth sample.dep
+</span></span></code></pre></div><p>すると, <code>a.out</code> が吐き出されます.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure3.jpg" title="figure3" data-thumbnail="/images/sechack365/figure3.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure3.jpg"
+            data-srcset="/images/sechack365/figure3.jpg, /images/sechack365/figure3.jpg 1.5x, /images/sechack365/figure3.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure3.jpg">
+    </a></p>
+<p>こんな感じです.<br>
+構造体のサンプルも見てみましょう.<br>
+ついでに <code>--dump-cfg</code> も使ってみます.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Depth</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">foo</span>: <span class="kt">i64</span>
+</span></span><span class="line"><span class="cl">  <span class="nc">bar</span>: <span class="kt">i64</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">func</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">depth</span><span class="w"> </span>: <span class="nc">Depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Depth</span><span class="p">{</span><span class="w"> </span><span class="n">foo</span>: <span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="n">bar</span>: <span class="mi">60</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">x</span><span class="w"> </span>: <span class="kt">i64</span> <span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">depth</span><span class="p">.</span><span class="n">foo</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">30</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">depth</span><span class="p">.</span><span class="n">foo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">depth</span><span class="p">.</span><span class="n">bar</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><a class="lightgallery" href="/images/sechack365/figure4.jpg" title="figure4" data-thumbnail="/images/sechack365/figure4.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure4.jpg"
+            data-srcset="/images/sechack365/figure4.jpg, /images/sechack365/figure4.jpg 1.5x, /images/sechack365/figure4.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure4.jpg">
+    </a></p>
+<p>吐かれた <code>cfg.dot</code> に対しGraphvizを用いて,画像に変換しています.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure5.jpg" title="figure5" data-thumbnail="/images/sechack365/figure5.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure5.jpg"
+            data-srcset="/images/sechack365/figure5.jpg, /images/sechack365/figure5.jpg 1.5x, /images/sechack365/figure5.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure5.jpg">
+    </a></p>
+<p>メンバ名がいまのところスタックオフセットになってしまっているんですが,<br>
+ちゃんと制御フローグラフは構築出来ています.</p>
+<h3 id="アセンブラ" class="headerLink">
+    <a href="#%e3%82%a2%e3%82%bb%e3%83%b3%e3%83%96%e3%83%a9" class="header-mark"></a>4.2 アセンブラ</h3><p>次にアセンブラのできる事を紹介するんですが,<br>
+言語処理系の勉強をしている人の中にはアセンブラがどんな役割を持つソフトウェアなのかしらない人も多いと思うので,<br>
+ここでは簡単に解説しようと思います.</p>
+<p>アセンブラとはとてもシンプルに言えば,<br>
+<strong>アセンブリ言語をオブジェクトファイルに変換するソフトウェア</strong> のことです.</p>
+<p>一般的には <strong>アセンブリ言語を機械語に翻訳するソフトウェア</strong> と言われていて,それは至極正しいんですが,<br>
+実際に実装してみると <strong>アセンブラの本質ってオブジェクトファイルにまとめる部分では</strong> と感じる事が多かったです.</p>
+<p>コンパイラと同じように字句解析,構文解析をします.<br>
+但し,コンパイラの構文解析における <strong>AST</strong> のような複雑な構造よりはシンプルですけどね.</p>
+<p>そして命令列に対応する機械語を生成します.<br>
+これによって 通常 <code>.text</code> に書き込む機械語列が得られるというわけです.</p>
+<p>次に, <strong>リンカが必要とする情報</strong> をバイナリに埋め込む作業に入ります.<br>
+これはあくまで私の場合ですが, <code>GNU ld</code> がリンク可能な最小のオブジェクトファイルには</p>
+<ul>
+<li>シンボルテーブル <code>.symtab</code> ( リンカがmainシンボルを見つける為 )
+<ul>
+<li>つまりシンボル文字列テーブル <code>.strtab</code> も必要</li>
+</ul>
+</li>
+<li><code>.text</code> (当たり前)</li>
+<li><code>.shstrtab</code> (リンカはセクションの判断にきちんとこの名前を用いている)</li>
+<li>勿論 <strong>セクションヘッダテーブル</strong> も必要
+<ul>
+<li>各ヘッダに適切な値を設定する必要もある.</li>
+</ul>
+</li>
+</ul>
+<p>が必要でした.<br>
+これらの情報を過不足なく,そして正確に設定することで初めてリンク可能なオブジェクトファイルとなります.<br>
+逆に言うと, リンカが実行プログラムを作成する上で <strong>最低限必要な情報</strong> ということです.<br>
+それぞれの解説をここで加えているととてつもない分量になってしまうので,</p>
+<p><a href="https://otakuassembly.booth.pm/" target="_blank" rel="noopener noreferrer">こちら</a>で是非電子版を購入してください.私が3章を担当しています( <strong>宣伝を入れるな</strong> )<br>
+3章ではELFの基礎的な知識について解説しています.</p>
+<p>気を取り直して,現在Depthアセンブラができることです.</p>
+<ul>
+<li>生成セクション
+<ul>
+<li>NULLセクション</li>
+<li><code>.text</code></li>
+<li><code>.strtab</code></li>
+<li><code>.symtab</code></li>
+<li><code>.rela.text</code></li>
+<li><code>.shstrtab</code></li>
+</ul>
+</li>
+<li>relative offset jump(めちゃくちゃ難しかった)
+<ul>
+<li><code>e9 c1 ff ff ff          jmp    400031 &lt;main+0x19&gt;</code> みたいなやつ.</li>
+<li>アドレス変位の部分に現在の機械語からの相対オフセットが指定されている</li>
+</ul>
+</li>
+<li>対応命令
+<ul>
+<li><code>movzx</code></li>
+<li><code>ret</code></li>
+<li><code>pop</code></li>
+<li><code>push</code></li>
+<li><code>cqo</code></li>
+<li><code>add</code></li>
+<li><code>sub</code></li>
+<li><code>idiv</code></li>
+<li><code>imul</code></li>
+<li><code>cmp</code></li>
+<li><code>setle</code></li>
+<li><code>syscall</code></li>
+<li><code>setl</code></li>
+<li><code>setg</code></li>
+<li><code>setge</code></li>
+<li><code>sete</code></li>
+<li><code>setne</code></li>
+<li><code>call</code></li>
+<li><code>lea</code></li>
+<li><code>neg</code></li>
+<li><code>mov</code></li>
+<li><code>jmp</code></li>
+<li><code>sal</code></li>
+<li><code>sar</code></li>
+<li><code>jz</code></li>
+</ul>
+</li>
+</ul>
+<p>コンパイラが吐くアセンブリコードには全て対応しています.<br>
+<strong>メモリアドレッシング</strong> もできるし,システムコールの発行も出来ます.</p>
+<p>これもデモ画像を見てみましょう.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure6.jpg" title="figure6" data-thumbnail="/images/sechack365/figure6.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure6.jpg"
+            data-srcset="/images/sechack365/figure6.jpg, /images/sechack365/figure6.jpg 1.5x, /images/sechack365/figure6.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure6.jpg">
+    </a></p>
+<p><a class="lightgallery" href="/images/sechack365/figure7.jpg" title="figure7" data-thumbnail="/images/sechack365/figure7.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure7.jpg"
+            data-srcset="/images/sechack365/figure7.jpg, /images/sechack365/figure7.jpg 1.5x, /images/sechack365/figure7.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure7.jpg">
+    </a></p>
+<p>うまくアセンブル出来ている事がわかります.<br>
+ELFの仕様に則ったオブジェクトファイルを生成しているので,<br>
+ちゃんとreadelfしてもエラーが起きず解析できます.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure8.jpg" title="figure8" data-thumbnail="/images/sechack365/figure8.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure8.jpg"
+            data-srcset="/images/sechack365/figure8.jpg, /images/sechack365/figure8.jpg 1.5x, /images/sechack365/figure8.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure8.jpg">
+    </a></p>
+<h3 id="リンカ" class="headerLink">
+    <a href="#%e3%83%aa%e3%83%b3%e3%82%ab" class="header-mark"></a>4.3 リンカ</h3><p>リンカもアセンブラ同様,簡潔に解説します.<br>
+アセンブラの出力によって <strong>オブジェクトファイル</strong> が得られますが,<br>
+これは <strong>再配置可能</strong> な状態と言って, <strong>実際にメモリ上のどこにロードされるか</strong> という情報を持っていません.<br>
+そこで <strong>リンカ</strong> というソフトウェアが</p>
+<ul>
+<li>このシンボルはここにおいて</li>
+<li>この文字列はここにおいて, <strong>読み取り専用にして</strong></li>
+<li>ファイル上のここからここは <strong>プログラム実行に必要ないから要らないフラグをつけて</strong></li>
+</ul>
+<p>みたいに,<br>
+<strong>オブジェクトファイルを全解析</strong> します.</p>
+<p>この作業によって初めて <strong>実行可能なプログラム</strong> , つまり <strong>メモリにロードし,CPUが実行可能なプログラム</strong> に変化します.<br>
+リンカがやることは沢山あるのですが,これについて説明しておくとこれまた一冊本が出来てしまうので,<br>
+実際に出来上がった本を購入していただければと思います.<br>
+<a href="https://shop.cqpub.co.jp/hanbai/books/38/38071.html" target="_blank" rel="noopener noreferrer">日本語で解説されている <strong>最も詳しい</strong> リンカ実装本</a>です.<br>
+非常にニッチかつ内容も簡単ではないですが, <strong>システムプログラミングの基礎</strong> と言ってもいいと思います.<br>
+まだ読んでない人は絶対に読むべきです.</p>
+<p>自作リンカは <strong>約230行</strong> で実装されているので,できる事はめちゃくちゃ少ないです.</p>
+<ul>
+<li>静的リンク
+<ul>
+<li>動的リンクは出来ません.</li>
+</ul>
+</li>
+<li>単一オブジェクトファイル
+<ul>
+<li>複数ファイルには対応していません</li>
+</ul>
+</li>
+<li>再配置
+<ul>
+<li>再配置テーブルを見て,アドレス解決されていないシンボルを見つけます</li>
+<li>再配置テーブルの情報から,参照されている機械語上のオフセットにアドレスを書き込みます</li>
+<li>とてもシンプル</li>
+</ul>
+</li>
+<li>エントリポイントの指定
+<ul>
+<li><code>_start</code> シンボルを見つけ,割り当てたアドレスを <code>elf64_ehdr.e_entry</code> に書き込みます</li>
+</ul>
+</li>
+</ul>
+<p>これぐらいかな,できる事はとてもシンプルです.<br>
+しかしこれだけですが, <strong>現状Depth言語で記述した動くプログラムの全て</strong> をリンク可能です.<br>
+つまり,アセンブラが吐いた全てのオブジェクトファイルは正常にリンクできます.</p>
+<p>これは, <strong>リンカというソフトウェアの特性</strong> にも絡んできます.<br>
+リンカの実装フェーズは,大まかに3つに分かれていると個人的に思っています.</p>
+<ul>
+<li>
+<ol>
+<li>スタティックリンクできるようにする(今のDepthリンカ)</li>
+</ol>
+<ul>
+<li>動的リンクにすると結構難しくなる</li>
+</ul>
+</li>
+<li>
+<ol start="2">
+<li>ライブラリリンクできるようになる(ここにめちゃくちゃ大きな壁がある)</li>
+</ol>
+<ul>
+<li>ファイル間のシンボル解決,アーカイブフォーマットの解析,セクション位置の調整…</li>
+<li>対応しなければならないセクション数も爆発する</li>
+</ul>
+</li>
+<li>
+<ol start="3">
+<li>LTO( <strong>Link Time Optimization</strong> ) の実装</li>
+</ol>
+</li>
+</ul>
+<p>逆に言うと,細かな改良が <strong>最低限の機能に限定すれば</strong> あまり必要ないということです.<br>
+1番が実装できているので,2番が必要になるまでは現在のリンカで対応できます.</p>
+<p>上記コンポーネントを全て利用すると,以下のような事ができます.</p>
+<p><a class="lightgallery" href="/images/sechack365/figure9.jpg" title="figure9" data-thumbnail="/images/sechack365/figure9.jpg">
+        <img
+            class="lazyload"
+            data-src="/images/sechack365/figure9.jpg"
+            data-srcset="/images/sechack365/figure9.jpg, /images/sechack365/figure9.jpg 1.5x, /images/sechack365/figure9.jpg 2x"
+            data-sizes="auto"
+            alt="/images/sechack365/figure9.jpg">
+    </a></p>
+<h3 id="追記2019124ローダ" class="headerLink">
+    <a href="#%e8%bf%bd%e8%a8%982019124%e3%83%ad%e3%83%bc%e3%83%80" class="header-mark"></a>4.4 追記:2019/12/4:ローダ</h3><p>普通シェルで <code>./binary</code> 等とした時,<br>
+ユーザプロセスから <code>execve(2)</code> システムコールが呼ばれ,<br>
+内部で様々な処理を実行した後カーネル組み込みのELFローダが起動,<br>
+プログラムを実行するという流れになっています.</p>
+<p>私は <strong>ここも自作したい</strong> という気持ちから,<br>
+更にコンパイラドライバ内にELFローダも実装しました.<br>
+<a href="https://github.com/Drumato/Depth/blob/master/src/load/elf.rs" target="_blank" rel="noopener noreferrer">実装全体はこちら</a>に.<br>
+下ではロードのメイン処理を載せておきます.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">fn</span> <span class="nf">load</span><span class="p">(</span><span class="n">elf_file</span>: <span class="nc">ELF</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">i32</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">page</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">Self</span>::<span class="n">setup_page_with_using_mmap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">binary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">elf_file</span><span class="p">.</span><span class="n">to_vec</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">unwrapped_phdrs</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">elf_file</span><span class="p">.</span><span class="n">phdrs</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unwrapped_phdrs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">p_offset</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">usize</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">segment_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unwrapped_phdrs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">p_filesz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">usize</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="cm">/* get segment from binary */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">load_segment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">binary</span><span class="p">[</span><span class="n">offset</span><span class="o">..</span><span class="n">offset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">segment_size</span><span class="p">].</span><span class="n">to_vec</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">pointer_to_segment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_segment</span><span class="p">.</span><span class="n">as_ptr</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">program</span><span class="p">.</span><span class="n">copy_from_nonoverlapping</span><span class="p">(</span><span class="n">pointer_to_segment</span><span class="p">,</span><span class="w"> </span><span class="n">segment_size</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">usize</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">f</span>: <span class="nc">fn</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="kt">i32</span> <span class="o">=</span><span class="w"> </span>::<span class="n">std</span>::<span class="n">mem</span>::<span class="n">transmute</span><span class="p">(</span><span class="n">page</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">f</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="fm">eprintln!</span><span class="p">(</span><span class="s">&#34;not found program header table&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><ul>
+<li>実行可能なメモリ領域を <code>mmap(2)</code></li>
+<li>関数ポインタにキャスト,実行</li>
+<li>ローダ側でキャッチして,それをプロセスの終了ステータスとする</li>
+</ul>
+<p>みたいなことをやっています.<br>
+リンカが吐き出す <code>ET_EXEC</code> ファイルのセグメント数が1つだからこそ出来る簡易実装になっています.</p>
+<p><a href="https://twitter.com/drumato/status/1201142600364769281" target="_blank" rel="noopener noreferrer">実際に動作している様子</a>です.<br>
+Linuxカーネル組み込みのローダを使わずに，<br>
+(といってもDepthコンパイラドライバのロードには使っているんですが)<br>
+<code>add.dep</code> の実行結果を受け取っていることがわかります.</p>
+<h3 id="困ったこと" class="headerLink">
+    <a href="#%e5%9b%b0%e3%81%a3%e3%81%9f%e3%81%93%e3%81%a8" class="header-mark"></a>4.5 困ったこと</h3><p>ここからは実装時に困ったことをつらつら書いていきます.</p>
+<h4 id="elfに蔓延るnull三姉妹" class="headerLink">
+    <a href="#elf%e3%81%ab%e8%94%93%e5%bb%b6%e3%82%8bnull%e4%b8%89%e5%a7%89%e5%a6%b9" class="header-mark"></a>4.5.1 ELFに蔓延るNULL三姉妹</h4><p>詳しくは<a href="https://speakerdeck.com/drumato/elfniman-yan-runullsan-zi-mei" target="_blank" rel="noopener noreferrer">こちらスライド</a>を見ていただきたいのですが,<br>
+要は <strong>ELF独特の仕様に苦しめられた</strong> ということです.<br>
+自分で色々値を変えてみたりして検証する必要がありました.</p>
+<h4 id="そもそもやっている人がいない" class="headerLink">
+    <a href="#%e3%81%9d%e3%82%82%e3%81%9d%e3%82%82%e3%82%84%e3%81%a3%e3%81%a6%e3%81%84%e3%82%8b%e4%ba%ba%e3%81%8c%e3%81%84%e3%81%aa%e3%81%84" class="header-mark"></a>4.5.2 そもそもやっている人がいない</h4><p>坂井さんの本はリンカ実装の上でとても役に立ったんですが,<br>
+あれはあくまでも <strong>GNU binutils</strong> (GNU as)の吐いたオブジェクトファイルをリンクできるプログラムなんですよね.<br>
+つまり <strong>自作アセンブラ</strong> には対応していないんですよ( <strong>当たり前</strong> ).</p>
+<p>ということは,<br>
+<strong>オブジェクトファイルの生成から間違っているかもしれない</strong> という可能性を捨てきれないまま,<br>
+リンカを作ったりする必要があるわけですね…<br>
+これは辛い,非常に大変だった.</p>
+<p>どうやら世の中で <strong>コンパイラ･アセンブラ･リンカ</strong> を作っている人はかなり少数みたいで,<br>
+ドキュメントはほぼありませんでした. というか全く無い.</p>
+<p>一番大変だったのは <strong>自作バイナリのデバッグ</strong> ですね.<br>
+リンカがある程度出来上がったときに実行すると <strong><code>BusError</code></strong> で落ちる事がよくあったんですね.<br>
+これ,カーネルが仮想メモリに(アラインメントエラーとかで)うまくマッピング出来なかったりすると起こるんですが<br>
+どこを調べても解決方法は載っていないので大変でした.</p>
+<p><strong><code>gdb</code>を使ってもデバッグ情報なんか無いですからね!</strong><br>
+後実行してもELFヘッダを機械語列と見てしまっていたり,もう大変でした.</p>
+<h2 id="まとめ" class="headerLink">
+    <a href="#%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>5 まとめ</h2><p>ここでは自作言語の実装の中でもかなりニッチな<br>
+<strong>自作バイナリの生成</strong> についてお話しました.<br>
+<strong>ブラックボックスでやりたくないんだ!</strong> という方や <strong>低レイヤが好きなんだ!</strong> という方は<br>
+是非実装に挑戦してみてくださいね.</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2019-12-08</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/toolchain-in-rust/" data-title="実行プログラム作成基盤をスクラッチで書いた" data-hashtags="compiler,assembler,linker,rust"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/toolchain-in-rust/" data-hashtag="compiler"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/toolchain-in-rust/" data-title="実行プログラム作成基盤をスクラッチで書いた"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/toolchain-in-rust/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/toolchain-in-rust/" data-title="実行プログラム作成基盤をスクラッチで書いた"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/toolchain-in-rust/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/compiler/">compiler</a>,&nbsp;<a href="/ja/tags/assembler/">assembler</a>,&nbsp;<a href="/ja/tags/linker/">linker</a>,&nbsp;<a href="/ja/tags/rust/">rust</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/glibc-reading/" class="prev" rel="prev" title="glibc wrapperから読み始めてsystem call handlerまで"><i class="fas fa-angle-left fa-fw"></i>glibc wrapperから読み始めてsystem call handlerまで</a>
+            <a href="/ja/posts/sechack365/" class="next" rel="next" title="SecHack365 3rdとして一年間活動しました">SecHack365 3rdとして一年間活動しました<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">seccamp2019のCコンパイラゼミに参加しました - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="seccamp2019のCコンパイラゼミに参加しました" />
+<meta property="og:description" content="セキュリティ･キャンプ全国大会2019に参加しました! 集中開発コースの中にある ｢Y-Ⅱ Cコンパイラを自作してみよう!｣ のテーマに応募し､ 普段" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/seccamp2019/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-08-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-08-18T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="seccamp2019のCコンパイラゼミに参加しました"/>
+<meta name="twitter:description" content="セキュリティ･キャンプ全国大会2019に参加しました! 集中開発コースの中にある ｢Y-Ⅱ Cコンパイラを自作してみよう!｣ のテーマに応募し､ 普段"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/seccamp2019/" /><link rel="next" href="http://drumato.com/ja/posts/glibc-reading/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "seccamp2019のCコンパイラゼミに参加しました",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/seccamp2019\/"
+        },"genre": "posts","keywords": "c, compiler","wordcount":  3924 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/seccamp2019\/","datePublished": "2019-08-18T00:00:00+00:00","dateModified": "2019-08-18T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/seccamp2019/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/seccamp2019/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#応募課題について">応募課題について</a></li>
+    <li><a href="#集中開発コースについて">集中開発コースについて</a></li>
+    <li><a href="#成果物とその進捗について">成果物とその進捗について</a>
+      <ul>
+        <li><a href="#事前学習期間">事前学習期間</a></li>
+        <li><a href="#当日">当日</a></li>
+      </ul>
+    </li>
+    <li><a href="#総評">総評</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">seccamp2019のCコンパイラゼミに参加しました</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-08-18">2019-08-18</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2019-08-18">2019-08-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3924 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#応募課題について">応募課題について</a></li>
+    <li><a href="#集中開発コースについて">集中開発コースについて</a></li>
+    <li><a href="#成果物とその進捗について">成果物とその進捗について</a>
+      <ul>
+        <li><a href="#事前学習期間">事前学習期間</a></li>
+        <li><a href="#当日">当日</a></li>
+      </ul>
+    </li>
+    <li><a href="#総評">総評</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><strong>セキュリティ･キャンプ全国大会2019に参加しました!</strong><br>
+集中開発コースの中にある <strong>｢Y-Ⅱ Cコンパイラを自作してみよう!｣</strong> のテーマに応募し､<br>
+<strong>普段独学では絶対に出来ない事を多く経験し､</strong><br>
+<strong>尊敬する講師の方々からたくさんの事を教えて頂きました｡</strong></p>
+<blockquote>
+<p>セキュリティ･キャンプ(以下seccamp)とは?と思った方は<br>
+<a href="https://www.ipa.go.jp/jinzai/camp/2019/zenkoku2019_about.html" target="_blank" rel="noopener noreferrer">こちらのページ</a>を参考にしてください!</p>
+</blockquote>
+<p>この記事では､</p>
+<ul>
+<li>応募課題はどんな内容のものだったか
+<ul>
+<li>提出したものをそのまま載せます</li>
+</ul>
+</li>
+<li>集中開発コースはどのようなものだったか?
+<ul>
+<li>特に <strong>Yトラックについて詳しく</strong></li>
+</ul>
+</li>
+<li>成果物の進捗､所感</li>
+<li>総評</li>
+</ul>
+<p>という流れでお話できればと思います｡</p>
+<p>来年以降seccampに参加しようとしている方の参考になれば幸いです｡</p>
+<blockquote>
+<p>注意:応募課題についてですが､<br>
+応募時点での状況､応募時点での知識を元にした内容が書かれています｡<br>
+コンパイラの知識として間違っているものもあり､<br>
+また現在はラボユースとして活動していない等､<br>
+いくつか現時点とは異なる部分もあります｡ご了承ください｡</p>
+</blockquote>
+<h2 id="応募課題について" class="headerLink">
+    <a href="#%e5%bf%9c%e5%8b%9f%e8%aa%b2%e9%a1%8c%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>1 応募課題について</h2><p>seccampでは参加したいコースを選んだ後､<br>
+<strong>各コースが用意する設問に解答した上で</strong>応募する必要があります｡</p>
+<p>私達Yトラックの課題は<a href="https://www.ipa.go.jp/files/000073105.txt:embed:cite" target="_blank" rel="noopener noreferrer">こちら</a>に記載されており､<br>
+4/15~5/27の間に問題に答えて提出する､という流れでした｡</p>
+<p>問題はトラック･コースによって様々なのですが私が個人的に抱いた感想は､<br>
+<strong>｢うわぁ､どのコースもその分野をどれだけ好きか問うているなあ｣</strong> というものでした｡</p>
+<p>例えばCコンパイラゼミでは､</p>
+<ul>
+<li>プログラミングそのものに対する熱意
+<ul>
+<li>コンパイラ実装には <strong>実装に大きな時間と労力を要する</strong>為</li>
+</ul>
+</li>
+<li>コンパイラの役割･用いられている技術に対する知識</li>
+<li>実際にCコンパイラを書いたことがあるか､又はCコンパイラ実装に具体的なイメージが湧いているか</li>
+</ul>
+<p>等､<br>
+まさにコンパイラについての思い･情熱を答える問題が用意されていました｡</p>
+<p>ここではその応募課題(4問のうち3問)を記載したいと思います｡<br>
+参考になるかどうかはわかりませんが､<br>
+どちらかというと <strong>後々自分自身で見返したい</strong>という気持ちがありますね…</p>
+<p>今見返してみるととても恥ずかしいですね｡<br>
+コンパイラについての勉強は<br>
+<strong>応募課題を描き始めた4月</strong>にし始めたこともあり､<br>
+少ない知識からとにかくたくさん書いた記憶があります｡<br>
+ということはコンパイラの勉強を始めて4ヶ月ぐらいが経過したということになりますね｡<br>
+<del>なにか成長できたのだろうか…</del></p>
+<p>以下に各問の回答を示しますが､<br>
+<strong>応募時の内容を一切改変せず</strong>記載しています｡<br>
+冒頭に述べたように <strong>現在とは状況が異なり､間違っている知識が含まれている可能性がある</strong>点をご了承ください｡</p>
+<ul>
+<li><a href="https://gist.github.com/Drumato/1b13655d4441c51049c4a23266c07448#file-t1-md" target="_blank" rel="noopener noreferrer">問1</a></li>
+<li><a href="https://gist.github.com/Drumato/1b13655d4441c51049c4a23266c07448#file-t2-md" target="_blank" rel="noopener noreferrer">問2</a></li>
+<li><a href="https://gist.github.com/Drumato/1b13655d4441c51049c4a23266c07448#file-t3-md" target="_blank" rel="noopener noreferrer">問3</a></li>
+</ul>
+<h2 id="集中開発コースについて" class="headerLink">
+    <a href="#%e9%9b%86%e4%b8%ad%e9%96%8b%e7%99%ba%e3%82%b3%e3%83%bc%e3%82%b9%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>2 集中開発コースについて</h2><blockquote>
+<p>後述しますが私は選択コースに参加したわけではないので､<br>
+選択コースの魅力･内容を十分に理解していません｡<br>
+よってあくまでも集中開発コースについての内容のみ取り上げることにします｡</p>
+</blockquote>
+<p>自分のやりたいもの､受けたい講義を幅広い種類から選択し､<br>
+それらを受講することで知識を深める <strong>選択コース</strong>とは異なり､<br>
+集中開発コースはまさに <strong>一本勝負</strong> といえるコースです｡</p>
+<p>いくつかのテーマがありますが､<br>
+Yトラックでは</p>
+<ul>
+<li>OS開発ゼミ</li>
+<li>Cコンパイラ自作ゼミ</li>
+</ul>
+<p>の2つが存在し､<br>
+<strong>(事前学習+)3日間OS/コンパイラを書き続ける</strong>という夢のような時間を過ごす事ができます｡</p>
+<p><strong>やりたい事が一つに定まっている</strong>且つ､<br>
+<strong>とにかく&quot;実装したい&quot;という熱意がある</strong> 人には､集中開発コースはおすすめです｡</p>
+<p>各ゼミによって差異はあると思いますが､<br>
+Cコンパイラゼミでは 受講生が自主的にゴリゴリ進めていきつつ､<br>
+講師の方が適宜助けてくれる､というスタンスでした｡<br>
+これは事前学習の時期でも当日でも変わりません｡</p>
+<p><strong>受講生全員がCコンパイラを書いている</strong> ので､<br>
+受講生同士で <strong>｢この実装どうやりました?｣</strong> みたいな会話もあって凄い充実していました｡</p>
+<p>私は普段学校やサークルで勉強しているときも､<br>
+周りにコンパイラ･言語処理系の勉強をしているひとがいないので､<br>
+<strong>こんな環境憧れだなあ</strong> と思っていましたね｡</p>
+<h2 id="成果物とその進捗について" class="headerLink">
+    <a href="#%e6%88%90%e6%9e%9c%e7%89%a9%e3%81%a8%e3%81%9d%e3%81%ae%e9%80%b2%e6%8d%97%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" class="header-mark"></a>3 成果物とその進捗について</h2><p>今回seccampで私が実装したコンパイラは<a href="https://github.com/Drumato/comcom" target="_blank" rel="noopener noreferrer">こちらのリポジトリ</a>に置いてあります｡<br>
+何故アーカイブしたのかについてですが単純で､</p>
+<ul>
+<li><strong>seccamp2019</strong>の取り組みでやったものとして保持したかった
+<ul>
+<li>後々見返して駄目だったところ等見返したい</li>
+</ul>
+</li>
+<li>確実にもう一度作り直すが､そのときには <strong>新しくリポジトリを作りたい</strong></li>
+</ul>
+<p>という理由です｡</p>
+<p>事前学習期間と当日に分けてそれぞれ追っていきます｡</p>
+<h3 id="事前学習期間" class="headerLink">
+    <a href="#%e4%ba%8b%e5%89%8d%e5%ad%a6%e7%bf%92%e6%9c%9f%e9%96%93" class="header-mark"></a>3.1 事前学習期間</h3><p>Cコンパイラにあてた時間というのはかなり長くて､<br>
+応募した段階で取り組み始めていました｡</p>
+<p>しかし <strong>&ldquo;インクリメンタルな開発&quot;から離れた方法で実装していた</strong>為に､<br>
+何度もつまづき､かなり歯痒い思いをしていました｡</p>
+<p>具体的には､</p>
+<ul>
+<li><strong>まずC言語の仕様を読んで完全準拠したLexerを作ろうとする</strong>
+<ul>
+<li>全部の予約語に対応して､小数も整数もやって､みたいな</li>
+<li>結果的に <strong>コード生成まで結びつかないコードが何百行もある</strong> みたいな状態になっていた</li>
+</ul>
+</li>
+<li>次に <strong>構文解析を延々書きまくる</strong> みたいなことをしていた
+<ul>
+<li>それらも全てコード生成出来ない､みたいな</li>
+</ul>
+</li>
+<li>実際にコード生成出来ていたのは加減算だけだった</li>
+</ul>
+<p>みたいな感じです｡<br>
+これは <strong>コードの全体感が全く把握できない</strong>し､<br>
+<strong>モチベーションも上がりません｡</strong><br>
+また <strong>コード生成まで結びつかないコードが大量にある</strong>為に､<br>
+<strong>テストも非常にしづらい</strong> みたいな状況になっていました｡</p>
+<p>そこで講師のRuiさんから <strong>もう一度作り直したほうが良い</strong>という旨のアドバイスを頂きました｡<br>
+結果､セキュキャン当日まで開発していたコンパイラを作り始めたのは <strong>7/8</strong> ということになります｡</p>
+<p><a href="https://twitter.com/drumato/status/1150736686277517312?s=20" target="_blank" rel="noopener noreferrer">7/15の状態</a>です｡<br>
+このときは <strong>RuiさんのCコンパイラブックを参照しながら</strong> 実装していました｡</p>
+<p><a href="https://twitter.com/drumato/status/1151013255441027072?s=20" target="_blank" rel="noopener noreferrer">その翌日</a>ですね｡<br>
+引数ありの関数呼び出しができるようになったみたいなやつです｡</p>
+<p>このときになって<br>
+<strong>やっぱりインクリメンタルな開発って大事だなあ</strong>と痛感しました｡<br>
+ここまで実装したコードが全てコード生成に結びついており､<br>
+全てのコードを <strong>何のために書いたのか説明できる</strong> 状態だったからです｡</p>
+<p><a href="https://twitter.com/drumato/status/1153661445973790723?s=20" target="_blank" rel="noopener noreferrer">7/23､ポインタが実装出来た部分</a>かな?</p>
+<p><a href="https://twitter.com/drumato/status/1158356155040616448?s=20" target="_blank" rel="noopener noreferrer">ポインタ演算ができる様になっていますね｡</a><br>
+実はこれが <strong>事前学習期間の最後の進捗</strong> となってしまいます｡</p>
+<p>このあと配列の実装に着手するんですが､<br>
+これがわからなすぎて <strong>悠久の時を過ごしました</strong>｡</p>
+<p>このときは <strong>あぁ､当日も三日間配列の実装に手こずったまま終わるんだろうなあ</strong>とか思っていました｡</p>
+<h3 id="当日" class="headerLink">
+    <a href="#%e5%bd%93%e6%97%a5" class="header-mark"></a>3.2 当日</h3><p>1日目､この日はコースごとの活動は行わず､<br>
+全体で講義を受けたりする時間が大半を占めていました｡</p>
+<p>日中の活動が終了し､<br>
+自室に戻って私がしたことは <a href="https://twitter.com/drumato/status/1161410487042445312?s=20" target="_blank" rel="noopener noreferrer"><strong>正規表現エンジンの実装</strong></a> でした｡<br>
+<del>配列実装がトラウマになっていて逃げていたのかもしれません｡</del></p>
+<p>一応コンパイラには関係あるんですよね｡<br>
+<strong>タイガーブック</strong> では字句解析器を実装する方法として正規表現が取り上げられており､<br>
+今まで手書きしかやったこと無いなあと思って取り組んでいました｡</p>
+<p>2日目､いよいよコースでの活動が始まりました｡</p>
+<p>肝心の配列実装はというと､講師の方々にアドバイスして頂いたおかげで案<a href="https://twitter.com/drumato/status/1161506841332985857?s=20" target="_blank" rel="noopener noreferrer">外パクっと出来てしまいました｡</a></p>
+<p>事前学習期間延々悩んでいた事が数時間で実装できて､<br>
+とてもスッキリした気分でした｡</p>
+<p>次に実装したのは <a href="https://twitter.com/drumato/status/1161584876430098432?s=20" target="_blank" rel="noopener noreferrer"><strong>グローバル変数</strong></a> ですね｡</p>
+<p>あとは <strong>char型と､<code>'A'</code>みたいなリテラル</strong>の実装をやりました｡</p>
+<p>私は <strong><code>#100DaysOf精進</code>や <code>#100dPeach</code></strong> 等､<br>
+毎日の進捗をツイートしているのですが､<br>
+<a href="https://twitter.com/drumato/status/1161625226490208262?s=20" target="_blank" rel="noopener noreferrer">キャンプ中も変わらず実施していました｡</a></p>
+<p>三日目です｡変わらずコンパイラを書きまくります｡</p>
+<p><a href="https://twitter.com/drumato/status/1161793044389085184?s=20" target="_blank" rel="noopener noreferrer">文字列リテラルが実装できた瞬間です｡</a><br>
+これはかなり感動したなあ｡</p>
+<p><a href="https://twitter.com/drumato/status/1161893826404835328?s=20" target="_blank" rel="noopener noreferrer">構造体実装の瞬間｡</a><br>
+<strong>うおお､プログラミング言語になってきている!</strong> という実感がありましたね｡<br>
+ハリボテ実装感は否めないのですが｡</p>
+<p>Tweetはしていないのですが､</p>
+<p><code>int x = 30;</code> のような初期化式みたいなのも簡易的にやりましたし､</p>
+<p><code>0b10010</code> , <code>0777</code> , <code>0xff</code> みたいな2進8進16進リテラルの実装もやっていました｡</p>
+<p>3日目の終わりのほう､<br>
+<strong>あ､これセルフホストは出来ないかもな</strong>みたいな諦めが生じ､</p>
+<p>だったら他にできる事をやろうと思い､<br>
+float型の実装に着手しました｡</p>
+<p><a href="https://twitter.com/drumato/status/1162278558586138626?s=20" target="_blank" rel="noopener noreferrer">4日目の様子</a>です｡</p>
+<p>C言語は</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">;</span> <span class="c1">//小数リテラルが整数に型変換される
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span> <span class="c1">//整数リテラルが小数に型変換される
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">;</span> <span class="c1">//加算時にxがfloatに型変換された後､計算結果のfloatをintに型変換して代入される
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></div><p>みたいな特徴があるのですが､<br>
+これの実装をやってみたくなりました(何故)</p>
+<p><code>gcc -S -O0 -masm=intel -fno-asynchronous-unwind-tables</code> の吐くアセンブリを見ると､</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nasm" data-lang="nasm"><span class="line"><span class="cl">	<span class="nf">.file</span>	<span class="s">&#34;c.c&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.intel_syntax</span> <span class="nv">noprefix</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.text</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.section</span>	<span class="nv">.rodata</span>
+</span></span><span class="line"><span class="cl"><span class="nl">.LC1:</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.string</span>	<span class="s">&#34;%d\n&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.text</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.globl</span>	<span class="nv">main</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.type</span>	<span class="nv">main</span><span class="p">,</span> <span class="err">@</span><span class="nv">function</span>
+</span></span><span class="line"><span class="cl"><span class="nl">main:</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">push</span>	<span class="nb">rbp</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">sub</span>	<span class="nb">rsp</span><span class="p">,</span> <span class="mi">16</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="o">-</span><span class="mi">12</span><span class="p">[</span><span class="nb">rbp</span><span class="p">],</span> <span class="mi">30</span> <span class="c1">;30.0が変換された状態でストア</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">movss</span>	<span class="nv">xmm0</span><span class="p">,</span> <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="nv">.LC0</span><span class="p">[</span><span class="nv">rip</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">movss</span>	<span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="o">-</span><span class="mi">8</span><span class="p">[</span><span class="nb">rbp</span><span class="p">],</span> <span class="nv">xmm0</span> <span class="c1">;30を変換しストア</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">cvtsi2ss</span>	<span class="nv">xmm0</span><span class="p">,</span> <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="o">-</span><span class="mi">12</span><span class="p">[</span><span class="nb">rbp</span><span class="p">]</span> <span class="c1">; int xを変換しつつxmmレジスタにロード</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">addss</span>	<span class="nv">xmm0</span><span class="p">,</span> <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="o">-</span><span class="mi">8</span><span class="p">[</span><span class="nb">rbp</span><span class="p">]</span> <span class="c1">; float同士の加算</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">cvttss2si</span>	<span class="nb">eax</span><span class="p">,</span> <span class="nv">xmm0</span> <span class="c1">;整数型に変換し</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="o">-</span><span class="mi">4</span><span class="p">[</span><span class="nb">rbp</span><span class="p">],</span> <span class="nb">eax</span> <span class="c1">; 格納</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="nb">eax</span><span class="p">,</span> <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="o">-</span><span class="mi">4</span><span class="p">[</span><span class="nb">rbp</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="nb">esi</span><span class="p">,</span> <span class="nb">eax</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">lea</span>	<span class="nb">rdi</span><span class="p">,</span> <span class="nv">.LC1</span><span class="p">[</span><span class="nv">rip</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="nb">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">call</span>	<span class="nv">printf@PLT</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">mov</span>	<span class="nb">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">leave</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ret</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.size</span>	<span class="nv">main</span><span class="p">,</span> <span class="nv">.</span><span class="o">-</span><span class="nv">main</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.section</span>	<span class="nv">.rodata</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.align</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl"><span class="nl">.LC0:</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.long</span>	<span class="mi">1106247680</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.ident</span>	<span class="s">&#34;GCC: (Ubuntu 8.3.0-6ubuntu1) 8.3.0&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">.section</span>	<span class="nv">.note.GNU</span><span class="o">-</span><span class="nv">stack</span><span class="p">,</span><span class="s">&#34;&#34;</span><span class="p">,</span><span class="err">@</span><span class="nv">progbits</span>
+</span></span></code></pre></div><p>みたいな感じになっています｡<br>
+私は意味解析時に型を変換するところまでは出来たんですが､<br>
+<code>cvttss2si</code> 命令等を使ってアセンブリで変換する､みたいな事ができなかったですね｡<br>
+これはCコンパイラを再実装したときの課題にしたいなあと思っています｡</p>
+<h2 id="総評" class="headerLink">
+    <a href="#%e7%b7%8f%e8%a9%95" class="header-mark"></a>4 総評</h2><p>ここまでプログラミングに本気になった3日間はなかったし､<br>
+コンパイラ実装について多くの事を学べるとてもいい経験が出来ました｡</p>
+<p>同じことに熱意を持っている人と知り合う事ができたし､<br>
+考え方が大きく変わったという意味でも凄いイベントに参加できたなあ､と思っています｡</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2019-08-18</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/seccamp2019/" data-title="seccamp2019のCコンパイラゼミに参加しました" data-hashtags="c,compiler"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/seccamp2019/" data-hashtag="c"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/seccamp2019/" data-title="seccamp2019のCコンパイラゼミに参加しました"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/seccamp2019/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/seccamp2019/" data-title="seccamp2019のCコンパイラゼミに参加しました"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/seccamp2019/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/c/">c</a>,&nbsp;<a href="/ja/tags/compiler/">compiler</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+            <a href="/ja/posts/glibc-reading/" class="next" rel="next" title="glibc wrapperから読み始めてsystem call handlerまで">glibc wrapperから読み始めてsystem call handlerまで<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

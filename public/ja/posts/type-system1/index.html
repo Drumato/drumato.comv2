@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Rustでつくる単相型システムもどき - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Rustでつくる単相型システムもどき" />
+<meta property="og:description" content="この記事は IPFactory Advent Calendar 2020 の20日目です． このネタを 言語実装 Advent Calendar 2020 の記事に採用すればよかったかもしれない． 私は1日目にも記事を上げていますので，興味" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/type-system1/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-12-20T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-12-20T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Rustでつくる単相型システムもどき"/>
+<meta name="twitter:description" content="この記事は IPFactory Advent Calendar 2020 の20日目です． このネタを 言語実装 Advent Calendar 2020 の記事に採用すればよかったかもしれない． 私は1日目にも記事を上げていますので，興味"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/type-system1/" /><link rel="prev" href="http://drumato.com/ja/posts/dive-into-combine/" /><link rel="next" href="http://drumato.com/ja/posts/recap-linux-open-syscall/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Rustでつくる単相型システムもどき",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/type-system1\/"
+        },"genre": "posts","keywords": "type-system, rust","wordcount":  7285 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/type-system1\/","datePublished": "2020-12-20T00:00:00+00:00","dateModified": "2020-12-20T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/type-system1/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/type-system1/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#対象読者">対象読者</a></li>
+    <li><a href="#対象でない読者">対象でない読者</a></li>
+    <li><a href="#型システムについての前提知識">型システムについての前提知識</a>
+      <ul>
+        <li><a href="#型システムの用語">型システムの用語</a></li>
+        <li><a href="#単一化">単一化</a></li>
+        <li><a href="#単相と多相">単相と多相</a></li>
+      </ul>
+    </li>
+    <li><a href="#型推論システムの実装">型推論システムの実装</a></li>
+    <li><a href="#mincamlコンパイラの型推論を一部実装">MinCamlコンパイラの型推論を一部実装</a>
+      <ul>
+        <li><a href="#リテラルに対する推論">リテラルに対する推論</a></li>
+        <li><a href="#変数に対する推論">変数に対する推論</a></li>
+        <li><a href="#let式に対する推論">let式に対する推論</a></li>
+        <li><a href="#λ抽象に対する推論">λ抽象に対する推論</a></li>
+        <li><a href="#関数適用に対する推論">関数適用に対する推論</a></li>
+        <li><a href="#二項演算に対する推論おまけ">二項演算に対する推論おまけ</a></li>
+        <li><a href="#mincamlコンパイラの型推論を一部実装所感">MinCamlコンパイラの型推論を一部実装所感</a></li>
+      </ul>
+    </li>
+    <li><a href="#wip-多相型推論システムの実装">WIP: 多相型推論システムの実装</a></li>
+    <li><a href="#まとめ">まとめ</a></li>
+    <li><a href="#参考資料">参考資料</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Rustでつくる単相型システムもどき</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-12-20">2020-12-20</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2020-12-20">2020-12-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;7285 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;15 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#対象読者">対象読者</a></li>
+    <li><a href="#対象でない読者">対象でない読者</a></li>
+    <li><a href="#型システムについての前提知識">型システムについての前提知識</a>
+      <ul>
+        <li><a href="#型システムの用語">型システムの用語</a></li>
+        <li><a href="#単一化">単一化</a></li>
+        <li><a href="#単相と多相">単相と多相</a></li>
+      </ul>
+    </li>
+    <li><a href="#型推論システムの実装">型推論システムの実装</a></li>
+    <li><a href="#mincamlコンパイラの型推論を一部実装">MinCamlコンパイラの型推論を一部実装</a>
+      <ul>
+        <li><a href="#リテラルに対する推論">リテラルに対する推論</a></li>
+        <li><a href="#変数に対する推論">変数に対する推論</a></li>
+        <li><a href="#let式に対する推論">let式に対する推論</a></li>
+        <li><a href="#λ抽象に対する推論">λ抽象に対する推論</a></li>
+        <li><a href="#関数適用に対する推論">関数適用に対する推論</a></li>
+        <li><a href="#二項演算に対する推論おまけ">二項演算に対する推論おまけ</a></li>
+        <li><a href="#mincamlコンパイラの型推論を一部実装所感">MinCamlコンパイラの型推論を一部実装所感</a></li>
+      </ul>
+    </li>
+    <li><a href="#wip-多相型推論システムの実装">WIP: 多相型推論システムの実装</a></li>
+    <li><a href="#まとめ">まとめ</a></li>
+    <li><a href="#参考資料">参考資料</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>この記事は <a href="https://qiita.com/advent-calendar/2020/ipfactory" target="_blank" rel="noopener noreferrer">IPFactory Advent Calendar 2020</a> の20日目です．<br>
+このネタを <a href="https://qiita.com/advent-calendar/2020/lang_dev" target="_blank" rel="noopener noreferrer">言語実装 Advent Calendar 2020</a> の記事に採用すればよかったかもしれない．<br>
+私は<a href="https://drumato.com//ja/posts/dive-into-nom-internals/" target="_blank" rel="noopener noreferrer">1日目にも記事</a>を上げていますので，興味があればそちらも見てください．</p>
+<p>言語処理系の勉強をしていればほぼ100%，そうでなくても一度は目にしたことがあるであろう，<strong>&ldquo;型システム&rdquo;</strong> という言葉．<br>
+何やらかっこいい名前ですが，どういったものかは理解していても実装方法まで知っている人は多くありません．<br>
+かくいう私も，今まで作ってきた言語達はすべて <strong>&ldquo;型の明示を強制する&rdquo;</strong> 言語だったので経験はありませんでした．<br>
+また，そもそも型システムについて勉強しようという気になったことがありませんでした．</p>
+<p>そんな私が <a href="https://sechack365.nict.go.jp/" target="_blank" rel="noopener noreferrer">SecHack365</a> に参加していたとき，<br>
+<a href="https://twitter.com/mkeiptr" target="_blank" rel="noopener noreferrer">同期の方</a> が <a href="https://admarimoin.hatenablog.com/entry/2019/12/30/000337" target="_blank" rel="noopener noreferrer">サクッと実装</a> していて大変びっくりした記憶があります．<br>
+&ldquo;よくわかんなければ作りましょう，作ったことなきゃ作りましょう&rdquo; が私の技術に対するモチベーションなので，<br>
+記事読んで満足するだけじゃなく，ちゃんと自分でも作ってみないとね，と思っていました(<del>そして数千年の時が経ちました</del>)．</p>
+<p>本記事はあくまで <strong>&ldquo;型システムを実装するための記事，実際にRustで実装した記事&rdquo;</strong> になるので，<br>
+型システムについての詳細な解説等は行いません．<br>
+記事末尾に参考資料を記載しておくので，<br>
+そちらをご覧いただければと思います．<br>
+当方型システムについての勉強はこれが初めてなので，間違っている点もあるかもしれません．<br>
+その際は是非コメント等で教えていただけると助かります．</p>
+<p>ソースコード全体が<a href="https://github.com/Drumato/blog_samples/tree/main/toy-type-system" target="_blank" rel="noopener noreferrer">GitHubで見れるよう</a>になっているので，そちらも是非．</p>
+<h2 id="対象読者" class="headerLink">
+    <a href="#%e5%af%be%e8%b1%a1%e8%aa%ad%e8%80%85" class="header-mark"></a>1 対象読者</h2><ul>
+<li>一番シンプルな型推論アルゴリズムを知りたい!という人</li>
+<li>Rustで型システムをどうやって作るのか知りたい人</li>
+</ul>
+<h2 id="対象でない読者" class="headerLink">
+    <a href="#%e5%af%be%e8%b1%a1%e3%81%a7%e3%81%aa%e3%81%84%e8%aa%ad%e8%80%85" class="header-mark"></a>2 対象でない読者</h2><p>読んでほしくない，というわけではなく，<br>
+このレベルに該当する人にとっては退屈かもよ，という意味です．</p>
+<ul>
+<li>型推論アルゴリズムの実装をしたことがある人</li>
+<li>型システムの論文をよく読む人</li>
+<li>関数型言語の実装をよくやる人</li>
+<li>その他詳しい人</li>
+</ul>
+<h2 id="型システムについての前提知識" class="headerLink">
+    <a href="#%e5%9e%8b%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6%e3%81%ae%e5%89%8d%e6%8f%90%e7%9f%a5%e8%ad%98" class="header-mark"></a>3 型システムについての前提知識</h2><p>ここでは最低限，型システム関連の情報を整理しておきます．<br>
+後に，それら概念や知識を使って実装の解説をしていきます．<br>
+また，本記事の後，型システムに関する論文や他記事を読む為の助けにもなるでしょう(なるといいな)．<br>
+興味のない人は飛ばしてください．<br>
+基本的には，<a href="https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/isle4-06w/text/miniml011.html" target="_blank" rel="noopener noreferrer">こちらのページ</a>等に書いてある知識の要約であり，n番煎じです．<br>
+間違っていたらコメントお願いします．</p>
+<h3 id="型システムの用語" class="headerLink">
+    <a href="#%e5%9e%8b%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%81%ae%e7%94%a8%e8%aa%9e" class="header-mark"></a>3.1 型システムの用語</h3><p>まず， &ldquo;<strong>型環境( <em>type environment</em> )</strong> <code>Γ</code> 下においてプログラム中の式 <code>e</code> が型 <code>T</code> を持つ&rdquo; という表現を <strong>型判断 (<em>type judgement</em> )</strong> といいます．<br>
+これは，以下のように書きます．</p>
+<p><a class="lightgallery" href="/images/type-system/eql1.png" title="eql1" data-thumbnail="/images/type-system/eql1.png">
+        <img
+            class="lazyload"
+            data-src="/images/type-system/eql1.png"
+            data-srcset="/images/type-system/eql1.png, /images/type-system/eql1.png 1.5x, /images/type-system/eql1.png 2x"
+            data-sizes="auto"
+            alt="/images/type-system/eql1.png">
+    </a></p>
+<p><em>type judgement</em> は， <strong>型付け規則( <em>typing rule</em> )</strong> というものを使って導出されます．<br>
+イメージとしては， &ldquo;こんなコンテキストで前提xxが全て導出できれば，結論xx&rdquo; みたいな感じです．<br>
+下に示した型付け規則は，<br>
+&ldquo;型環境 <code>Γ</code> 下において <code>x</code> が <code>σ</code> 型を持つと言えるとき，そのようにして扱える&rdquo; みたいな意味になります．</p>
+<p><a class="lightgallery" href="/images/type-system/eql2.png" title="eql1" data-thumbnail="/images/type-system/eql2.png">
+        <img
+            class="lazyload"
+            data-src="/images/type-system/eql2.png"
+            data-srcset="/images/type-system/eql2.png, /images/type-system/eql2.png 1.5x, /images/type-system/eql2.png 2x"
+            data-sizes="auto"
+            alt="/images/type-system/eql2.png">
+    </a></p>
+<p>導出中において&quot;未知の変数&quot;を表すために <strong>型変数 (<em>type variable</em>)</strong> という概念が用いられます．<br>
+これにより，関数適用 <code>((fn x -&gt; x) 3)</code> のような式についても推論が可能になります．<br>
+<code>a0 -&gt; a0</code> な関数に対し <code>int</code> を適用すると，最終的に <code>int -&gt; int</code> が導出されます．<br>
+このとき， &ldquo;型変数とその正体の対応関係&rdquo; を <strong>型代入( <em>type substitution</em> )</strong> と呼びます．</p>
+<h3 id="単一化" class="headerLink">
+    <a href="#%e5%8d%98%e4%b8%80%e5%8c%96" class="header-mark"></a>3.2 単一化</h3><p>ここで，<code>fn x -&gt; x + 3</code> という関数という推論について考えます  ．<br>
+二項演算のオペランドである <code>x</code>, <code>3</code> の推論結果はそれぞれ <code>a0</code>, <code>int</code> となります．<br>
+<code>a0</code> と <code>int</code> は単純比較すると異なるように見えますが，<br>
+<code>a0 = int</code> であればこの関数はvalidであることがわかります．<br>
+これを解決するために， <strong>単一化( <em>unification</em> )</strong> という操作を行います．<br>
+<code>S(a0) = int</code> となるような型代入を得ることができれば，上式は推論可能であることがわかります．</p>
+<h3 id="単相と多相" class="headerLink">
+    <a href="#%e5%8d%98%e7%9b%b8%e3%81%a8%e5%a4%9a%e7%9b%b8" class="header-mark"></a>3.3 単相と多相</h3><p>ここまでの仕組みを実装して得られる型推論器を <strong>&ldquo;単相的である&rdquo;</strong> と表現します．<br>
+<code>let f = fn x -&gt; x + 3 in f 4</code> のようなプログラムでは，<br>
+<code>f :: 'a -&gt; 'a</code> というシグネチャが <code>'a = int</code> という型代入を持ってして，<br>
+&ldquo;let式 <code>let f = fn x -&gt; x + 3 in f 4</code> は型 <code>int</code> を持つ&rdquo; という型判断が得られました．</p>
+<p>しかし，<a href="https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/isle4-06w/text/miniml011.html#toc15" target="_blank" rel="noopener noreferrer">こちら</a> で取り上げられているように，<br>
+<code>let f = fn x -&gt; x in if f true then f 2 else 3</code> のような式が推論できません．<br>
+しかし，Haskellなどの関数型言語ではこのような使い方も可能です．<br>
+Haskellを含むいくつかの言語は多相を実現するための言語機能を持っています．
+(コードの意味は特にありません)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">let</span> <span class="n">r</span> <span class="ow">=</span> <span class="kr">let</span> <span class="n">f</span> <span class="ow">=</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span><span class="p">)</span> <span class="kr">in</span> <span class="kr">if</span> <span class="n">f</span> <span class="kt">True</span> <span class="kr">then</span> <span class="n">f</span> <span class="mi">3</span> <span class="kr">else</span> <span class="n">f</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl">    <span class="n">print</span> <span class="n">r</span>
+</span></span></code></pre></div><p>これを実現するために導入されるのが <strong>let多相( <em>let-polymorphism</em> )</strong> という概念です．<br>
+Haskellでは多相的なプログラムを構築することが可能です．<br>
+同様に <strong>型変数( <em>variable</em> )</strong> という概念が存在しますが，<br>
+それらは <strong>全称量化</strong> されていると考えることができます．<br>
+推論途中の&quot;未知変数&quot;を表す型変数とは区別して， <strong>型スキーム( <em>type scheme</em> )</strong> と呼ばれます．</p>
+<h2 id="型推論システムの実装" class="headerLink">
+    <a href="#%e5%9e%8b%e6%8e%a8%e8%ab%96%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%81%ae%e5%ae%9f%e8%a3%85" class="header-mark"></a>4 型推論システムの実装</h2><p>型推論を実現するいくつかのアルゴリズムを紹介します．<br>
+他にもあったら教えて下さい．</p>
+<ul>
+<li><a href="http://esumii.github.io/min-caml/tutorial-mincaml-8.htm" target="_blank" rel="noopener noreferrer">MinCamlの型推論</a>
+<ul>
+<li><a href="https://github.com/esumii/min-caml" target="_blank" rel="noopener noreferrer">住井先生のMinCaml</a> で用いられている型推論アルゴリズム</li>
+<li>単相型推論となっている</li>
+<li><strong>今回はこちらのアルゴリズム(の一部)を実装</strong></li>
+</ul>
+</li>
+<li><a href="http://lucacardelli.name/Papers/BasicTypechecking.pdf" target="_blank" rel="noopener noreferrer">Basic Polymorphic Typechecking</a>
+<ul>
+<li>1987年の論文</li>
+<li>プログラミング言語における多相についての歴史から入り，型推論アルゴリズムまで紹介</li>
+<li>パラメトリック多相には明示的/暗黙的の，2つの実現手法があると主張
+<ul>
+<li>例1: Zig言語のジェネリクスは<em>explicit polymorphism</em>に該当?
+<ul>
+<li>参考: <a href="https://ziglang.org/documentation/master/#Generic-Data-Structures" target="_blank" rel="noopener noreferrer">Documentation</a> の <code>List</code> 関数</li>
+</ul>
+</li>
+<li>例2: Haskellの型変数を用いた多相は<em>implicit polymorphism</em>に該当?</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://www.sciencedirect.com/science/article/pii/0022000078900144" target="_blank" rel="noopener noreferrer">Algorithm W</a>
+<ul>
+<li>1978年に提唱された型推論アルゴリズム</li>
+<li>構文木をトップダウン的に探索する</li>
+</ul>
+</li>
+<li><a href="https://dl.acm.org/doi/10.1145/291891.291892" target="_blank" rel="noopener noreferrer">Algorithm M</a>
+<ul>
+<li>1998年に提唱された，Wの対比となるアルゴリズム</li>
+<li>Mの前に <code>folklore</code> と呼ばれていたアルゴリズムがあったけど，それは証明されていなかったっぽい</li>
+<li>Wを高速化したっぽい(論文にもそう書かれてる)</li>
+</ul>
+</li>
+<li><a href="http://gallium.inria.fr/~remy/ftp/eq-theory-on-types.pdf" target="_blank" rel="noopener noreferrer">level-based type inference</a>
+<ul>
+<li>詳細は<a href="https://rhysd.hatenablog.com/entry/2017/12/16/002048" target="_blank" rel="noopener noreferrer">こちら</a></li>
+</ul>
+</li>
+<li><a href="http://www.cs.uu.nl/research/techreps/repo/CS-2002/2002-031.pdf" target="_blank" rel="noopener noreferrer">Generalized HMTI Algorithm</a>
+<ul>
+<li>2002年に発表された論文に記載</li>
+<li>WやMではエラーメッセージが有益でないとし，それらを解決する為のアルゴリズムを提唱し，完全性を証明?</li>
+</ul>
+</li>
+</ul>
+<p>今回はこのうち，MinCamlコンパイラの型推論システム(っぽいもの)を実装してみます．<br>
+(いずれ全部やりたいなあ)</p>
+<h2 id="mincamlコンパイラの型推論を一部実装" class="headerLink">
+    <a href="#mincaml%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e5%9e%8b%e6%8e%a8%e8%ab%96%e3%82%92%e4%b8%80%e9%83%a8%e5%ae%9f%e8%a3%85" class="header-mark"></a>5 MinCamlコンパイラの型推論を一部実装</h2><p>MinCamlは多くの言語機能を有していますが，<br>
+ここでは言語機能をある程度制限します．<br>
+また，コードすべてを載せるととんでもないことになってしまうので一部のみ取り上げます．<br>
+<a href="https://github.com/Drumato/blog_samples/tree/main/toy-type-system/mincaml-inferer" target="_blank" rel="noopener noreferrer">全体はこちら</a>に．<br>
+<code>cargo test</code> を動かしていただければ雰囲気はつかめると思います．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="sd">//! src/expr.rs
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">pub</span><span class="w"> </span><span class="k">enum</span> <span class="nc">Expr</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `x`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Variable</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `42`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Integer</span><span class="p">(</span><span class="kt">i64</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `true` | `false`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Boolean</span><span class="p">(</span><span class="kt">bool</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `x + 3`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Plus</span><span class="p">(</span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `\x -&gt; x + 3`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Lambda</span><span class="p">(</span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `f 3`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Application</span><span class="p">(</span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="sd">/// `let x = 3 in x + 3`
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="w">    </span><span class="n">Let</span><span class="p">(</span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>今回の型推論器で扱う式を表します．<br>
+Rustではこのような再帰的データ構造を表現する場合，<br>
+<code>Box&lt;T&gt;</code> を使用するのが最もシンプルなので，今回はそうしています．<br>
+他には， <a href="https://crates.io/crates/typed-arena" target="_blank" rel="noopener noreferrer">typed-arena</a> のようなアロケータクレートを用いるという方法もあります．<br>
+私はこのtyped-arenaを好んでよく使っています．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="sd">//! src/types.rs
+</span></span></span><span class="line"><span class="cl"><span class="sd"></span><span class="k">pub</span><span class="w"> </span><span class="k">enum</span> <span class="nc">Type</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Boolean</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Integer</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nb">Fn</span><span class="p">(</span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Type</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Type</span><span class="o">&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Variable</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>推論結果として使用する型です．<br>
+<code>Type::Variable</code> は型変数であり，その名前を持ちます．</p>
+<p>実際の推論アルゴリズムを見てみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">infer</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">mut</span><span class="w"> </span><span class="n">env</span>: <span class="nc">Env</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">mut</span><span class="w"> </span><span class="n">iter</span>: <span class="nc">RangeInclusive</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">e</span>: <span class="nc">Expr</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(</span><span class="n">Env</span><span class="p">,</span><span class="w"> </span><span class="n">RangeInclusive</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span><span class="p">),</span><span class="w"> </span><span class="n">InferenceError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Boolean</span><span class="p">(</span><span class="n">_b</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Integer</span><span class="p">(</span><span class="n">_v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Let</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">e1</span><span class="p">,</span><span class="w"> </span><span class="n">e2</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Lambda</span><span class="p">(</span><span class="n">var</span><span class="p">,</span><span class="w"> </span><span class="n">expr</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Application</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Expr</span>::<span class="n">Plus</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* stripped */</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>第一引数の <code>env: Env</code> は，型変数から実際の型や，<br>
+<code>Expr::Lambda</code>に登場する束縛変数から型を導出するために使用します．<br>
+MinCamlでは <code>Type.t.Var</code> が <code>Type.t option</code> を持っており，<br>
+導出結果を型自体に保存する手法を取っていますが，<br>
+今回はハッシュマップを持って取り回す方がシンプルに実装できそうだったので，そうしています．<br>
+しかし，<code>env</code>が <strong>&ldquo;関数の引数に関する型環境&rdquo;</strong> と <strong>型変数の代入</strong> という2つの意味を持って使用されてしまうので，少し読みづらいかもしれません．<br>
+区別して読みやすくするために，単純なハッシュマップではなく，それをラップする構造体を定義しています(<code>src/types.rs</code>の <code>struct Env</code> を参照)．</p>
+<p>第2引数の <code>RangeInclusive&lt;char&gt;</code> は <code>'a'..='z'</code> というrange objectを生成して渡しています．<br>
+これは型変数名のジェネレータです．<br>
+他の実装では，呼び出すたびに+1される作用を持った関数を実装して，<br>
+<code>a0, a1, a2, ..., an</code> という名前を生成する物を見つけました．<br>
+Rustではイテレータを使う方が良さそうだったので，そうしています．<br>
+<code>count: RefCell&lt;usize&gt;</code> 等の参照を <code>infer()</code> に渡せば同様の事が出来そうです．</p>
+<p>第3引数は推論の対象となるノードです．<br>
+パターンマッチを行って，式の種類ごとに分岐しています．<br>
+トップダウン的に推論を行うアルゴリズムですが，<br>
+解説はボトムアップに行おうと思います．<br>
+実際のコードについては， <code>src/inference.rs</code> に定義されたテストも合わせてご覧いただければと思います．</p>
+<h3 id="リテラルに対する推論" class="headerLink">
+    <a href="#%e3%83%aa%e3%83%86%e3%83%a9%e3%83%ab%e3%81%ab%e5%af%be%e3%81%99%e3%82%8b%e6%8e%a8%e8%ab%96" class="header-mark"></a>5.1 リテラルに対する推論</h3><p>これは説明するまでもないですね．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Boolean</span><span class="p">(</span><span class="n">_b</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Boolean</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Integer</span><span class="p">(</span><span class="n">_v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Integer</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>対応する型をそのまま返しています．</p>
+<h3 id="変数に対する推論" class="headerLink">
+    <a href="#%e5%a4%89%e6%95%b0%e3%81%ab%e5%af%be%e3%81%99%e3%82%8b%e6%8e%a8%e8%ab%96" class="header-mark"></a>5.2 変数に対する推論</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">env</span><span class="p">.</span><span class="n">vars_in_fn</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Some</span><span class="p">(</span><span class="n">var_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">var_ty</span><span class="p">.</span><span class="n">clone</span><span class="p">())),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">None</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Err</span><span class="p">(</span><span class="n">InferenceError</span>::<span class="n">NotFoundSuchAVariable</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">v</span>: <span class="nc">name</span><span class="p">.</span><span class="n">to_string</span><span class="p">()</span><span class="w"> </span><span class="p">}),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>後に示す <code>Expr::Lambda(var, expr)</code> に対する推論時に，<br>
+<code>env.vars_in_fn.insert(var, new_type_var)</code> が行われ，更新された <code>env</code> が渡されます．<br>
+<code>λx.x</code> のようなラムダ式の場合， <code>x =&gt; a</code> のような&quot;変数と型変数の対応&quot;がマップに存在するので，<br>
+その対応が存在すれば取り出し，そうでなければエラーを返しています．</p>
+<p>MinCamlでは外部変数もうまく扱えるようになっていますが(自由変数のキャプチャも推論出来る)，<br>
+今回は実装をシンプルにするためにその機能は無視しています．</p>
+<h3 id="let式に対する推論" class="headerLink">
+    <a href="#let%e5%bc%8f%e3%81%ab%e5%af%be%e3%81%99%e3%82%8b%e6%8e%a8%e8%ab%96" class="header-mark"></a>5.3 let式に対する推論</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Let</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">e1</span><span class="p">,</span><span class="w"> </span><span class="n">e2</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="k">mut</span><span class="w"> </span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">e1_t</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">e1</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">env</span><span class="p">.</span><span class="n">vars_in_fn</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">e1_t</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">e2</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>変数に代入する式 <code>e1</code> を推論して，変数の型が得られます．<br>
+それを <code>env</code> に登録した状態で，変数の使用部分である <code>e2</code> を推論するだけです．</p>
+<p>実はこれだけでネストした <code>let</code> の推論等も動いてしまいます．<br>
+ここまで説明した内容を元に，<code>let x = 3 in let y = x in y</code> という式を理解してみましょう．<br>
+階層構造的には， <code>Let(&quot;x&quot;, 3, Let(&quot;y&quot;, &quot;x&quot;, &quot;y&quot;))</code> となっている点に注目すると良いです．</p>
+<ol>
+<li><code>3</code> が推論され， <code>env</code> に <code>x =&gt; int</code> が登録される</li>
+<li><code>let y = x in y</code> の推論開始
+<ol>
+<li><code>x</code> が推論される． <code>env</code> をlookupして， <code>int</code> が返される</li>
+<li><code>env</code> に <code>y =&gt; int</code> が登録される</li>
+<li><code>y</code> が推論され，<code>int</code> が返される．これがinner-let-exprの型となる</li>
+</ol>
+</li>
+<li>inner-let-exprの型がouter-let-exprの型となる</li>
+</ol>
+<p>言語処理系の実装をする人にとって再帰関数は馴染み深いものですが，<br>
+何度作っても魔法のように見えますね．</p>
+<h3 id="λ抽象に対する推論" class="headerLink">
+    <a href="#%ce%bb%e6%8a%bd%e8%b1%a1%e3%81%ab%e5%af%be%e3%81%99%e3%82%8b%e6%8e%a8%e8%ab%96" class="header-mark"></a>5.4 λ抽象に対する推論</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Lambda</span><span class="p">(</span><span class="n">var</span><span class="p">,</span><span class="w"> </span><span class="n">expr</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">new_type_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">().</span><span class="n">unwrap</span><span class="p">().</span><span class="n">to_string</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">new_type_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">new_type_var</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">env</span><span class="p">.</span><span class="n">vars_in_fn</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">var</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="n">new_type_var</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">expr_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">expr</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">((</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">env</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">iter</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Type</span>::<span class="nb">Fn</span><span class="p">(</span><span class="nb">Box</span>::<span class="n">new</span><span class="p">(</span><span class="n">new_type_var</span><span class="p">),</span><span class="w"> </span><span class="nb">Box</span>::<span class="n">new</span><span class="p">(</span><span class="n">expr_ty</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><code>id</code> 関数を例に考えましょう．<br>
+<code>λx.x</code> に対する推論は，次のようになります．</p>
+<ol>
+<li>新しく型変数 <code>a</code> を作る</li>
+<li><code>env</code> に <code>x =&gt; a</code> を登録する(これにより，<code>expr</code> に登場する束縛変数の型を推論できる)</li>
+<li><code>x</code> に対する推論を行う．2番の操作により，<code>a</code> 型が得られる</li>
+<li><code>a =&gt; a</code> な型を返す</li>
+</ol>
+<p>この関数型に登場する型変数<code>a</code>は，実際に適用されるまでわかりません．<br>
+また，この関数 <code>a</code> はあくまでも &ldquo;未知である単一の型&rdquo; である点に注意です．</p>
+<h3 id="関数適用に対する推論" class="headerLink">
+    <a href="#%e9%96%a2%e6%95%b0%e9%81%a9%e7%94%a8%e3%81%ab%e5%af%be%e3%81%99%e3%82%8b%e6%8e%a8%e8%ab%96" class="header-mark"></a>5.5 関数適用に対する推論</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Application</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">new_type_var_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">().</span><span class="n">unwrap</span><span class="p">().</span><span class="n">to_string</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">new_type_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">new_type_var_name</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">fn_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">f</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">param_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">param</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unify</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">env</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">fn_ty</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Type</span>::<span class="nb">Fn</span><span class="p">(</span><span class="nb">Box</span>::<span class="n">new</span><span class="p">(</span><span class="n">param_ty</span><span class="p">.</span><span class="n">clone</span><span class="p">()),</span><span class="w"> </span><span class="nb">Box</span>::<span class="n">new</span><span class="p">(</span><span class="n">new_type_var</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">resolved_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">env</span><span class="p">.</span><span class="n">type_vars</span><span class="o">..</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">new_type_var_name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">resolved_ty</span><span class="p">.</span><span class="n">clone</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">param_ty</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>少し長いので複雑に見えますが，一つ一つじっくり追っていきましょう．<br>
+やはり実例がわかりやすいと思うので，<code>((λx.x) 3)</code> について考えます．<br>
+ASTを書き下すと， <code>Apply(Lambda(&quot;x&quot;, &quot;x&quot;), 3)</code> という感じです．</p>
+<p>まず，新たな型変数 <code>a</code> を作ります．<br>
+そして，<code>λx.x</code> に対して <code>infer()</code> を呼び出します．<br>
+先程の解説から，この推論が <code>b =&gt; b</code> のような関数型を返すことがわかっています．<br>
+そして，引数の<code>3</code>に対する推論で <code>int</code> が得られます．</p>
+<p>最後に，2つの型 <code>((b =&gt; b), (int =&gt; a))</code> に対して <code>unify()</code> を呼び出します．<br>
+このような呼び出しになっている理由は，<br>
+<code>f</code> の推論結果である <code>b =&gt; b</code> の <code>b</code> を <code>int</code> で置換したとき，<br>
+<code>((int =&gt; int), (int =&gt; a))</code> となるかどうかをチェックしたい為です．<br>
+すぐ後に説明しますが，<code>unify()</code> 内部では未知の型変数に対する代入(<em>substitution</em>)が行われる為，<br>
+<code>a =&gt; int</code> もすぐに判明します．</p>
+<p><code>int =&gt; a</code> な関数に対する適用とわかったところで，<br>
+<code>a</code> の型が既に判明しているかどうか<code>env</code>に問い合わせます．</p>
+<p><code>unify</code> 関数について定義を示します．<br>
+少しキレイな書き方ではなくなってしまったので，概要だけ説明します．<br>
+詳細に知りたい方はGitHubを御覧ください．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">unify</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">mut</span><span class="w"> </span><span class="n">env</span>: <span class="nc">Env</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">t1</span>: <span class="nc">Type</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">t2</span>: <span class="nc">Type</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="n">Env</span><span class="p">,</span><span class="w"> </span><span class="n">InferenceError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="p">(</span><span class="n">t1</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// シンプルな比較
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">        </span><span class="p">(</span><span class="n">Type</span>::<span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Integer</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">Type</span>::<span class="n">Boolean</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Boolean</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">env</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">(</span><span class="n">Type</span>::<span class="nb">Fn</span><span class="p">(</span><span class="n">var_ty1</span><span class="p">,</span><span class="w"> </span><span class="n">ret_ty1</span><span class="p">),</span><span class="w"> </span><span class="n">Type</span>::<span class="nb">Fn</span><span class="p">(</span><span class="n">var_ty2</span><span class="p">,</span><span class="w"> </span><span class="n">ret_ty2</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 引数同士，返り値同士で型の比較
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unify</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">var_ty1</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">var_ty2</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">unify</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">ret_ty1</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">ret_ty2</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">(</span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">name1</span><span class="p">),</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">name2</span><span class="p">))</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">name2</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">env</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 一方が型変数の場合を調べる
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">        </span><span class="p">(</span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">var</span><span class="p">),</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 定義済み(割り当て済み)の場合，単純比較
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">var_t</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">env</span><span class="p">.</span><span class="n">type_vars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">unify</span><span class="p">(</span><span class="n">env</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">var_t</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">t2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 未定義(未知)の場合，occur check後代入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">occur</span><span class="p">(</span><span class="o">&amp;</span><span class="n">var</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">t2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nb">Err</span><span class="p">(</span><span class="n">InferenceError</span>::<span class="n">FoundOccurrence</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">env</span><span class="p">.</span><span class="n">type_vars</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">var</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="n">t2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nb">Ok</span><span class="p">(</span><span class="n">env</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">var</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* 上記と同様にチェック */</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">Err</span><span class="p">(</span><span class="n">InferenceError</span>::<span class="n">CannotUnify</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><ul>
+<li>渡された2つの型が等しいかチェック</li>
+<li>どちらか一方が型変数の場合，occur checkを行った後代入
+<ul>
+<li>occur checkとは， <code>t1: int =&gt; a, t2: a</code> な場合等で <code>a =&gt; (int =&gt; a)</code>としてしまうと無限ループに陥ってしまうので，そういったケースの検出をする手続き</li>
+</ul>
+</li>
+</ul>
+<p>をする関数だということだけ理解していただければ問題ありません．<br>
+ちょっとぐちゃっとなってしまったので，まとめましょう</p>
+<ul>
+<li><code>((λx.x) 3)</code> に対する推論はじめ
+<ul>
+<li>この関数適用の結果 <code>a</code> が得られるとして型変数を持っておく</li>
+<li><code>λx.x</code> の型が <code>b =&gt; b</code> だとわかる</li>
+<li><code>3</code> の型が <code>int</code> だとわかる</li>
+<li>ここまでで， <code>int =&gt; a</code> という関数に対する適用だとわかる</li>
+</ul>
+</li>
+<li><code>unify((b =&gt; b), (int =&gt; a))</code> を呼び出す
+<ul>
+<li><code>unify(b, int)</code> が呼ばれ， <code>b =&gt; int</code> が<code>env</code>に登録される</li>
+<li><code>unify(b, a)</code> が呼ばれ，<code>b =&gt; int</code> がわかっているので， <code>unify(int, a)</code> としてもっかい呼ぶ
+<ul>
+<li><code>a =&gt; int</code> が登録される</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>int =&gt; int</code> として導出できたので，返り値型である <code>int</code> を返す</li>
+</ul>
+<p>という感じです．<br>
+かなり複雑でしたが，実装することで理解が深まりました．</p>
+<h3 id="二項演算に対する推論おまけ" class="headerLink">
+    <a href="#%e4%ba%8c%e9%a0%85%e6%bc%94%e7%ae%97%e3%81%ab%e5%af%be%e3%81%99%e3%82%8b%e6%8e%a8%e8%ab%96%e3%81%8a%e3%81%be%e3%81%91" class="header-mark"></a>5.6 二項演算に対する推論おまけ</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Expr</span>::<span class="n">Plus</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">lhs_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">lhs</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">rhs_ty</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">rhs</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unify</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">lhs_ty</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unify</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">rhs_ty</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">var</span><span class="p">),</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">lhs_ty</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rhs_ty</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">resolved_ty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">env</span><span class="p">.</span><span class="n">type_vars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">).</span><span class="n">unwrap</span><span class="p">().</span><span class="n">clone</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">resolved_ty</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">Type</span>::<span class="n">Variable</span><span class="p">(</span><span class="n">var</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">lhs_ty</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rhs_ty</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">resolved_ty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">env</span><span class="p">.</span><span class="n">type_vars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">).</span><span class="n">unwrap</span><span class="p">().</span><span class="n">clone</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">resolved_ty</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">((</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">lhs_ty</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><code>+</code> 演算子を，2つの引数を取る中置関数だと考えると，ほぼ同じことをしているとわかります．<br>
+しかし <code>+</code> は今回想定する言語では <code>int</code> しか引数を持たないので，<br>
+<code>unify</code> の呼び出し回数は少なくて済みます．</p>
+<h3 id="mincamlコンパイラの型推論を一部実装所感" class="headerLink">
+    <a href="#mincaml%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e5%9e%8b%e6%8e%a8%e8%ab%96%e3%82%92%e4%b8%80%e9%83%a8%e5%ae%9f%e8%a3%85%e6%89%80%e6%84%9f" class="header-mark"></a>5.7 MinCamlコンパイラの型推論を一部実装所感</h3><p>150行程度の実装でしたが比較的複雑で，実装にもある程度時間がかかってしまいました．<br>
+OCamlで実装されたコードをRustに変換するとき，<br>
+Rustの知識が足りないせいであまりキレイじゃない書き方になってしまい，若干悔しい思いをしています．<br>
+Rustでもっと関数型っぽい書き方に慣れていきたいところですね．</p>
+<p>型推論アルゴリズムというとあれですが，<br>
+自作言語では <code>let x : i64 = x + 3;</code> みたいな代入に対して，<br>
+&ldquo;右辺がちゃんと宣言通りの型を持っているか&quot;みたいな型検査の実装をしたことがあったので，少し親近感はありました．<br>
+しかし <code>unify()</code> はやはり複雑でしたし，ちゃんとテストが通ったときは凄いびっくりしました．</p>
+<h2 id="wip-多相型推論システムの実装" class="headerLink">
+    <a href="#wip-%e5%a4%9a%e7%9b%b8%e5%9e%8b%e6%8e%a8%e8%ab%96%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%81%ae%e5%ae%9f%e8%a3%85" class="header-mark"></a>6 WIP: 多相型推論システムの実装</h2><p>時間が足りずできませんでした(無念…)<br>
+後日別記事にまとめてあげようかな，なんて思っていたりします．</p>
+<h2 id="まとめ" class="headerLink">
+    <a href="#%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>7 まとめ</h2><p>今回はRustで単相型推論アルゴリズムを実装しつつ，お勉強してみました．<br>
+本当は多相型推論も実装しようとしたんですが何分記事のアイデアを思いついたのが期日ギリギリだったので厳しかったです．<br>
+なんだかなあなあになってしまった感じがあるので，後日記事書きたいなあ，なんて思っています(できたら)．</p>
+<p>先程も述べましたが，Rustで関数型っぽく書く力をもっと身につけたいなあ，と感じることができましたね．<br>
+ここらへんRustのベストプラクティスも調べながら知っていきたい．<br>
+OCamlの <code>Map.add</code> のように，エントリ挿入後のマップが返るようなAPIが <code>std::collections::HashMap</code>にもほしいなと思います(おもいませんか?)</p>
+<p>とはいえ，効率を考えたら <code>&amp;mut HashMap&lt;K, V&gt;</code> でごにょごにょするほうがいい気もします．<br>
+うーん，難しい．</p>
+<h2 id="参考資料" class="headerLink">
+    <a href="#%e5%8f%82%e8%80%83%e8%b3%87%e6%96%99" class="header-mark"></a>8 参考資料</h2><ul>
+<li><a href="https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system" target="_blank" rel="noopener noreferrer">Wikipedia</a>
+<ul>
+<li>単相型/多相型についての解説も記載</li>
+<li>具体的な定義とかが書いてある</li>
+<li>このページの参考資料にある論文とか読むと良さそう(私は読んでません)</li>
+</ul>
+</li>
+<li><a href="https://admarimoin.hatenablog.com/entry/2019/12/30/000337" target="_blank" rel="noopener noreferrer">Hindley-Milner型推論をCで実装した話</a>
+<ul>
+<li>記事が比較的新しめ</li>
+<li>ラムダ計算の知識も説明されているので，前提知識のない人におすすめ</li>
+<li><code>let f = λx -&gt; x in ((pair (f 200)) (f true))</code> サンプルからもわかるように，多相が動いている</li>
+<li>C言語で実装されているので，他言語よりも敷居が低い
+<ul>
+<li>Haskell/Scala読める人よりC読める人の方が多いんじゃないか?という予想からの発言です</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://uhideyuki.sakura.ne.jp/studs/index.cgi/ja/HindleyMilnerInHaskell" target="_blank" rel="noopener noreferrer">型システムを学ぼう！</a>
+<ul>
+<li>Haskell実装が掲載
+<ul>
+<li><code>typeOf</code> が推論のエントリポイントなのでそこから読むといいです</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://rhysd.hatenablog.com/entry/2017/12/16/002048" target="_blank" rel="noopener noreferrer">OCaml でも採用されているレベルベースの多相型型推論とは</a>
+<ul>
+<li>発展的な話題</li>
+<li>多相的型推論アルゴリズムのうち，実用されている高パフォーマンスな手法の解説</li>
+</ul>
+</li>
+<li><a href="https://sites.google.com/site/scalajp/home/documentation/scala-by-example/chapter16" target="_blank" rel="noopener noreferrer">第16章 Hindley/Milner型推論</a>
+<ul>
+<li><a href="https://www.scala-lang.org/old/sites/default/files/linuxsoft_archives/docu/files/ScalaByExample.pdf" target="_blank" rel="noopener noreferrer">Scala By Example</a> の16章の実装</li>
+<li>HMTS自体の解説は0なので，ドメイン知識を得たい場合はほか記事を読んでから実装だけ参照すると良さそう</li>
+</ul>
+</li>
+<li><a href="https://blog.waft.me/2017/10/08/algorithm-w/" target="_blank" rel="noopener noreferrer">Algorithm W Step By Stepを読んだ &amp; 実装した</a>
+<ul>
+<li>Algorithm Wの実装</li>
+<li>Algorithm W Step By Step自体は <a href="https://github.com/wh5a/Algorithm-W-Step-By-Step/blob/master/AlgorithmW.pdf" target="_blank" rel="noopener noreferrer">このPDF</a> だと思われる</li>
+</ul>
+</li>
+<li><a href="https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/isle4-06w/text/miniml011.html" target="_blank" rel="noopener noreferrer">型推論機構の実装</a>
+<ul>
+<li>京都大学の講義資料?</li>
+<li>単相型推論に始まる型システムの基礎から詳しく説明されている</li>
+<li>めちゃくちゃ読みました</li>
+</ul>
+</li>
+</ul>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-12-20</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/type-system1/" data-title="Rustでつくる単相型システムもどき" data-hashtags="type-system,rust"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/type-system1/" data-hashtag="type-system"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/type-system1/" data-title="Rustでつくる単相型システムもどき"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/type-system1/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/type-system1/" data-title="Rustでつくる単相型システムもどき"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/type-system1/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/type-system/">type-system</a>,&nbsp;<a href="/ja/tags/rust/">rust</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/dive-into-combine/" class="prev" rel="prev" title="Rust製のパーサコンビネータcombine v4.4.0を覗き見する"><i class="fas fa-angle-left fa-fw"></i>Rust製のパーサコンビネータcombine v4.4.0を覗き見する</a>
+            <a href="/ja/posts/recap-linux-open-syscall/" class="next" rel="next" title="Linuxのopen(2) syscallをもう一度復習する">Linuxのopen(2) syscallをもう一度復習する<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

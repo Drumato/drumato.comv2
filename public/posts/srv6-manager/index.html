@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Replace FRR Zebra SRv6 Manager with YANG Backend - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Replace FRR Zebra SRv6 Manager with YANG Backend" />
+<meta property="og:description" content="Now I&rsquo;m playing with FRRouting and contributing with tiny PRs(my PRs have merged twice). Today I&rsquo;ll introduce my recent PoC that achieves replacement SRv6 Manager with YANG backend. This PoC is related with FRR Northbound API so I&rsquo;m interesting in it. This PoC is incomplete but it&rsquo;s maybe helpful if you want to know about the FRR&rsquo;s mechanism of Northbound API. You can see the PoC in here .
+1 Prerequisites 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/posts/srv6-manager/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-01-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-01-04T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Replace FRR Zebra SRv6 Manager with YANG Backend"/>
+<meta name="twitter:description" content="Now I&rsquo;m playing with FRRouting and contributing with tiny PRs(my PRs have merged twice). Today I&rsquo;ll introduce my recent PoC that achieves replacement SRv6 Manager with YANG backend. This PoC is related with FRR Northbound API so I&rsquo;m interesting in it. This PoC is incomplete but it&rsquo;s maybe helpful if you want to know about the FRR&rsquo;s mechanism of Northbound API. You can see the PoC in here .
+1 Prerequisites 1."/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/posts/srv6-manager/" /><link rel="prev" href="http://drumato.com/posts/kubectl-plugin-builder/" /><link rel="next" href="http://drumato.com/posts/peachcomb/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Replace FRR Zebra SRv6 Manager with YANG Backend",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/posts\/srv6-manager\/"
+        },"genre": "posts","keywords": "frr, srv6","wordcount":  1506 ,
+        "url": "http:\/\/drumato.com\/posts\/srv6-manager\/","datePublished": "2022-01-04T00:00:00+00:00","dateModified": "2022-01-04T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="/posts/"> Post </a><a class="menu-item" href="/diaries/"> Diary </a><a class="menu-item" href="/thissite/"> This Site </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/posts/srv6-manager/" selected>English</option><option value="/ja/posts/srv6-manager/">Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="/posts/" title="">Post</a><a class="menu-item" href="/diaries/" title="">Diary</a><a class="menu-item" href="/thissite/" title="">This Site</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/posts/srv6-manager/" selected>English</option><option value="/ja/posts/srv6-manager/">Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisites">Prerequisites</a>
+      <ul>
+        <li><a href="#frr-zebra-srv6-manager">FRR Zebra SRv6 Manager</a></li>
+        <li><a href="#northbound-grpc">Northbound gRPC</a></li>
+        <li><a href="#frr-yang-backend">FRR YANG backend</a></li>
+      </ul>
+    </li>
+    <li><a href="#main">Main</a>
+      <ul>
+        <li><a href="#current-status">Current Status</a></li>
+        <li><a href="#goals">Goals</a></li>
+      </ul>
+    </li>
+    <li><a href="#current-implementation">Current Implementation</a>
+      <ul>
+        <li><a href="#define-yang-files">Define YANG files</a></li>
+        <li><a href="#northbound-api-callbacks">Northbound API Callbacks</a></li>
+        <li><a href="#srv6-manager-cli">SRv6 Manager CLI</a></li>
+      </ul>
+    </li>
+    <li><a href="#future-works">Future Works</a>
+      <ul>
+        <li><a href="#show-yang-operational-data"><code>show yang operational-data</code></a></li>
+        <li><a href="#researching-mgmtd">researching mgmtd</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Replace FRR Zebra SRv6 Manager with YANG Backend</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-01-04">2022-01-04</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2022-01-04">2022-01-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1506 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisites">Prerequisites</a>
+      <ul>
+        <li><a href="#frr-zebra-srv6-manager">FRR Zebra SRv6 Manager</a></li>
+        <li><a href="#northbound-grpc">Northbound gRPC</a></li>
+        <li><a href="#frr-yang-backend">FRR YANG backend</a></li>
+      </ul>
+    </li>
+    <li><a href="#main">Main</a>
+      <ul>
+        <li><a href="#current-status">Current Status</a></li>
+        <li><a href="#goals">Goals</a></li>
+      </ul>
+    </li>
+    <li><a href="#current-implementation">Current Implementation</a>
+      <ul>
+        <li><a href="#define-yang-files">Define YANG files</a></li>
+        <li><a href="#northbound-api-callbacks">Northbound API Callbacks</a></li>
+        <li><a href="#srv6-manager-cli">SRv6 Manager CLI</a></li>
+      </ul>
+    </li>
+    <li><a href="#future-works">Future Works</a>
+      <ul>
+        <li><a href="#show-yang-operational-data"><code>show yang operational-data</code></a></li>
+        <li><a href="#researching-mgmtd">researching mgmtd</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Now I&rsquo;m playing with <a href="https://frrouting.org/" target="_blank" rel="noopener noreferrer">FRRouting</a> and contributing with tiny PRs(my PRs have merged twice).
+Today I&rsquo;ll introduce my recent PoC that achieves replacement SRv6 Manager with YANG backend.
+This PoC is related with FRR Northbound API so I&rsquo;m interesting in it.
+This PoC is incomplete but it&rsquo;s maybe helpful if you want to know about the FRR&rsquo;s mechanism of Northbound API.
+You can see the PoC in <a href="https://github.com/Drumato/frr/pull/4" target="_blank" rel="noopener noreferrer">here</a> .</p>
+<hr>
+<h2 id="prerequisites" class="headerLink">
+    <a href="#prerequisites" class="header-mark"></a>1 Prerequisites</h2><h3 id="frr-zebra-srv6-manager" class="headerLink">
+    <a href="#frr-zebra-srv6-manager" class="header-mark"></a>1.1 FRR Zebra SRv6 Manager</h3><p>In FRR, Zebra daemon manages SRv6 resources intensively.
+And routing daemons(bgpd/isisd/etc) requests the resources to Zebra.
+Zebra provides the resource&rsquo;s ownerships to them.
+It&rsquo;s just a <strong>&ldquo;Server - Client&rdquo; model</strong> as you know.
+there is a component called <strong>SRv6 Manager</strong> in zebra.
+it&rsquo;s responsible for managing SRv6 resources and the requests to them.
+I recommend you to read <a href="https://github.com/FRRouting/frr/tree/frr-8.1/tests/topotests/bgp_srv6l3vpn_to_bgp_vrf" target="_blank" rel="noopener noreferrer">this topotest</a> that demonstrates VPNv6 with BGP SRv6 for understanding SRv6 Manager.</p>
+<h3 id="northbound-grpc" class="headerLink">
+    <a href="#northbound-grpc" class="header-mark"></a>1.2 Northbound gRPC</h3><p>In FRR you can use <strong>vtysh</strong> to configure dynamically.
+I think vtysh is the most popular way to interact FRR daemons.
+vtysh provides the experiences that are almost the same as Cisco&rsquo;s interactive CLI.</p>
+<p>On the other hand, FRR provides another way called <strong>Northbound gRPC</strong>.
+It enables you to configure FRR daemons via gRPC communications.
+When FRR users want to interact with FRR daemons they only need to implement gRPC clients.
+You can see the detailed documentation in <a href="http://docs.frrouting.org/en/latest/grpc.html" target="_blank" rel="noopener noreferrer">here</a> and <a href="http://docs.frrouting.org/projects/dev-guide/en/latest/grpc.html" target="_blank" rel="noopener noreferrer">here</a> .</p>
+<h3 id="frr-yang-backend" class="headerLink">
+    <a href="#frr-yang-backend" class="header-mark"></a>1.3 FRR YANG backend</h3><p>FRR achieves the Northbound gRPC with following method.</p>
+<ul>
+<li>modeling FRR configuration/operational-data by using <a href="https://datatracker.ietf.org/doc/html/rfc7950" target="_blank" rel="noopener noreferrer">YANG</a></li>
+<li>attaching <strong>Northbound API callbacks</strong> into the data model</li>
+</ul>
+<p>Each routing daemon doesn&rsquo;t need to implement each API response handler.
+Requests from clients contain an XPath and corresponding callback is called automatically.</p>
+<p>There are some merits in centralizing configurations/operational-data into YANG definitions.
+First, network operators only need to refer YANG files if operators want to know about the data models and their structures.
+network operators are familiar with YANG.
+And YANG doesn&rsquo;t depend on any programming languages and implementations.
+Second, We can refer network vendor&rsquo;s YANG models in <a href="https://github.com/YangModels/yang" target="_blank" rel="noopener noreferrer">here</a>.
+You only need to refer them if you want to unify the operations among vendor&rsquo;s appliances and yours.</p>
+<hr>
+<h2 id="main" class="headerLink">
+    <a href="#main" class="header-mark"></a>2 Main</h2><h3 id="current-status" class="headerLink">
+    <a href="#current-status" class="header-mark"></a>2.1 Current Status</h3><p>As described above, there is a big motivation to replace FRR components with YANG backend.
+In fact FRR community set the roadmap to replace all daemons with YANG backend.
+Now the new management daemon called <strong>mgmtd</strong> is being proposed(I&rsquo;ll describe it later).
+So I wanted to be familiar with FRR by implementing a YANG backend.</p>
+<p>Now SRv6 Manager doesn&rsquo;t support Northbound API.
+But SRv6 Manager is responsible for important things in small code-base.
+I had read overall of SRv6 Manager roughly so I didn&rsquo;t think it&rsquo;s difficult to replace for me(in fact I faced on some issues later).
+So I decided to implement SRv6 Manager YANG backend.</p>
+<h3 id="goals" class="headerLink">
+    <a href="#goals" class="header-mark"></a>2.2 Goals</h3><ul>
+<li>replace SRv6 components in practical ways
+<ul>
+<li>daemon side</li>
+<li>SRv6 Manager vtysh commands</li>
+</ul>
+</li>
+<li>of course I keep SRv6 Manager correct
+<ul>
+<li>I&rsquo;m careful of srv6_locator topotest</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="current-implementation" class="headerLink">
+    <a href="#current-implementation" class="header-mark"></a>3 Current Implementation</h2><p>I considered the PoC of this task as three sub-tasks.</p>
+<ul>
+<li>define YANG files</li>
+<li>define and implement API callbacks that are corresponding to YANG data node</li>
+<li>change the logic of SRv6 vtysh commands</li>
+</ul>
+<h3 id="define-yang-files" class="headerLink">
+    <a href="#define-yang-files" class="header-mark"></a>3.1 Define YANG files</h3><p>First of all I defined YANG files.
+The YANG files are the foundation of daemon/vtysh&rsquo;s implementation.
+So I had to design them carefully.</p>
+<p>So I referred the YANG models of Cisco IOS-XR 7.5.1.
+I thought they&rsquo;re already well-defined so they&rsquo;re good references for me.
+There are some YANG files they&rsquo;re related to SRv6, <code>cfg</code> and <code>datatypes</code> and <code>oper</code>.
+In FRR core logic I had to focus <code>cfg</code> and <code>datatypes</code> YANG.</p>
+<ul>
+<li><a href="https://github.com/YangModels/yang/blob/master/vendor/cisco/xr/751/Cisco-IOS-XR-segment-routing-srv6-oper.yang" target="_blank" rel="noopener noreferrer">Cisco-IOS-XR-segment-routing-srv6-oper.yang</a></li>
+<li><a href="https://github.com/YangModels/yang/blob/master/vendor/cisco/xr/751/Cisco-IOS-XR-segment-routing-srv6-datatypes.yang" target="_blank" rel="noopener noreferrer">Cisco-IOS-XR-segment-routing-srv6-datatypes.yang</a></li>
+<li><a href="https://github.com/YangModels/yang/blob/master/vendor/cisco/xr/751/Cisco-IOS-XR-segment-routing-srv6-cfg.yang" target="_blank" rel="noopener noreferrer">Cisco-IOS-XR-segment-routing-srv6-cfg.yang</a></li>
+</ul>
+<p>And I saw <code>segment-routing-srv6-cfg:srv6</code> container-block just augments <code>segment-routing-ms-cfg:sr</code> block.
+<code>segment-routing-ms-cfg</code> is the entire model of Segment-Rouring.
+For now there was no segment-routing manager in zebra(described later) but I didn&rsquo;t care about that.</p>
+<ul>
+<li><code>frr-srv6.yang</code> &hellip; refers <code>segment-routing-srv6-datatypes</code></li>
+<li><code>frr-zebra-sr.yang</code> &hellip; refers <code>segment-routing-ms-cfg</code>
+<ul>
+<li>that isn&rsquo;t related to SRv6 Manager but it&rsquo;s needed for consistency</li>
+</ul>
+</li>
+<li><code>frr-zebra-srv6.yang</code> &hellip; refers <code>segment-routing-srv6-cfg</code></li>
+</ul>
+<h3 id="northbound-api-callbacks" class="headerLink">
+    <a href="#northbound-api-callbacks" class="header-mark"></a>3.2 Northbound API Callbacks</h3><p>Next I implemented Northbound API callbacks they&rsquo;re corresponding to each YANG node.
+For instance, <code>router isis AREA_TAG</code> command creates a new isisd instance in isisd.
+this command also instantiates a new YANG list-node entry and stores it into isisd&rsquo;s YANG data tree.
+At this time the corresponding <code>create</code> callback is called automatically.
+I&rsquo;ll describe some kinds of Northbound API callbacks.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Callback</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>create</code></td>
+<td style="text-align:center">Configuration</td>
+<td style="text-align:center">at creation of a list-node entry/type empty/leaf-list entry</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>modify</code></td>
+<td style="text-align:center">Configuration</td>
+<td style="text-align:center">at modification of a leaf-node value</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>destroy</code></td>
+<td style="text-align:center">Configuration</td>
+<td style="text-align:center">at deletion of a list-node entry/leaf-list entry/etc</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>get_elem</code></td>
+<td style="text-align:center">Operation</td>
+<td style="text-align:center">at retrieving of a leaf/leaf-list entry/etc</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>lookup_entry</code></td>
+<td style="text-align:center">Operation</td>
+<td style="text-align:center">at searching of a list-node entry with given key</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>cli_show</code></td>
+<td style="text-align:center">Operation</td>
+<td style="text-align:center">prints a CLI command that is corresponding to a node</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>cli_show_end</code></td>
+<td style="text-align:center">Operation</td>
+<td style="text-align:center">if a node(container/list-node/etc) opens CLI command block this callback prints the block&rsquo;s beginning</td>
+</tr>
+</tbody>
+</table>
+<p>Next task is to implement these callbacks into each YANG model.
+I defined new <code>struct frr_yang_module_info</code> and passed it to the instantiation function of Zebra daemon.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_nb.c#L31" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_nb.c#L31</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* stripped */</span>
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="k">struct</span> <span class="n">frr_yang_module_info</span> <span class="n">frr_zebra_srv6_info</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;frr-zebra-srv6&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">xpath</span> <span class="o">=</span> <span class="s">&#34;/frr-zebra-sr:sr/frr-zebra-srv6:srv6&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">cbs</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show</span> <span class="o">=</span> <span class="n">cli_show_segment_routing_srv6</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show_end</span> <span class="o">=</span> <span class="n">cli_show_segment_routing_srv6_end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">NB_DFLT_PRIORITY</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">xpath</span> <span class="o">=</span> <span class="s">&#34;/frr-zebra-sr:sr/frr-zebra-srv6:srv6/locators&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">cbs</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show</span> <span class="o">=</span> <span class="n">cli_show_srv6_locators</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show_end</span> <span class="o">=</span> <span class="n">cli_show_srv6_locators_end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">xpath</span> <span class="o">=</span> <span class="s">&#34;/frr-zebra-sr:sr/frr-zebra-srv6:srv6/locators/locators&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">cbs</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show</span> <span class="o">=</span> <span class="n">cli_show_srv6_locators_locators</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show_end</span> <span class="o">=</span> <span class="n">cli_show_srv6_locators_locators_end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">xpath</span> <span class="o">=</span> <span class="s">&#34;/frr-zebra-sr:sr/frr-zebra-srv6:srv6/locators/locators/locator&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">cbs</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show</span> <span class="o">=</span> <span class="n">cli_show_srv6_locator</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cli_show_end</span> <span class="o">=</span> <span class="n">cli_show_srv6_locator_end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">create</span> <span class="o">=</span> <span class="n">nb_lib_srv6_locator_create</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">destroy</span> <span class="o">=</span> <span class="n">nb_lib_srv6_locator_destroy</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* stripped */</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>I also defined <code>struct frr_yang_module_info frr_zebra_sr_info</code> same as <code>frr_zebra_srv6_info</code>.
+So finally I just needed to implement specified callbacks as above one by one.
+For instance I&rsquo;ll show youw <code>nb_lib_srv6_locator_create</code>.
+that is a typical <code>create</code> callback.
+that is called when a new SRv6 locator is created.</p>
+<p>First of all, In FRR we should manage the both of YANG data tree and C data-structures.
+In this case <code>nb_lib_srv6_locator_create</code> calls <code>zebra_srv6_locator_add()</code> to update the master variable of SRv6 Manager.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_nb_config.c#L29" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_nb_config.c#L29</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * XPath: /frr-zebra-sr:sr/frr-zebra-srv6:srv6/locators/locators/locator
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">nb_lib_srv6_locator_create</span><span class="p">(</span><span class="k">struct</span> <span class="n">nb_cb_create_args</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">struct</span> <span class="n">srv6_locator</span> <span class="o">*</span><span class="n">loc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">struct</span> <span class="n">srv6_locator_chunk</span> <span class="o">*</span><span class="n">chunk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">loc_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">args</span><span class="o">-&gt;</span><span class="n">event</span> <span class="o">!=</span> <span class="n">NB_EV_APPLY</span><span class="p">)</span> <span class="k">return</span> <span class="n">NB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">loc_name</span> <span class="o">=</span> <span class="nf">yang_dnode_get_string</span><span class="p">(</span><span class="n">args</span><span class="o">-&gt;</span><span class="n">dnode</span><span class="p">,</span> <span class="s">&#34;./name&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">loc</span> <span class="o">=</span> <span class="nf">zebra_srv6_locator_lookup</span><span class="p">(</span><span class="n">loc_name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">loc</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* SRv6 manager pre-allocates one chunk for zclients */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loc</span> <span class="o">=</span> <span class="nf">srv6_locator_alloc</span><span class="p">(</span><span class="n">loc_name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chunk</span> <span class="o">=</span> <span class="nf">srv6_locator_chunk_alloc</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chunk</span><span class="o">-&gt;</span><span class="n">proto</span> <span class="o">=</span> <span class="n">NO_PROTO</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">listnode_add</span><span class="p">(</span><span class="n">loc</span><span class="o">-&gt;</span><span class="n">chunks</span><span class="p">,</span> <span class="n">chunk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">zebra_srv6_locator_add</span><span class="p">(</span><span class="n">loc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">nb_running_set_entry</span><span class="p">(</span><span class="n">args</span><span class="o">-&gt;</span><span class="n">dnode</span><span class="p">,</span> <span class="n">loc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">NB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span></code></pre></div><p>Next example is <code>nb_lib_srv6_locator_prefix_modify</code>.
+that is called when <code>leaf prefix</code> is modified.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_nb_config.c#L124" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_nb_config.c#L124</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * XPath: /frr-zebra-sr:sr/frr-zebra-srv6:srv6/locators/locators/locator/prefix/prefix
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">nb_lib_srv6_locator_prefix_modify</span><span class="p">(</span><span class="k">struct</span> <span class="n">nb_cb_modify_args</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">struct</span> <span class="n">srv6_locator</span> <span class="o">*</span><span class="n">locator</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">args</span><span class="o">-&gt;</span><span class="n">event</span> <span class="o">!=</span> <span class="n">NB_EV_APPLY</span><span class="p">)</span> <span class="k">return</span> <span class="n">NB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">locator</span> <span class="o">=</span> <span class="nf">nb_running_get_entry</span><span class="p">(</span><span class="n">args</span><span class="o">-&gt;</span><span class="n">dnode</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">yang_dnode_get_prefix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">locator</span><span class="o">-&gt;</span><span class="n">prefix</span><span class="p">,</span> <span class="n">args</span><span class="o">-&gt;</span><span class="n">dnode</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">NB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span></code></pre></div><p>Last I passed <code>struct frr_yang_module_info</code> into <code>FRR_DAEMON_INFO</code> in <code>zebra/main.c</code>.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/main.c#L261" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/main.c#L261</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">frr_yang_module_info</span> <span class="o">*</span><span class="k">const</span> <span class="n">zebra_yang_modules</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_filter_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_interface_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_route_map_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_zebra_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_vrf_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_routing_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_srv6_info</span><span class="p">,</span> <span class="c1">// added
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="o">&amp;</span><span class="n">frr_zebra_route_map_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&amp;</span><span class="n">frr_zebra_sr_info</span><span class="p">,</span> <span class="c1">// added
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="o">&amp;</span><span class="n">frr_zebra_srv6_info</span><span class="p">,</span> <span class="c1">// added
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span></code></pre></div><h3 id="srv6-manager-cli" class="headerLink">
+    <a href="#srv6-manager-cli" class="header-mark"></a>3.3 SRv6 Manager CLI</h3><p>Next I implemented vtysh commands side.
+Previously SRv6 Manager vtysh commands directly called daemon&rsquo;s functions.
+So replace them with just calling Northbound API.
+First I&rsquo;ll show <code>srv6_locator_cmd</code> that transitions to <code>SRV6_LOC_NODE</code>.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_vty.c#L246" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_vty.c#L246</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="nf">DEFPY_YANG_NOSH</span><span class="p">(</span><span class="n">srv6_locator</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">srv6_locator_cmd</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;locator LOC_NAME$name&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">SRV6_LOCATOR_CMD_STR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">xpath</span><span class="p">[</span><span class="n">XPATH_MAXLEN</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">rv</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">snprintf</span><span class="p">(</span><span class="n">xpath</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">xpath</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">           <span class="s">&#34;/frr-zebra-sr:sr&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="s">&#34;/frr-zebra-srv6:srv6&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="s">&#34;/locators/locators/locator[name=&#39;%s&#39;]&#34;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">nb_cli_enqueue_change</span><span class="p">(</span><span class="n">vty</span><span class="p">,</span> <span class="n">xpath</span><span class="p">,</span> <span class="n">NB_OP_CREATE</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">rv</span> <span class="o">=</span> <span class="nf">nb_cli_apply_changes</span><span class="p">(</span><span class="n">vty</span><span class="p">,</span> <span class="n">xpath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">rv</span> <span class="o">==</span> <span class="n">CMD_SUCCESS</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">VTY_PUSH_XPATH</span><span class="p">(</span><span class="n">SRV6_LOC_NODE</span><span class="p">,</span> <span class="n">xpath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">rv</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span></code></pre></div><p>I&rsquo;ll also show an example of a <code>cli_show</code> callback.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_vty.c#L405" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_vty.c#L405</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">cli_show_srv6_locator</span><span class="p">(</span><span class="k">struct</span> <span class="n">vty</span> <span class="o">*</span><span class="n">vty</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">lyd_node</span> <span class="o">*</span><span class="n">dnode</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">bool</span> <span class="n">show_defaults</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">loc_name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">loc_name</span> <span class="o">=</span> <span class="nf">yang_dnode_get_string</span><span class="p">(</span><span class="n">dnode</span><span class="p">,</span> <span class="s">&#34;./name&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">vty_out</span><span class="p">(</span><span class="n">vty</span><span class="p">,</span> <span class="s">&#34;   locator %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">loc_name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span></code></pre></div><p>finally all configurations can be printed by <code>cli_show</code> callbacks.
+<code>zebra_sr_config()</code> function is called when <code>show-running</code> command is called.
+So I replaced it with <code>cli_show</code> callbacks.
+FRR provides <code>nb_cli_show_dnode_cmds()</code> , that recursively calls <code>cli_show</code> callback from a given dnode.</p>
+<p><a href="https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_vty.c#L453" target="_blank" rel="noopener noreferrer">https://github.com/Drumato/frr/blob/a41251800b09b9b93726a18fb891127a3e10340b/zebra/zebra_srv6_vty.c#L453</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">zebra_sr_config</span><span class="p">(</span><span class="k">struct</span> <span class="n">vty</span> <span class="o">*</span><span class="n">vty</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">write_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">struct</span> <span class="n">lyd_node</span> <span class="o">*</span><span class="n">dnode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nf">zebra_srv6_is_enable</span><span class="p">())</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dnode</span> <span class="o">=</span> <span class="nf">yang_dnode_get</span><span class="p">(</span><span class="n">running_config</span><span class="o">-&gt;</span><span class="n">dnode</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;/frr-zebra-sr:sr&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;/frr-zebra-srv6:srv6&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">dnode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">nb_cli_show_dnode_cmds</span><span class="p">(</span><span class="n">vty</span><span class="p">,</span> <span class="n">dnode</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">write_count</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">write_count</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// stripped
+</span></span></span></code></pre></div><hr>
+<h2 id="future-works" class="headerLink">
+    <a href="#future-works" class="header-mark"></a>4 Future Works</h2><p>So I&rsquo;ve finished to pass srv6_locator topotest with YANG backend.
+But there are some issues yet.</p>
+<h3 id="show-yang-operational-data" class="headerLink">
+    <a href="#show-yang-operational-data" class="header-mark"></a>4.1 <code>show yang operational-data</code></h3><p>For now this PoC only supports <strong>configurational</strong> callbacks.
+If user calls <strong>operational</strong> callbacks, it doesn&rsquo;t work correctly.
+this indicates the <code>show yang operational-data</code> command will fail.</p>
+<p>To achieve it, I should know how to use <code>get_keys/get_next/get_elem/lookup_entry</code> callback.
+those API don&rsquo;t have any comprehensive docs, so I&rsquo;ll have to read the existing implementations.</p>
+<h3 id="researching-mgmtd" class="headerLink">
+    <a href="#researching-mgmtd" class="header-mark"></a>4.2 researching mgmtd</h3><p>Now a new YANG-based management daemon called <strong>mgmtd</strong> is proposed to FRR.
+this daemon will support following features.
+I think the daemon will improve our development/operational experiences.</p>
+<ul>
+<li>Frontend Interface for all API clients
+<ul>
+<li>running/candidate/startup/etc databases</li>
+</ul>
+</li>
+<li>Backend Interface for all FRR daemons
+<ul>
+<li>each daemon only needs to interact with mgmtd and can handle any config/data</li>
+<li>this enables FRR daemons to unify implementations among them</li>
+</ul>
+</li>
+<li>Candidate Config Commit Rollbacks/History</li>
+</ul>
+<hr>
+<h2 id="conclusion" class="headerLink">
+    <a href="#conclusion" class="header-mark"></a>5 Conclusion</h2><p>Today I described my PoC and FRR current status.
+If you want to know more informations, please check the FRR community(GitHub and Slack)!</p>
+<hr>
+<h2 id="references" class="headerLink">
+    <a href="#references" class="header-mark"></a>6 References</h2><ul>
+<li><a href="http://docs.frrouting.org/en/latest/grpc.html" target="_blank" rel="noopener noreferrer">http://docs.frrouting.org/en/latest/grpc.html</a>
+<ul>
+<li><a href="http://docs.frrouting.org/projects/dev-guide/en/latest/grpc.html" target="_blank" rel="noopener noreferrer">http://docs.frrouting.org/projects/dev-guide/en/latest/grpc.html</a></li>
+</ul>
+</li>
+<li><a href="https://engineering.linecorp.com/ja/blog/internship2021-frrouting/" target="_blank" rel="noopener noreferrer">【インターンレポート】FRRouting IS-IS SRv6 Extension 設計と実装に関して</a></li>
+<li><a href="https://github.com/FRRouting/frr/pull/5865" target="_blank" rel="noopener noreferrer">zebra: srv6 manager</a></li>
+</ul>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-01-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/posts/srv6-manager/" data-title="Replace FRR Zebra SRv6 Manager with YANG Backend" data-hashtags="frr,srv6"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/posts/srv6-manager/" data-hashtag="frr"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/posts/srv6-manager/" data-title="Replace FRR Zebra SRv6 Manager with YANG Backend"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/posts/srv6-manager/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/posts/srv6-manager/" data-title="Replace FRR Zebra SRv6 Manager with YANG Backend"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/posts/srv6-manager/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/frr/">frr</a>,&nbsp;<a href="/tags/srv6/">srv6</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/kubectl-plugin-builder/" class="prev" rel="prev" title="Kubectl Plugin Builder"><i class="fas fa-angle-left fa-fw"></i>Kubectl Plugin Builder</a>
+            <a href="/posts/peachcomb/" class="next" rel="next" title="Go Parser Combinator with Go Generics">Go Parser Combinator with Go Generics<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

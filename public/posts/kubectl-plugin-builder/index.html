@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Kubectl Plugin Builder - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Kubectl Plugin Builder" />
+<meta property="og:description" content="As you know Kubernetes provides many extensibilities to users. These extensibilities are explained in the official docs.
+Custom Controller CRD Admission Webhook Kubernetes Scheduler Plugin CNI Plugin In the same way, kubectl that is used by almost k8s operators, provides an extensibility to us. That is called kubectl plugin, we use the extensibility and utilize our operations.
+In this post I&rsquo;ll describe you the overview of kubectl plugin. I&rsquo;ll take up some subject about kubectl plugin, and finally I&rsquo;ll introduce my project that is called kubectl-plugin-builder." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/posts/kubectl-plugin-builder/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-06T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubectl Plugin Builder"/>
+<meta name="twitter:description" content="As you know Kubernetes provides many extensibilities to users. These extensibilities are explained in the official docs.
+Custom Controller CRD Admission Webhook Kubernetes Scheduler Plugin CNI Plugin In the same way, kubectl that is used by almost k8s operators, provides an extensibility to us. That is called kubectl plugin, we use the extensibility and utilize our operations.
+In this post I&rsquo;ll describe you the overview of kubectl plugin. I&rsquo;ll take up some subject about kubectl plugin, and finally I&rsquo;ll introduce my project that is called kubectl-plugin-builder."/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/posts/kubectl-plugin-builder/" /><link rel="next" href="http://drumato.com/posts/srv6-manager/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Kubectl Plugin Builder",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/posts\/kubectl-plugin-builder\/"
+        },"genre": "posts","keywords": "kubernetes, go, kubectl","wordcount":  552 ,
+        "url": "http:\/\/drumato.com\/posts\/kubectl-plugin-builder\/","datePublished": "2021-12-06T00:00:00+00:00","dateModified": "2021-12-06T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="/posts/"> Post </a><a class="menu-item" href="/diaries/"> Diary </a><a class="menu-item" href="/thissite/"> This Site </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/posts/kubectl-plugin-builder/" selected>English</option><option value="/ja/posts/kubectl-plugin-builder/">Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="/posts/" title="">Post</a><a class="menu-item" href="/diaries/" title="">Diary</a><a class="menu-item" href="/thissite/" title="">This Site</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/posts/kubectl-plugin-builder/" selected>English</option><option value="/ja/posts/kubectl-plugin-builder/">Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#what-is-kubectl-plugin">What is kubectl plugin</a>
+      <ul>
+        <li><a href="#how-to-develop-a-new-plugin">How to develop a new plugin</a></li>
+      </ul>
+    </li>
+    <li><a href="#issues-they-are-appeared-by-using-go">Issues they are appeared by using Go</a></li>
+    <li><a href="#kubectl-plugin-builder">kubectl-plugin-builder</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubectl Plugin Builder</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-06">2021-12-06</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2021-12-06">2021-12-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;552 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#what-is-kubectl-plugin">What is kubectl plugin</a>
+      <ul>
+        <li><a href="#how-to-develop-a-new-plugin">How to develop a new plugin</a></li>
+      </ul>
+    </li>
+    <li><a href="#issues-they-are-appeared-by-using-go">Issues they are appeared by using Go</a></li>
+    <li><a href="#kubectl-plugin-builder">kubectl-plugin-builder</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>As you know Kubernetes provides many extensibilities to users.
+These extensibilities are explained in <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/" target="_blank" rel="noopener noreferrer">the official docs</a>.</p>
+<ul>
+<li>Custom Controller</li>
+<li>CRD</li>
+<li>Admission Webhook</li>
+<li>Kubernetes Scheduler Plugin</li>
+<li>CNI Plugin</li>
+</ul>
+<p>In the same way, <strong>kubectl</strong> that is used by almost k8s operators, provides an extensibility to us.
+That is called <strong>kubectl plugin</strong>, we use the extensibility and utilize our operations.</p>
+<p>In this post I&rsquo;ll describe you the overview of kubectl plugin.
+I&rsquo;ll take up some subject about kubectl plugin,
+and finally I&rsquo;ll introduce my project that is called <strong>kubectl-plugin-builder</strong>.</p>
+<hr>
+<h2 id="background" class="headerLink">
+    <a href="#background" class="header-mark"></a>1 Background</h2><h2 id="what-is-kubectl-plugin" class="headerLink">
+    <a href="#what-is-kubectl-plugin" class="header-mark"></a>2 What is kubectl plugin</h2><p>kubectl plugin is just an executable.
+A executable can be a kubectl plugin when it is located in a directory that kubectl can recognize.
+the executable&rsquo;s name must follow a naming convension(<code>kubectl-*</code>).
+The official docs introduces us to implement a kubectl plugin by using shell script.
+I think kubectl plugin has some merits but I think the most merit for k8s operators is <strong>uniformity</strong>.
+we unify k8s operations among kubectl and its plugins.
+we can check installed plugins using <code>kubectl plugin list</code>.</p>
+<p>There is a famous plugin called <strong><a href="https://github.com/postfinance/kubectl-ns" target="_blank" rel="noopener noreferrer">postfinance/kubectl-ns</a></strong>.
+<a href="https://github.com/kubernetes/sample-cli-plugin" target="_blank" rel="noopener noreferrer">kubernetes/sample-cli-plugin</a> takes the concept.
+And <a href="https://github.com/ishantanu/awesome-kubectl-plugins" target="_blank" rel="noopener noreferrer">awesome-kubectl-plugins</a> introduces the plugin.
+This plugin manages the namespace context in a kubeconfig.
+I think kubectl plugin should follow one principle, <strong>&ldquo;One Plugin Does One Thing&rdquo;</strong> like this.</p>
+<h3 id="how-to-develop-a-new-plugin" class="headerLink">
+    <a href="#how-to-develop-a-new-plugin" class="header-mark"></a>2.1 How to develop a new plugin</h3><p>I described in above, a kubectl plugin is just an executable.
+we can develop plugins whatever we use shell script/Python/Go as programming language.
+For now I focus one subject <strong>&ldquo;My thought abount implementing kubectl plugins in best practices&rdquo;</strong>
+I&rsquo;ll strongly recommend you to use Go and its CLI application builder like <a href="https://github.com/spf13/cobra" target="_blank" rel="noopener noreferrer">spf13/cobra</a>.
+There are 3 reasons.</p>
+<p>First, the biggest concern for kubernetes operators is <strong>Simplifying kubernetes operations</strong>.
+they don&rsquo;t want to waste time about how to construct a new plugin.
+It means <strong>even if you develop a tiny plugin you should use scalable programming languages.</strong></p>
+<p>Second, almost kubernetes ecosystems adopt Go. Core components(kube-apiserver/kube-scheduler/kubectl) are also.
+So Kubernetes engineers are close to Go.
+A plugin should be easy to understand when A newbie join to kubernetes operation team.
+This merit comes up with one idea that recommend us to use a mainstream programming language.</p>
+<p>Last, almost famous kubectl plugins are written in Go actually.
+Moreover they&rsquo;re constructed with cobra.
+Development of kubectl plugin depends each case so there are few documents in the internet I think.
+but almost implementations of plugins are published.</p>
+<h2 id="issues-they-are-appeared-by-using-go" class="headerLink">
+    <a href="#issues-they-are-appeared-by-using-go" class="header-mark"></a>3 Issues they are appeared by using Go</h2><p>You need some boilerplates to implement a kubectl plugin by using Go.</p>
+<ul>
+<li>initialization client-go</li>
+<li>initialization cli-runtime
+<ul>
+<li>for using common CLI flags(e.g. <code>-n/--namespace</code>)</li>
+</ul>
+</li>
+<li>follows the practical ways
+<ul>
+<li><code>Complete/Validate/Run</code> model</li>
+</ul>
+</li>
+</ul>
+<p>And we know some issues about development api client.
+how we develop it as testable/maintainable/simple?</p>
+<hr>
+<h2 id="kubectl-plugin-builder" class="headerLink">
+    <a href="#kubectl-plugin-builder" class="header-mark"></a>4 kubectl-plugin-builder</h2><p>So I referenced kubebuilder&rsquo;s philosophy and achievements,
+and developed a builder that helps our plugin developments.
+It&rsquo;s already published at <a href="https://github.com/Drumato/kubectl-plugin-builder" target="_blank" rel="noopener noreferrer">GitHub</a>.
+You can see the brief introduction <a href="https://github.com/Drumato/kubectl-plugin-builder/blob/main/docs/introduction.md" target="_blank" rel="noopener noreferrer">here</a>.
+There are some features.</p>
+<ul>
+<li>initializes a new plugin project</li>
+<li>constructs a cli application architecture from yaml declaratively
+<ul>
+<li>flag</li>
+<li>command alias</li>
+</ul>
+</li>
+<li>add a new command definition to the yaml</li>
+<li>controls the plugin&rsquo;s output-format</li>
+</ul>
+<p>The implementation consists of few thousand LoC so it&rsquo;s easy to understand.</p>
+<hr>
+<h2 id="conclusion" class="headerLink">
+    <a href="#conclusion" class="header-mark"></a>5 Conclusion</h2><p>Today I introduced some concerns about kubectl plugins and kubectl-plugin-builder.
+Please play with it and share your experiences with me!</p>
+<h2 id="references" class="headerLink">
+    <a href="#references" class="header-mark"></a>6 References</h2><ul>
+<li><a href="https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/" target="_blank" rel="noopener noreferrer">Extend kubectl with plugins</a></li>
+</ul>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-12-06</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/posts/kubectl-plugin-builder/" data-title="Kubectl Plugin Builder" data-hashtags="kubernetes,go,kubectl"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/posts/kubectl-plugin-builder/" data-hashtag="kubernetes"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/posts/kubectl-plugin-builder/" data-title="Kubectl Plugin Builder"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/posts/kubectl-plugin-builder/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/posts/kubectl-plugin-builder/" data-title="Kubectl Plugin Builder"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/posts/kubectl-plugin-builder/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/tags/go/">go</a>,&nbsp;<a href="/tags/kubectl/">kubectl</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+            <a href="/posts/srv6-manager/" class="next" rel="next" title="Replace FRR Zebra SRv6 Manager with YANG Backend">Replace FRR Zebra SRv6 Manager with YANG Backend<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

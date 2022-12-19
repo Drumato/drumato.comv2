@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">FRR BGPdのbestpath selectionの3番までを動かして検証する - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="FRR BGPdのbestpath selectionの3番までを動かして検証する" />
+<meta property="og:description" content="BGPでは複数のneighborから同じprefixに対する経路を受け取ることがあります． それに対して bestpath selection というalgorithmを適用し，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/bgpd-bestpath/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-10-04T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="FRR BGPdのbestpath selectionの3番までを動かして検証する"/>
+<meta name="twitter:description" content="BGPでは複数のneighborから同じprefixに対する経路を受け取ることがあります． それに対して bestpath selection というalgorithmを適用し，"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/bgpd-bestpath/" /><link rel="prev" href="http://drumato.com/ja/posts/cybozu-labs-youth-10th/" /><link rel="next" href="http://drumato.com/ja/posts/kubectl-plugin-builder/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "FRR BGPdのbestpath selectionの3番までを動かして検証する",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/bgpd-bestpath\/"
+        },"genre": "posts","keywords": "bgp, frr","wordcount":  3377 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/bgpd-bestpath\/","datePublished": "2021-10-04T00:00:00+00:00","dateModified": "2021-10-04T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/bgpd-bestpath/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/bgpd-bestpath/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#weight-check">Weight check</a></li>
+    <li><a href="#local-preference-check">Local Preference Check</a></li>
+    <li><a href="#local-route-check">Local Route Check</a></li>
+    <li><a href="#おわりに">おわりに</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">FRR BGPdのbestpath selectionの3番までを動かして検証する</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-10-04">2021-10-04</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2021-10-04">2021-10-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3377 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#weight-check">Weight check</a></li>
+    <li><a href="#local-preference-check">Local Preference Check</a></li>
+    <li><a href="#local-route-check">Local Route Check</a></li>
+    <li><a href="#おわりに">おわりに</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>BGPでは複数のneighborから同じprefixに対する経路を受け取ることがあります．<br>
+それに対して <strong>bestpath selection</strong> というalgorithmを適用し，<br>
+実際にFIBにinstallする経路を決定します．<br>
+ここではFRRを用いてそれを検証し，<br>
+BGPのお気持ちを頑張って理解してみます．<br>
+<a href="https://docs.frrouting.org/en/latest/bgp.html#route-selection" target="_blank" rel="noopener noreferrer">FRRのalgorithm</a> はこちらに記載されています．<br>
+今回はこのうち3番，Local Route Checkまでを検証してみます．</p>
+<blockquote>
+<p>恐らくですが全部のruleを検証するように，後々書きかえると思います．<br>
+もっといいtopoに変更したり，ちゃんとpacapして出すと思います．<br>
+それまでの暫定的な記事だと思っていただければ．</p>
+</blockquote>
+<p>今回用いるtinet configは，<br>
+<a href="https://github.com/Drumato/local-network-topologies/tree/main/bgp/frr-bestpath" target="_blank" rel="noopener noreferrer">こちら</a> に置いてあります．</p>
+<p>実行環境も載せておきます．</p>
+<p><a class="lightgallery" href="/images/frr-bestpath/archey.png" title="archey" data-thumbnail="/images/frr-bestpath/archey.png">
+        <img
+            class="lazyload"
+            data-src="/images/frr-bestpath/archey.png"
+            data-srcset="/images/frr-bestpath/archey.png, /images/frr-bestpath/archey.png 1.5x, /images/frr-bestpath/archey.png 2x"
+            data-sizes="auto"
+            alt="/images/frr-bestpath/archey.png">
+    </a></p>
+<h2 id="weight-check" class="headerLink">
+    <a href="#weight-check" class="header-mark"></a>1 Weight check</h2><p>まずは経路につけるweightを制御することでbestpathにどう影響が出るのか見ていきます．<br>
+まずはequal weightで経路広報してみて，<br>
+その後weightをつけるとどうなるか，というようにして見てみます．</p>
+<p>次のようなnetworkを考えてみます．<br>
+ここで，R2, R3からは <code>redistribute connected</code> を設定しています．<br>
+configを見るとわかりますがprefix-listでroute filteringを行っているので，<br>
+R2, R3は <code>10.0.0.0/16</code> , <code>10.0.1.0/24</code> のみ広報します．<br>
+upperからdefault routeを広報し <code>neighbor PEER default-originate</code> を設定するというのもやってみたかったですが．<br>
+<a href="https://github.com/Drumato/local-network-topologies/blob/main/bgp/frr-bestpath/equal-weight-spec.yaml" target="_blank" rel="noopener noreferrer">対応するtinet configはこちら</a>に．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">           +-----------------------------------+
+</span></span><span class="line"><span class="cl">           |                                   |
+</span></span><span class="line"><span class="cl">           |                                   |
+</span></span><span class="line"><span class="cl">           |              R1                   |
+</span></span><span class="line"><span class="cl">           |           AS65001                 |
+</span></span><span class="line"><span class="cl">           |                                   |
+</span></span><span class="line"><span class="cl">           |                                   |
+</span></span><span class="line"><span class="cl">           |         .1                   .2   |
+</span></span><span class="line"><span class="cl">           +----------+-------------------+----+
+</span></span><span class="line"><span class="cl">                      |    10.0.0.0/16    |
+</span></span><span class="line"><span class="cl">                      |                   |
+</span></span><span class="line"><span class="cl">+---------------------+---+    +----------+---------------+
+</span></span><span class="line"><span class="cl">|                    .251 |    |          .252            |
+</span></span><span class="line"><span class="cl">|           R2            |    |           R3             |
+</span></span><span class="line"><span class="cl">|         AS65002         |    |         AS65003          |
+</span></span><span class="line"><span class="cl">|                         |    |                          |
+</span></span><span class="line"><span class="cl">|                         |    |                          |
+</span></span><span class="line"><span class="cl">|              .1         |    |          .2              |
+</span></span><span class="line"><span class="cl">+-------------+-----------+    +---------+----------------+
+</span></span><span class="line"><span class="cl">              |          10.0.1.0/24     |
+</span></span><span class="line"><span class="cl">           +--+--------------------------+------+
+</span></span><span class="line"><span class="cl">           |   .251                      .252   |
+</span></span><span class="line"><span class="cl">           |                                    |
+</span></span><span class="line"><span class="cl">           |              C1                    |
+</span></span><span class="line"><span class="cl">           |           AS65004                  |
+</span></span><span class="line"><span class="cl">           |                                    |
+</span></span><span class="line"><span class="cl">           |                                    |
+</span></span><span class="line"><span class="cl">           |                                    |
+</span></span><span class="line"><span class="cl">           +------------------------------------+
+</span></span></code></pre></div><p>一例として，R1 configを見てみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> R1 vtysh -c <span class="s1">&#39;sh run&#39;</span>
+</span></span><span class="line"><span class="cl">Building configuration...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Current configuration:
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">frr version 8.0
+</span></span><span class="line"><span class="cl">frr defaults traditional
+</span></span><span class="line"><span class="cl">hostname R1
+</span></span><span class="line"><span class="cl">log syslog informational
+</span></span><span class="line"><span class="cl">no ipv6 forwarding
+</span></span><span class="line"><span class="cl">service integrated-vtysh-config
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">interface net1
+</span></span><span class="line"><span class="cl"> ip address 10.0.0.1/16
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">router bgp <span class="m">65001</span>
+</span></span><span class="line"><span class="cl"> bgp router-id 1.1.1.1
+</span></span><span class="line"><span class="cl"> bgp bestpath as-path multipath-relax
+</span></span><span class="line"><span class="cl"> neighbor 10.0.0.251 remote-as <span class="m">65002</span>
+</span></span><span class="line"><span class="cl"> neighbor 10.0.0.252 remote-as <span class="m">65003</span>
+</span></span><span class="line"><span class="cl"> !
+</span></span><span class="line"><span class="cl"> address-family ipv4 unicast
+</span></span><span class="line"><span class="cl">  neighbor 10.0.0.251 route-map RMAP_LOWER in
+</span></span><span class="line"><span class="cl">  neighbor 10.0.0.252 route-map RMAP_LOWER in
+</span></span><span class="line"><span class="cl"> exit-address-family
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">ip prefix-list PLIST_LOWER seq <span class="m">5</span> permit 10.0.1.0/24
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">route-map RMAP_LOWER permit <span class="m">10</span>
+</span></span><span class="line"><span class="cl"> match ip address prefix-list PLIST_LOWER
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">line vty
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">end
+</span></span></code></pre></div><p><code>RMAP_LOWER</code> は C1が接続するnetwork prefixだけをpermitし，<br>
+R2, R3からはその経路しかもらわないようにfilteringします．<br>
+R2, R3は実際には <code>10.0.0.0/16</code> にも接続していますが，<br>
+同じくR1も接続していてその経路はいらないので弾くイメージです．</p>
+<p>今度はC1でrib/fibを見てみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh bgp ipv4 unicast&#39;</span>
+</span></span><span class="line"><span class="cl">BGP table version is 2, <span class="nb">local</span> router ID is 4.4.4.4, vrf id <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Default <span class="nb">local</span> pref 100, <span class="nb">local</span> AS <span class="m">65004</span>
+</span></span><span class="line"><span class="cl">Status codes:  s suppressed, d damped, h history, * valid, &gt; best, <span class="o">=</span> multipath,
+</span></span><span class="line"><span class="cl">               i internal, r RIB-failure, S Stale, R Removed
+</span></span><span class="line"><span class="cl">Nexthop codes: @NNN nexthop<span class="err">&#39;</span>s vrf id, &lt; announce-nh-self
+</span></span><span class="line"><span class="cl">Origin codes:  i - IGP, e - EGP, ? - incomplete
+</span></span><span class="line"><span class="cl">RPKI validation codes: V valid, I invalid, N Not found
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Network          Next Hop            Metric LocPrf Weight Path
+</span></span><span class="line"><span class="cl">*<span class="o">=</span> 10.0.0.0/16      10.0.1.2                 <span class="m">0</span>             <span class="m">0</span> <span class="m">65003</span> ?
+</span></span><span class="line"><span class="cl">*&gt;                  10.0.1.1                 <span class="m">0</span>             <span class="m">0</span> <span class="m">65002</span> ?
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Displayed  <span class="m">1</span> routes and <span class="m">2</span> total paths
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh ip route&#39;</span>
+</span></span><span class="line"><span class="cl">Codes: K - kernel route, C - connected, S - static, R - RIP,
+</span></span><span class="line"><span class="cl">       O - OSPF, I - IS-IS, B - BGP, E - EIGRP, N - NHRP,
+</span></span><span class="line"><span class="cl">       T - Table, v - VNC, V - VNC-Direct, A - Babel, F - PBR,
+</span></span><span class="line"><span class="cl">       f - OpenFabric,
+</span></span><span class="line"><span class="cl">       &gt; - selected route, * - FIB route, q - queued, r - rejected, b - backup
+</span></span><span class="line"><span class="cl">       t - trapped, o - offload failure
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">B&gt;* 10.0.0.0/16 <span class="o">[</span>20/0<span class="o">]</span> via 10.0.1.1, net2, weight 1, 00:00:14
+</span></span><span class="line"><span class="cl">  *                    via 10.0.1.2, net2, weight 1, 00:00:14
+</span></span><span class="line"><span class="cl">C&gt;* 10.0.1.0/24 is directly connected, net2, 00:00:16
+</span></span></code></pre></div><p>いい感じにmultipathが広報されていますね．<br>
+それでは本題です．<br>
+C1のroute-mapで <code>set weight</code> をかけてみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh run&#39;</span>
+</span></span><span class="line"><span class="cl">Building configuration...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Current configuration:
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">frr version 8.0
+</span></span><span class="line"><span class="cl">frr defaults traditional
+</span></span><span class="line"><span class="cl">hostname C1
+</span></span><span class="line"><span class="cl">log syslog informational
+</span></span><span class="line"><span class="cl">no ipv6 forwarding
+</span></span><span class="line"><span class="cl">service integrated-vtysh-config
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">interface net2
+</span></span><span class="line"><span class="cl"> ip address 10.0.1.254/24
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">router bgp <span class="m">65004</span>
+</span></span><span class="line"><span class="cl"> bgp router-id 4.4.4.4
+</span></span><span class="line"><span class="cl"> bgp bestpath as-path multipath-relax
+</span></span><span class="line"><span class="cl"> neighbor 10.0.1.1 remote-as <span class="m">65002</span>
+</span></span><span class="line"><span class="cl"> neighbor 10.0.1.2 remote-as <span class="m">65003</span>
+</span></span><span class="line"><span class="cl"> !
+</span></span><span class="line"><span class="cl"> address-family ipv4 unicast
+</span></span><span class="line"><span class="cl">  neighbor 10.0.1.1 route-map RMAP_UPPER1 in
+</span></span><span class="line"><span class="cl">  neighbor 10.0.1.2 route-map RMAP_UPPER2 in
+</span></span><span class="line"><span class="cl"> exit-address-family
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">ip prefix-list PLIST_UPPER seq <span class="m">5</span> permit 10.0.0.0/16
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">route-map RMAP_UPPER1 permit <span class="m">10</span>
+</span></span><span class="line"><span class="cl"> match ip address prefix-list PLIST_UPPER
+</span></span><span class="line"><span class="cl"> <span class="nb">set</span> weight <span class="m">10</span>
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">route-map RMAP_UPPER2 permit <span class="m">10</span>
+</span></span><span class="line"><span class="cl"> match ip address prefix-list PLIST_UPPER
+</span></span><span class="line"><span class="cl"> <span class="nb">set</span> weight <span class="m">20</span>
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">line vty
+</span></span><span class="line"><span class="cl">!
+</span></span><span class="line"><span class="cl">end
+</span></span></code></pre></div><p>この状態でC1のrib/fibを見ると変化を確認できます．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh bgp ipv4 unicast&#39;</span>
+</span></span><span class="line"><span class="cl">BGP table version is 2, <span class="nb">local</span> router ID is 4.4.4.4, vrf id <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Default <span class="nb">local</span> pref 100, <span class="nb">local</span> AS <span class="m">65004</span>
+</span></span><span class="line"><span class="cl">Status codes:  s suppressed, d damped, h history, * valid, &gt; best, <span class="o">=</span> multipath,
+</span></span><span class="line"><span class="cl">               i internal, r RIB-failure, S Stale, R Removed
+</span></span><span class="line"><span class="cl">Nexthop codes: @NNN nexthop<span class="err">&#39;</span>s vrf id, &lt; announce-nh-self
+</span></span><span class="line"><span class="cl">Origin codes:  i - IGP, e - EGP, ? - incomplete
+</span></span><span class="line"><span class="cl">RPKI validation codes: V valid, I invalid, N Not found
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Network          Next Hop            Metric LocPrf Weight Path
+</span></span><span class="line"><span class="cl">*&gt; 10.0.0.0/16      10.0.1.2                 <span class="m">0</span>            <span class="m">20</span> <span class="m">65003</span> ?
+</span></span><span class="line"><span class="cl">*                   10.0.1.1                 <span class="m">0</span>            <span class="m">10</span> <span class="m">65002</span> ?
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Displayed  <span class="m">1</span> routes and <span class="m">2</span> total paths
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh ip route&#39;</span>
+</span></span><span class="line"><span class="cl">Codes: K - kernel route, C - connected, S - static, R - RIP,
+</span></span><span class="line"><span class="cl">       O - OSPF, I - IS-IS, B - BGP, E - EIGRP, N - NHRP,
+</span></span><span class="line"><span class="cl">       T - Table, v - VNC, V - VNC-Direct, A - Babel, F - PBR,
+</span></span><span class="line"><span class="cl">       f - OpenFabric,
+</span></span><span class="line"><span class="cl">       &gt; - selected route, * - FIB route, q - queued, r - rejected, b - backup
+</span></span><span class="line"><span class="cl">       t - trapped, o - offload failure
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">B&gt;* 10.0.0.0/16 <span class="o">[</span>20/0<span class="o">]</span> via 10.0.1.2, net2, weight 1, 00:01:10
+</span></span><span class="line"><span class="cl">C&gt;* 10.0.1.0/24 is directly connected, net2, 00:01:12
+</span></span></code></pre></div><p>これが <strong>Weight Check</strong> の挙動です．<br>
+同じprefixの経路が複数広報されたとき，<br>
+weightの高い方を優先してbestpathを選定します．<br>
+weight以外の項目に変化がないのが重要です．<br>
+<code>10.0.0.0/16</code> の経路はこのように重み付けされるが，<br>
+<code>10.0.1.0/24</code> は普通にmultipathである点に注意してください．<br>
+(route-mapを適用しているのは経路を受け取っているC1本人なので)</p>
+<h2 id="local-preference-check" class="headerLink">
+    <a href="#local-preference-check" class="header-mark"></a>2 Local Preference Check</h2><p>つづいてlocal preferenceです．<br>
+これはiBGP内で用いられるpath attributeの <code>LOCAL_PREF</code> に関わってきます．</p>
+<p>ここで対象とするものは，先程のnetworkからほとんど変わっていません．<br>
+loでpeeringする点くらい?<br>
+loのaddressはIGPとかを使わずにstatic routeで横着しています．<br>
+<a href="https://github.com/Drumato/local-network-topologies/blob/main/bgp/frr-bestpath/localprefcheck-spec.yaml" target="_blank" rel="noopener noreferrer">対応するtinet configはこちら</a>に．</p>
+<blockquote>
+<p>記事では解説しませんが，repositoryにはequal-localpref.yaml も置いてあるので参考にしてください．<br>
+先ほどと同じくmultipathがselectされるだけですが．</p>
+</blockquote>
+<p>さて，ここではR2, R3のconfigから，C1に適用するroute-mapを見てみます．<br>
+LOCAL_PREF path attributeはAS内のすべてのiBGP peerを流れるので，<br>
+R2で設定するとそれがC1に届くまで維持されます．</p>
+<p>まず，R2では <code>set local-preference 200</code> を設定しています．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> R2 vtysh -c <span class="s1">&#39;sh route-map RMAP_UPPER&#39;</span>
+</span></span><span class="line"><span class="cl">ZEBRA:
+</span></span><span class="line"><span class="cl">route-map: RMAP_UPPER Invoked: <span class="m">0</span> Optimization: enabled Processed Change: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> permit, sequence <span class="m">10</span> Invoked <span class="m">0</span>
+</span></span><span class="line"><span class="cl">  Match clauses:
+</span></span><span class="line"><span class="cl">    ip address prefix-list PLIST_UPPER
+</span></span><span class="line"><span class="cl">  Set clauses:
+</span></span><span class="line"><span class="cl">  Call clause:
+</span></span><span class="line"><span class="cl">  Action:
+</span></span><span class="line"><span class="cl">    Exit routemap
+</span></span><span class="line"><span class="cl">BGP:
+</span></span><span class="line"><span class="cl">route-map: RMAP_UPPER Invoked: <span class="m">12</span> Optimization: enabled Processed Change: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> permit, sequence <span class="m">10</span> Invoked <span class="m">6</span>
+</span></span><span class="line"><span class="cl">  Match clauses:
+</span></span><span class="line"><span class="cl">    ip address prefix-list PLIST_UPPER
+</span></span><span class="line"><span class="cl">  Set clauses:
+</span></span><span class="line"><span class="cl">    local-preference <span class="m">200</span>
+</span></span><span class="line"><span class="cl">  Call clause:
+</span></span><span class="line"><span class="cl">  Action:
+</span></span><span class="line"><span class="cl">    Exit routemap
+</span></span></code></pre></div><p>次に，R3では <code>set local-preference 400</code> を設定しています．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> R3 vtysh -c <span class="s1">&#39;sh route-map RMAP_UPPER&#39;</span>
+</span></span><span class="line"><span class="cl">ZEBRA:
+</span></span><span class="line"><span class="cl">route-map: RMAP_UPPER Invoked: <span class="m">0</span> Optimization: enabled Processed Change: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> permit, sequence <span class="m">10</span> Invoked <span class="m">0</span>
+</span></span><span class="line"><span class="cl">  Match clauses:
+</span></span><span class="line"><span class="cl">    ip address prefix-list PLIST_UPPER
+</span></span><span class="line"><span class="cl">  Set clauses:
+</span></span><span class="line"><span class="cl">  Call clause:
+</span></span><span class="line"><span class="cl">  Action:
+</span></span><span class="line"><span class="cl">    Exit routemap
+</span></span><span class="line"><span class="cl">BGP:
+</span></span><span class="line"><span class="cl">route-map: RMAP_UPPER Invoked: <span class="m">13</span> Optimization: enabled Processed Change: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> permit, sequence <span class="m">10</span> Invoked <span class="m">7</span>
+</span></span><span class="line"><span class="cl">  Match clauses:
+</span></span><span class="line"><span class="cl">    ip address prefix-list PLIST_UPPER
+</span></span><span class="line"><span class="cl">  Set clauses:
+</span></span><span class="line"><span class="cl">    local-preference <span class="m">400</span>
+</span></span><span class="line"><span class="cl">  Call clause:
+</span></span><span class="line"><span class="cl">  Action:
+</span></span><span class="line"><span class="cl">    Exit routemap
+</span></span></code></pre></div><p>この状態で <code>10.0.0.0/16</code> の経路が広報されるとき，<br>
+UPDATE messageのLOCAL_PREF attributeが期待する値に書き換わり，
+C1でのbestpath selectionに影響を与えるはずです．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh bgp ipv4 unicast&#39;</span>
+</span></span><span class="line"><span class="cl">BGP table version is 1, <span class="nb">local</span> router ID is 4.4.4.4, vrf id <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Default <span class="nb">local</span> pref 100, <span class="nb">local</span> AS <span class="m">65002</span>
+</span></span><span class="line"><span class="cl">Status codes:  s suppressed, d damped, h history, * valid, &gt; best, <span class="o">=</span> multipath,
+</span></span><span class="line"><span class="cl">               i internal, r RIB-failure, S Stale, R Removed
+</span></span><span class="line"><span class="cl">Nexthop codes: @NNN nexthop<span class="err">&#39;</span>s vrf id, &lt; announce-nh-self
+</span></span><span class="line"><span class="cl">Origin codes:  i - IGP, e - EGP, ? - incomplete
+</span></span><span class="line"><span class="cl">RPKI validation codes: V valid, I invalid, N Not found
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Network          Next Hop            Metric LocPrf Weight Path
+</span></span><span class="line"><span class="cl">*&gt;i10.0.0.0/16      10.0.255.3               <span class="m">0</span>    <span class="m">400</span>      <span class="m">0</span> ?
+</span></span><span class="line"><span class="cl">* i                 10.0.255.2               <span class="m">0</span>    <span class="m">200</span>      <span class="m">0</span> ?
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Displayed  <span class="m">1</span> routes and <span class="m">2</span> total paths
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> C1 vtysh -c <span class="s1">&#39;sh ip route&#39;</span>
+</span></span><span class="line"><span class="cl">Codes: K - kernel route, C - connected, S - static, R - RIP,
+</span></span><span class="line"><span class="cl">       O - OSPF, I - IS-IS, B - BGP, E - EIGRP, N - NHRP,
+</span></span><span class="line"><span class="cl">       T - Table, v - VNC, V - VNC-Direct, A - Babel, F - PBR,
+</span></span><span class="line"><span class="cl">       f - OpenFabric,
+</span></span><span class="line"><span class="cl">       &gt; - selected route, * - FIB route, q - queued, r - rejected, b - backup
+</span></span><span class="line"><span class="cl">       t - trapped, o - offload failure
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">B&gt;  10.0.0.0/16 <span class="o">[</span>200/0<span class="o">]</span> via 10.0.255.3 <span class="o">(</span>recursive<span class="o">)</span>, weight 1, 00:00:19
+</span></span><span class="line"><span class="cl">  *                       via 10.0.1.2, net2, weight 1, 00:00:19
+</span></span><span class="line"><span class="cl">C&gt;* 10.0.1.0/24 is directly connected, net2, 00:00:21
+</span></span><span class="line"><span class="cl">S&gt;* 10.0.255.2/32 <span class="o">[</span>1/0<span class="o">]</span> via 10.0.1.1, net2, weight 1, 00:00:21
+</span></span><span class="line"><span class="cl">S&gt;* 10.0.255.3/32 <span class="o">[</span>1/0<span class="o">]</span> via 10.0.1.2, net2, weight 1, 00:00:21
+</span></span><span class="line"><span class="cl">C&gt;* 10.0.255.4/32 is directly connected, lo, 00:00:21
+</span></span></code></pre></div><p>想定どおりの挙動ですね．<br>
+<code>LOCAL_PREF</code> attributeに格納された値が大きい方をbestpathとして優先します．<br>
+ところで <code>NEXT_HOP</code> attributeのrecursive lookupに全然詳しくないことがわかったので，<br>
+これはいずれ勉強して記事にしなければ．</p>
+<h2 id="local-route-check" class="headerLink">
+    <a href="#local-route-check" class="header-mark"></a>3 Local Route Check</h2><p>最後にLocal Route Checkですが，<br>
+これはsimpleにstatic/aggregates/redistributed routeを優先する，というものです．<br>
+実はこのruleはすでに確認しています．<br>
+<a href="#local-preference-check" rel="">Local Preference Check</a> のR2でribを見てみましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> R2 vtysh -c <span class="s1">&#39;sh bgp ipv4 unicast&#39;</span>
+</span></span><span class="line"><span class="cl">BGP table version is 3, <span class="nb">local</span> router ID is 2.2.2.2, vrf id <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Default <span class="nb">local</span> pref 100, <span class="nb">local</span> AS <span class="m">65002</span>
+</span></span><span class="line"><span class="cl">Status codes:  s suppressed, d damped, h history, * valid, &gt; best, <span class="o">=</span> multipath,
+</span></span><span class="line"><span class="cl">               i internal, r RIB-failure, S Stale, R Removed
+</span></span><span class="line"><span class="cl">Nexthop codes: @NNN nexthop<span class="err">&#39;</span>s vrf id, &lt; announce-nh-self
+</span></span><span class="line"><span class="cl">Origin codes:  i - IGP, e - EGP, ? - incomplete
+</span></span><span class="line"><span class="cl">RPKI validation codes: V valid, I invalid, N Not found
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Network          Next Hop            Metric LocPrf Weight Path
+</span></span><span class="line"><span class="cl">* i10.0.0.0/16      10.0.255.3               <span class="m">0</span>    <span class="m">400</span>      <span class="m">0</span> ?
+</span></span><span class="line"><span class="cl">*&gt;                  0.0.0.0                  <span class="m">0</span>         <span class="m">32768</span> ?
+</span></span><span class="line"><span class="cl">*&gt; 10.0.1.0/24      0.0.0.0                  <span class="m">0</span>         <span class="m">32768</span> ?
+</span></span><span class="line"><span class="cl">*&gt; 10.0.255.2/32    0.0.0.0                  <span class="m">0</span>         <span class="m">32768</span> ?
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Displayed  <span class="m">3</span> routes and <span class="m">4</span> total paths
+</span></span></code></pre></div><p>ここで，R2は <code>10.0.0.0/16</code> に関する2つの経路を持っていることがわかります．</p>
+<ul>
+<li>R3とiBGP peerを形成して，R3からもらった経路</li>
+<li>そもそものconnected route</li>
+</ul>
+<p>bestpathに選ばれている経路を見ると，<br>
+上記でいう2つ目，connected routeが対応していそうですね．<br>
+というのがLocal Route Checkの挙動です．simple.</p>
+<p>逆にいうと，<br>
+<strong>static routeよりも高いweight( FRRなら <code>32768</code> より上 )</strong> でneighborを設定すれば，<br>
+static routeよりもらってきた経路を優先することができるわけです．</p>
+<h2 id="おわりに" class="headerLink">
+    <a href="#%e3%81%8a%e3%82%8f%e3%82%8a%e3%81%ab" class="header-mark"></a>4 おわりに</h2><p>ここでは簡単にFRRでBGPd bestpath selectionを感じながら色々動かしてみました．<br>
+他にも，</p>
+<ul>
+<li>AS_PATH Length Check</li>
+<li>Route Origin Check</li>
+<li>MED Check</li>
+<li>External Check</li>
+<li>IGP Cost Check</li>
+</ul>
+<p>を含む多くの項目が存在しますが，<br>
+multipathよりも優先される項目は全部検証しておいても良いかな?と思っています．</p>
+<p>というか，BGP何もわかっていない&hellip;</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-10-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/bgpd-bestpath/" data-title="FRR BGPdのbestpath selectionの3番までを動かして検証する" data-hashtags="bgp,frr"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/bgpd-bestpath/" data-hashtag="bgp"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/bgpd-bestpath/" data-title="FRR BGPdのbestpath selectionの3番までを動かして検証する"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/bgpd-bestpath/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/bgpd-bestpath/" data-title="FRR BGPdのbestpath selectionの3番までを動かして検証する"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/bgpd-bestpath/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/bgp/">bgp</a>,&nbsp;<a href="/ja/tags/frr/">frr</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/cybozu-labs-youth-10th/" class="prev" rel="prev" title="Cybozu Labs Youth 10thとして一年間活動しました"><i class="fas fa-angle-left fa-fw"></i>Cybozu Labs Youth 10thとして一年間活動しました</a>
+            <a href="/ja/posts/kubectl-plugin-builder/" class="next" rel="next" title="Kubectl Plugin Builder">Kubectl Plugin Builder<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

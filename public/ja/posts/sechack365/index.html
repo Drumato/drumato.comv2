@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">SecHack365 3rdとして一年間活動しました - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="SecHack365 3rdとして一年間活動しました" />
+<meta property="og:description" content="以前,このような記事を書きました. 実はこのDepthの開発活動はSecHack365という 人材育成プロジェクト に参加した中で作成した成果物で" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/sechack365/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-02-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-02-08T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SecHack365 3rdとして一年間活動しました"/>
+<meta name="twitter:description" content="以前,このような記事を書きました. 実はこのDepthの開発活動はSecHack365という 人材育成プロジェクト に参加した中で作成した成果物で"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/sechack365/" /><link rel="prev" href="http://drumato.com/ja/posts/toolchain-in-rust/" /><link rel="next" href="http://drumato.com/ja/posts/abc-with-automaton/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "SecHack365 3rdとして一年間活動しました",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/sechack365\/"
+        },"genre": "posts","keywords": "compiler, assembler, linker, rust","wordcount":  5727 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/sechack365\/","datePublished": "2020-02-08T00:00:00+00:00","dateModified": "2020-02-08T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/sechack365/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/sechack365/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#sechack365の活動を振り返る">SecHack365の活動を振り返る</a>
+      <ul>
+        <li><a href="#sechack365とは">Sechack365とは</a></li>
+        <li><a href="#参加の動機">参加の動機</a></li>
+        <li><a href="#応募時点でやりたかったこと">応募時点でやりたかったこと</a></li>
+        <li><a href="#応募したコース">応募したコース</a></li>
+        <li><a href="#最終的に達成したこと">最終的に達成したこと</a></li>
+      </ul>
+    </li>
+    <li><a href="#各集合回のまとめ">各集合回のまとめ</a>
+      <ul>
+        <li><a href="#応募時点神奈川回">応募時点~神奈川回</a></li>
+        <li><a href="#北海道回まで">北海道回まで</a></li>
+        <li><a href="#福岡回まで">福岡回まで</a></li>
+        <li><a href="#宮城回まで">宮城回まで</a></li>
+        <li><a href="#愛媛回まで">愛媛回まで</a></li>
+        <li><a href="#沖縄回まで">沖縄回まで</a></li>
+      </ul>
+    </li>
+    <li><a href="#全体を通して">全体を通して</a></li>
+    <li><a href="#付加学習sechack365以外の活動">付加学習･SecHack365以外の活動</a>
+      <ul>
+        <li><a href="#自作os">自作OS</a></li>
+        <li><a href="#c--">c&ndash;</a></li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">SecHack365 3rdとして一年間活動しました</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-02-08">2020-02-08</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2020-02-08">2020-02-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;5727 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;12 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#sechack365の活動を振り返る">SecHack365の活動を振り返る</a>
+      <ul>
+        <li><a href="#sechack365とは">Sechack365とは</a></li>
+        <li><a href="#参加の動機">参加の動機</a></li>
+        <li><a href="#応募時点でやりたかったこと">応募時点でやりたかったこと</a></li>
+        <li><a href="#応募したコース">応募したコース</a></li>
+        <li><a href="#最終的に達成したこと">最終的に達成したこと</a></li>
+      </ul>
+    </li>
+    <li><a href="#各集合回のまとめ">各集合回のまとめ</a>
+      <ul>
+        <li><a href="#応募時点神奈川回">応募時点~神奈川回</a></li>
+        <li><a href="#北海道回まで">北海道回まで</a></li>
+        <li><a href="#福岡回まで">福岡回まで</a></li>
+        <li><a href="#宮城回まで">宮城回まで</a></li>
+        <li><a href="#愛媛回まで">愛媛回まで</a></li>
+        <li><a href="#沖縄回まで">沖縄回まで</a></li>
+      </ul>
+    </li>
+    <li><a href="#全体を通して">全体を通して</a></li>
+    <li><a href="#付加学習sechack365以外の活動">付加学習･SecHack365以外の活動</a>
+      <ul>
+        <li><a href="#自作os">自作OS</a></li>
+        <li><a href="#c--">c&ndash;</a></li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>以前,<a href="https://drumato.com/ja/posts/execution-program-infra-in-rust/" target="_blank" rel="noopener noreferrer">このような記事</a>を書きました.</p>
+<p>実はこのDepthの開発活動はSecHack365という <strong>人材育成プロジェクト</strong> に参加した中で作成した成果物であり,<br>
+またその成果物のうちごく一部を簡単に取り上げたもの,になります.<br>
+今回はSecHack365という活動がどういうものかをシェアしていけたらな,と思っています.</p>
+<p>本記事は以下のようにして構成されています.</p>
+<h2 id="sechack365の活動を振り返る" class="headerLink">
+    <a href="#sechack365%e3%81%ae%e6%b4%bb%e5%8b%95%e3%82%92%e6%8c%af%e3%82%8a%e8%bf%94%e3%82%8b" class="header-mark"></a>1 SecHack365の活動を振り返る</h2><h3 id="sechack365とは" class="headerLink">
+    <a href="#sechack365%e3%81%a8%e3%81%af" class="header-mark"></a>1.1 Sechack365とは</h3><p>SecHack365について簡単に述べるとするならば,<br>
+<a href="https://sechack365.nict.go.jp/" target="_blank" rel="noopener noreferrer"><strong>NICTが主催する通年の人材育成プロジェクト</strong></a> です.</p>
+<p>SecHack365の理念･概要については上記公式サイトを参照していただくとして,<br>
+まずは私が参加した理由･参加時点のモチベーションからお話したいと思います.</p>
+<h3 id="参加の動機" class="headerLink">
+    <a href="#%e5%8f%82%e5%8a%a0%e3%81%ae%e5%8b%95%e6%a9%9f" class="header-mark"></a>1.2 参加の動機</h3><p>私は学内の <strong>IPFactory</strong> というサークルに所属しているのですが,<br>
+その <a href="https://twitter.com/miyagaw61" target="_blank" rel="noopener noreferrer">サークルの先輩</a> が実際に昨年度(SecHack365'18)参加していました.<br>
+先輩から色々お話を伺ったり,公式サイトを色々と調べているうちに</p>
+<ul>
+<li>トレーナーの方にフィード・バックを頂きながら開発できる
+<ul>
+<li>システムプログラミングについて詳しいトレーナーの方がいることを期待した</li>
+</ul>
+</li>
+<li>1年間の開発の中で, <strong>沢山の能動的インプット</strong> ができるのではないかと考えた
+<ul>
+<li><strong>自分にとってハードルの高い課題</strong> を設定し, <strong>知らないことをガンガン勉強できる</strong> のではと思った</li>
+</ul>
+</li>
+</ul>
+<p>というモチベーションが湧いてきて,応募することを決意しました.</p>
+<h3 id="応募時点でやりたかったこと" class="headerLink">
+    <a href="#%e5%bf%9c%e5%8b%9f%e6%99%82%e7%82%b9%e3%81%a7%e3%82%84%e3%82%8a%e3%81%9f%e3%81%8b%e3%81%a3%e3%81%9f%e3%81%93%e3%81%a8" class="header-mark"></a>1.3 応募時点でやりたかったこと</h3><p>私がやりたかったことは <strong>実行バイナリ生成までをサポートするような&quot;コンパイラドライバ&quot;のスクラッチ実装</strong> です.<br>
+具体的には,</p>
+<ul>
+<li>自作言語 -&gt; x64 assemblyのコンパイラ
+<ul>
+<li>自作言語であることにこだわりはあまりなくて,別に既存言語の処理系実装でも良かった</li>
+</ul>
+</li>
+<li>x64 assembly -&gt; <strong>ELF relocatable object file</strong> の変換を担うアセンブラ</li>
+<li>シンボル解決などを行い単一の <strong>ELF executable file</strong> を生成するリンカ</li>
+</ul>
+<p>が含まれます.</p>
+<p>これは応募時点での目標であり,<br>
+最終的にはユーザスペースのローダやLLVMパス等多くの機能を追加しました.</p>
+<p>ここで述べておきたいのが,<br>
+応募時点では <strong>コンパイラを作ったことなどほぼなかった</strong> ということです.<br>
+厳密には <strong><a href="https://www.sigbus.info/compilerbook" target="_blank" rel="noopener noreferrer">RuiさんのCコンパイラブック</a></strong> を少し読んだことがある程度でした.<br>
+なので, 漠然と <strong>コンパイラって面白そうだよね</strong> というお気持ちで応募した感じになります.<br>
+この約一年間を通じて <strong>コンパイラが大好きな人</strong> になることが出来ました.やったね.</p>
+<h3 id="応募したコース" class="headerLink">
+    <a href="#%e5%bf%9c%e5%8b%9f%e3%81%97%e3%81%9f%e3%82%b3%e3%83%bc%e3%82%b9" class="header-mark"></a>1.4 応募したコース</h3><p>上記公式サイトを見ていただければわかるのですが,<br>
+SecHack365は今年度, <strong>5つのコース</strong> に分かれており,<br>
+自分が応募したいと思うコースに応募する,というようになっていました.</p>
+<p>私は以下の理由から <strong>学習駆動コース</strong> の <strong>坂井ゼミ</strong> を志望しました.</p>
+<ul>
+<li>応募時点で作りたいものが明確に定まっていたが, <strong>開発に対する具体的なイメージが湧いていなかった</strong>
+<ul>
+<li>なので,最初は技術書などでインプットなどを行って行きたかった</li>
+</ul>
+</li>
+<li>成果物以外の勉強もガンガンやっていきたかった
+<ul>
+<li>具体的にはLinuxOSのカーネルについての勉強やx64アーキテクチャの勉強など</li>
+<li>コンパイラ開発に役立つかどうかは別</li>
+<li>学習駆動コースの <strong>付加学習</strong> という考え方にとても共感した</li>
+</ul>
+</li>
+<li>あの <strong>坂井さん</strong> に一番質問しやすいポジションであった
+<ul>
+<li>システムプログラミングをテーマに開発したい私にとってこれは大事</li>
+</ul>
+</li>
+</ul>
+<h3 id="最終的に達成したこと" class="headerLink">
+    <a href="#%e6%9c%80%e7%b5%82%e7%9a%84%e3%81%ab%e9%81%94%e6%88%90%e3%81%97%e3%81%9f%e3%81%93%e3%81%a8" class="header-mark"></a>1.5 最終的に達成したこと</h3><p>基本的には<a href="https://www.linkedin.com/in/drumato/detail/treasury/position:1837434886/?entityUrn=urn%3Ali%3Afsd_profileTreasuryMedia%3A%28ACoAADD6vFEBpTNidEwiPdMZBOV2pbQF0tGIDOw%2C1635468764264%29&amp;section=position%3A1837434886&amp;treasuryCount=1" target="_blank" rel="noopener noreferrer">こちらのスライド</a>を見ていただければと思います.</p>
+<ul>
+<li>自作言語からx64アセンブリに変換するようなコンパイラを実装した
+<ul>
+<li>LLVM IRのパスも存在し,殆ど全ての言語機能をコンパイル出来る</li>
+<li>約5k行,(コンパイラ開発の本質に関わるような)ライブラリ未使用</li>
+</ul>
+</li>
+<li>x64アセンブリ(Intel記法)から再配置可能オブジェクトファイルを生成するアセンブラ
+<ul>
+<li>約1.2k行</li>
+</ul>
+</li>
+<li>単一ファイルのスタティックリンカを実装
+<ul>
+<li>(ELFバイナリを触るAPIを隔離し,リンクの動作のみを抽出すると)120行程度</li>
+<li>大体以下のようなことをやる
+<ul>
+<li>シンボルテーブル上のエントリに決め打ち+累計オフセットを割り当てる</li>
+<li>再配置テーブルを操作し, <code>bind</code> 値を見てシンボルテーブルからアドレスを取得,割当</li>
+<li>実際に <code>r_offset</code> から始まる機械語を上書き</li>
+<li>単一のセグメント/プログラムヘッダを構築</li>
+<li>セクションのアライメントとかを調整</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>ユーザ空間のローダを実装
+<ul>
+<li>とてもシンプルかつ超ミニマム実装</li>
+</ul>
+</li>
+<li>checksecを実装
+<ul>
+<li>ELFバイナリのフラグを見て,セキュリティ機構が有効化された状態でコンパイルされているか見る</li>
+<li>Depthコンパイラのバイナリを見るのではなく, <code>gcc</code> や <code>clang</code> によって生成されたバイナリが対象</li>
+</ul>
+</li>
+<li>readelf
+<ul>
+<li>出力を出来るだけ見やすくするように意識</li>
+<li>かなり大きなバイナリを食べさせても正しく動く(ニッチな属性値の出力はサポートしていないかも)</li>
+</ul>
+</li>
+</ul>
+<h2 id="各集合回のまとめ" class="headerLink">
+    <a href="#%e5%90%84%e9%9b%86%e5%90%88%e5%9b%9e%e3%81%ae%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>2 各集合回のまとめ</h2><p>SecHack365では,<br>
+<code>集合回 &lt;オンライン期間&gt; 集合回 &lt;オンライン期間&gt; ...</code>  というように,<br>
+年間のうち何度か集合回が開催され,間はオンラインで開発するスケジューリングになっています.</p>
+<ul>
+<li>集合回…トレーナー/トレーニー同士でアウトプットし合ったりコミュニケーションを取り合う場
+<ul>
+<li>定期的にアウトプットを <strong>強制</strong> されるので,独学だと勉強スピードが遅くなりやすい人にとってはありがたい</li>
+<li>私は一人で勉強し続ける場合でも比較的一定のペースを維持できるので,これは心配していなかった</li>
+<li>開発方針を大きく改善できるきっかけが生まれたりするので,ここでのコミュニケーションは非常に大事</li>
+</ul>
+</li>
+<li>オンライン期間…トレーナーの方と連絡を取りつつ,各々が開発する時間
+<ul>
+<li>集合回で得たアイデア/アドバイスを元に,やりまくるという感じ</li>
+<li>この期間にどれだけ本気を出したかで, <strong>集合回の密度に大きな差が生まれる</strong></li>
+</ul>
+</li>
+</ul>
+<p>という事で,私はオンライン期間の開発にかなり注力していました.<br>
+以下,時系列に沿って各集合回周辺の進捗やモチベーションを紹介していきます.</p>
+<h3 id="応募時点神奈川回" class="headerLink">
+    <a href="#%e5%bf%9c%e5%8b%9f%e6%99%82%e7%82%b9%e7%a5%9e%e5%a5%88%e5%b7%9d%e5%9b%9e" class="header-mark"></a>2.1 応募時点~神奈川回</h3><p>採択されたのが5/2なのですが,<br>
+採択された時点で既に開発をやり始めていました.<br>
+最初は先程紹介した <a href="https://www.sigbus.info/compilerbook" target="_blank" rel="noopener noreferrer">RuiさんのCコンパイラブック</a> やgccの出力を参考にしながら,<br>
+<strong>Golang</strong> で実装していました.</p>
+<blockquote>
+<p>Depthプロジェクトは何度かソースコードを全削除する,みたいなことをやっています.<br>
+現在は全削除を2回程度+構成要素ごとに何度か削除を行ったものが存在します.<br>
+Golang実装はそのうち最も初期のものになります.</p>
+</blockquote>
+<p><a href="https://twitter.com/drumato/status/1125051923780923392?s=20" target="_blank" rel="noopener noreferrer">その時のツイート</a>を見ると懐かしくなりますね.</p>
+<p>このときはどのようにアセンブリ言語がアセンブルされるのかがよくわかっていなかったので,<br>
+頑張って自作コンパイラが吐いたコードを機械語に変換し,<br>
+それを <strong>標準出力に文字列で</strong> 出して確認していました.</p>
+<p>このときはシステムプログラミングそのものもよく理解していなかったので,<br>
+<strong>機械語列がどうやって実行できるのか,OSがどうやってメモリに展開しているのか</strong> もわかっていませんでした.</p>
+<p><a href="https://twitter.com/drumato/status/1125699359528472577?s=20" target="_blank" rel="noopener noreferrer">自作言語に自動変数を実装したときのスクショ</a>です.<br>
+コンパイラ自作自体が初だったのですが,初めて実装できたので凄い嬉しかったです.</p>
+<p>第一回目の集合回である神奈川では,SecHack365自体のガイダンスや顔合わせ等を行いました.<br>
+かくいう私はこの集合回でも <strong>自分の実装ばかり</strong> やっていましたね.<br>
+もっとコミュニケーションを取っていればよかったと,反省しています.</p>
+<h3 id="北海道回まで" class="headerLink">
+    <a href="#%e5%8c%97%e6%b5%b7%e9%81%93%e5%9b%9e%e3%81%be%e3%81%a7" class="header-mark"></a>2.2 北海道回まで</h3><p>北海道回までは <strong>Golang実装を全てRustに置き換える</strong> みたいなことをやっていました.<br>
+理由としては以下の通りで,</p>
+<ul>
+<li>Rustをやってみたかった</li>
+<li>Version1の実装が単純に良くなかった
+<ul>
+<li>自動変数のスタックアロケートをパース時にやっていたり</li>
+</ul>
+</li>
+</ul>
+<p>等ですね.<br>
+結果,神奈川回でのGolang実装が実現していた言語機能とほぼ同等のものがRustで実装できました.</p>
+<h3 id="福岡回まで" class="headerLink">
+    <a href="#%e7%a6%8f%e5%b2%a1%e5%9b%9e%e3%81%be%e3%81%a7" class="header-mark"></a>2.3 福岡回まで</h3><p>ここでは, <strong>Rust実装(Version2)も&quot;全削除&quot;しました</strong> .<br>
+なんでそんな事をやったのかについてなんですが,</p>
+<p><a href="https://drumato.com/ja/posts/c-compiler-at-seccamp2019/" target="_blank" rel="noopener noreferrer">こちらの記事</a>に示した, <strong>セキュリティ・キャンプ</strong> の経験が大きく関係しています.</p>
+<p>私はseccamp2019でCコンパイラゼミに参加したのですが,<br>
+ここで講師の方から <strong>インクリメンタルに開発する事の重要性</strong> を学びました.<br>
+私が身につけたプログラミングに関する技術で最も重要なものだったと思います.</p>
+<p>小さい規模からコードを書き始め,必要になったらときに初めて追加する.<br>
+例えばCコンパイラなら最初から字句解析器を書きまくるようなことをしないで,<br>
+<strong>加算がコンパイルできる最も小さいコード</strong> みたいなのをできるようにする.<br>
+少しずつ,少しずつ規模を大きくしていくような感じです.</p>
+<p>それ以降のプログラミングにおいても,seccamp2019での経験は生きていると思います.</p>
+<blockquote>
+<p>Hikaliumさん,Ruiさん,本当にありがとうございました.</p>
+</blockquote>
+<h3 id="宮城回まで" class="headerLink">
+    <a href="#%e5%ae%ae%e5%9f%8e%e5%9b%9e%e3%81%be%e3%81%a7" class="header-mark"></a>2.4 宮城回まで</h3><p>この間で, 実際に <strong>実行プログラムを生成する</strong> ことが出来ました.<br>
+これが9/21時点の話になります.<br>
+SecHack365に採択されてから4ヶ月とちょっとぐらいでしょうか.</p>
+<p>最初は <strong>人のコンパイラのコードを真似する</strong> ことしか出来なかった私が,<br>
+4ヶ月間コンパイラについて調べ,実践し,失敗しては削除しを繰り返す事で<br>
+なんとか<a href="https://twitter.com/drumato/status/1170317711009665027?s=2" target="_blank" rel="noopener noreferrer">gcc等の既存ツールに頼らない実行バイナリ生成を達成</a>できました.</p>
+<p>アセンブラ実装中,機械語とオブジェクトファイルの概形を生成できるようにした様子です.<br>
+まだ.textセクションしか存在しないので,GNU ldに通したりすることは出来ません.</p>
+<p>実際に自作コンパイラ,自作アセンブラが協調動作して,<br>
+<a href="https://twitter.com/drumato/status/1171336998788812800?s=20" target="_blank" rel="noopener noreferrer">GNU ldがリンク可能な(実行バイナリ生成に必要な最小構成の)オブジェクトファイルを生成できた様子</a>です.</p>
+<p>x64の機械語/ELFについてそれまで身につけてきた知識が報われた気がして,<br>
+とても嬉しくなりました.</p>
+<p>ここからはリンカ実装の為に,<br>
+<a href="https://twitter.com/drumato/status/1172517722778828806?s=20" target="_blank" rel="noopener noreferrer">バイナリに埋め込む情報を追加したり</a>しています.</p>
+<p>9/21,<a href="https://twitter.com/drumato/status/1175248437513637888?s=20" target="_blank" rel="noopener noreferrer">実行プログラムが生成出来た瞬間</a>です.<br>
+ここまででやっと <strong>SecHack365応募時の大きな目標の一つ</strong> が達成されたことになります.</p>
+<p>再度コンパイラのバックエンド部を全削除して,<br>
+<a href="https://twitter.com/drumato/status/1177726677691981824?s=20" target="_blank" rel="noopener noreferrer">IRを3番地コードで実装している様子</a>です.</p>
+<p>それまでは独自の適当に考えたIRを用いていたんですが,<br>
+ドラゴンブックを読みながら3番地コードに変換していたら意外とうまくいきました.</p>
+<p><a href="https://twitter.com/drumato/status/1178168223549624321?s=20" target="_blank" rel="noopener noreferrer">CFGを構築して,DOT言語を吐き出しているようす</a>です.<br>
+DOT言語を吐き出す部分も勿論スクラッチでやっています.</p>
+<p><a href="https://twitter.com/drumato/status/1179270033475866626?s=20" target="_blank" rel="noopener noreferrer">結果的にこんぐらいの変換</a>になりました.</p>
+<h3 id="愛媛回まで" class="headerLink">
+    <a href="#%e6%84%9b%e5%aa%9b%e5%9b%9e%e3%81%be%e3%81%a7" class="header-mark"></a>2.5 愛媛回まで</h3><p>ここからは <strong>スクラッチな実行プログラム生成基盤を使ってなにか出来ないかな…?</strong> というのを考えていました.<br>
+アイデアを色々考えていたので実装はあまり出来ていませんね….</p>
+<p>やったこととしては,<br>
+実行プログラム生成基盤に <strong>LLVM IRを吐くパスを追加</strong> していました.</p>
+<p><a href="https://twitter.com/drumato/status/1198113850588979201?s=20" target="_blank" rel="noopener noreferrer">自動変数のサポート</a>です.<br>
+勿論IR生成にLLVMのRustバインディング等は用いていません.<br>
+LLVMの構成要素を全て定義して,スクラッチでIRBuiderみたいなのを作っていました.</p>
+<p><a href="https://twitter.com/drumato/status/1198977027589586944?s=20" target="_blank" rel="noopener noreferrer">静的なサイズの配列を実装している様子</a>です.<br>
+これ,結構大変だったんですよねー.</p>
+<h3 id="沖縄回まで" class="headerLink">
+    <a href="#%e6%b2%96%e7%b8%84%e5%9b%9e%e3%81%be%e3%81%a7" class="header-mark"></a>2.6 沖縄回まで</h3><p>主に以下のものを実装しました.</p>
+<ul>
+<li>GNU readelfとほぼ同等の機能を持つ解析ツールの実装</li>
+<li>checksec( Canaryが存在するかとか等. 実行バイナリのセキュリティ)</li>
+<li><strong>独自セクション</strong> の実装</li>
+</ul>
+<p><a href="https://twitter.com/drumato/status/1203616921918173185?s=20" target="_blank" rel="noopener noreferrer">readelfっぽいものを作っている様子</a>です.</p>
+<p>自作のデバッグセクションみたいなのを実装して,<br>
+<a href="https://twitter.com/drumato/status/1205522265829298176?s=20" target="_blank" rel="noopener noreferrer">自作readelfを用いると <strong>自作言語にある型･シンボル情報</strong> を取得できているサンプル</a>です.</p>
+<p>独自セクションその2です.<br>
+関数定義時にコメントを付属すると,<br>
+バイナリに自然言語のコメントを埋め込めて,<br>
+<a href="https://twitter.com/drumato/status/1206948602578440192?s=20" target="_blank" rel="noopener noreferrer">自作readelfを用いる事で解析できるようになっています</a>.</p>
+<h2 id="全体を通して" class="headerLink">
+    <a href="#%e5%85%a8%e4%bd%93%e3%82%92%e9%80%9a%e3%81%97%e3%81%a6" class="header-mark"></a>3 全体を通して</h2><p>私が個人的にSecHack365で学んだことは,以下の3つにまとめられるかな,と思います.</p>
+<ul>
+<li>システムプログラミングの考え方,重い実装に対するモチベーション</li>
+<li>実際の知識(特にOSがバイナリを実行するまでの流れ,x64機械語,ELF)</li>
+<li>｢凄い事をやる｣という漠然とした表現を実現する方法のいくつか</li>
+</ul>
+<h2 id="付加学習sechack365以外の活動" class="headerLink">
+    <a href="#%e4%bb%98%e5%8a%a0%e5%ad%a6%e7%bf%92sechack365%e4%bb%a5%e5%a4%96%e3%81%ae%e6%b4%bb%e5%8b%95" class="header-mark"></a>4 付加学習･SecHack365以外の活動</h2><p>SecHack365に参加してきたこの一年間ですが,<br>
+実はSecHack365に費やして来た時間というのはそこまで多くないんですよね.</p>
+<p>私は SecHack365の成果物以外にもいろいろな勉強をやって,<br>
+それが結局SecHack365の為になることもあるかな,という期待から.</p>
+<h3 id="自作os" class="headerLink">
+    <a href="#%e8%87%aa%e4%bd%9cos" class="header-mark"></a>4.1 自作OS</h3><p>個人的にちょっとずつ頑張っていこうと思っている自作OSです.<br>
+これは愛媛回から沖縄回までの期間にやっていました.</p>
+<p>[https://twitter.com/drumato/status/1211575163499606021?s=20:embed]</p>
+<p>SDKを使わずにUEFIアプリケーションでブートローダを記述し,<br>
+OSカーネル(raw binary)をメモリ上に載っけて制御を移しています.</p>
+<p>カーネルではシリアルポートの初期化とバイト列の送信を行っていて,<br>
+QEMUの <code>-serial stdio</code> によって表示している,みたいな感じです.</p>
+<p>川合さんの緑本を読んだことはあったんですがあれはLegacy BIOSを用いたブートだし,<br>
+あれは写経していただけなので,自分で書いたことはないです.<br>
+具体的には何人かの実装を参考にしたんですが.</p>
+<p>自作OSについてはまだまだ勉強不足なので,少しずつやっていきたいと思っています.</p>
+<h3 id="c--" class="headerLink">
+    <a href="#c--" class="header-mark"></a>4.2 c&ndash;</h3><p>Cコンパイラドライバの実装もはじめました.<br>
+1/1から作り始めたので,これも愛媛-沖縄間にやりはじめました.</p>
+<p>Depthプロジェクトにはバイナリ生成まで1ヶ月かかっていますが,<br>
+その知識を生かして <strong>10日程度で実行可能なバイナリを生成できた</strong> のが嬉しいですね.</p>
+<p>[https://twitter.com/drumato/status/1215876625947971585?s=20:embed]</p>
+<p>野良のCプログラムを投げてもうまく動くぐらいに育てていきたいと思います.</p>
+<h2 id="まとめ" class="headerLink">
+    <a href="#%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>5 まとめ</h2><p>今回SecHack365'19に参加する事で,</p>
+<ul>
+<li>コンパイラを作ったことがない状態から,実行プログラム基盤を作成できるようになった.</li>
+<li>活動をトリガーに多くの能動的学習を行うことが出来た</li>
+</ul>
+<p>等の恩恵が得られました.<br>
+これからの活動をもっといいものにできるよう,頑張っていきたいと思います.</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-02-08</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/sechack365/" data-title="SecHack365 3rdとして一年間活動しました" data-hashtags="compiler,assembler,linker,rust"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/sechack365/" data-hashtag="compiler"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/sechack365/" data-title="SecHack365 3rdとして一年間活動しました"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/sechack365/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/sechack365/" data-title="SecHack365 3rdとして一年間活動しました"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/sechack365/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/compiler/">compiler</a>,&nbsp;<a href="/ja/tags/assembler/">assembler</a>,&nbsp;<a href="/ja/tags/linker/">linker</a>,&nbsp;<a href="/ja/tags/rust/">rust</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/toolchain-in-rust/" class="prev" rel="prev" title="実行プログラム作成基盤をスクラッチで書いた"><i class="fas fa-angle-left fa-fw"></i>実行プログラム作成基盤をスクラッチで書いた</a>
+            <a href="/ja/posts/abc-with-automaton/" class="next" rel="next" title="Rustで有限オートマトンを書いてAtcoder Beginner ContestのA問題を解いてみる">Rustで有限オートマトンを書いてAtcoder Beginner ContestのA問題を解いてみる<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

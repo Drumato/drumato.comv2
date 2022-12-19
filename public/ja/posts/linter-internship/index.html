@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title class="pjax-title">Online Summer Internship for Gophers 2020に参加しました - drumato.com</title><meta name="Description" content=""><meta property="og:title" content="Online Summer Internship for Gophers 2020に参加しました" />
+<meta property="og:description" content="お久しぶりです． 2020/8/31 ~ 9/4の5日間に渡って開催された株式会社メルカリ様のインターンに参加しました． 詳細はこちらののページを御覧ください． また" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://drumato.com/ja/posts/linter-internship/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-09-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-09-04T00:00:00+00:00" /><meta property="og:site_name" content="drumato.com" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Online Summer Internship for Gophers 2020に参加しました"/>
+<meta name="twitter:description" content="お久しぶりです． 2020/8/31 ~ 9/4の5日間に渡って開催された株式会社メルカリ様のインターンに参加しました． 詳細はこちらののページを御覧ください． また"/>
+<meta name="application-name" content="drumato.com">
+<meta name="apple-mobile-web-app-title" content="drumato.com">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://drumato.com/ja/posts/linter-internship/" /><link rel="prev" href="http://drumato.com/ja/posts/abc-with-automaton/" /><link rel="next" href="http://drumato.com/ja/posts/tuipeach/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Online Summer Internship for Gophers 2020に参加しました",
+        "inLanguage": "ja",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/drumato.com\/ja\/posts\/linter-internship\/"
+        },"genre": "posts","keywords": "static-analyzer, go","wordcount":  8130 ,
+        "url": "http:\/\/drumato.com\/ja\/posts\/linter-internship\/","datePublished": "2020-09-04T00:00:00+00:00","dateModified": "2020-09-04T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": "Drumato"},"author": {
+                "@type": "Person",
+                "name": "Drumato"
+            },"description": ""
+    }
+    </script></head>
+
+<body header-desktop="" header-mobile=""><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('' === 'light' || '' === 'dark' || '' === 'black') setTheme(''), saveTheme(''); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/ja/" title="drumato.com"><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/ja/about/"> About </a><a class="menu-item" href="/ja/posts/"> 記事一覧 </a><a class="menu-item" href="/ja/diaries/"> 日記一覧 </a><a class="menu-item" href="/ja/thissite/"> このサイトについて </a><span class="menu-item delimiter"></span><a href="#" onclick="return false;" class="menu-item language" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                        <select class="language-select" title="Select Language" id="language-select-desktop" onchange="location = this.value;"><option value="/ja/posts/linter-internship/" selected>Japanese</option></select>
+                    </a><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/ja/" title="drumato.com"><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" onclick="return false;" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" onclick="return false;" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" onclick="return false;" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/ja/about/" title="">About</a><a class="menu-item" href="/ja/posts/" title="">記事一覧</a><a class="menu-item" href="/ja/diaries/" title="">日記一覧</a><a class="menu-item" href="/ja/thissite/" title="">このサイトについて</a><a href="#" onclick="return false;" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="#" onclick="return false;" class="menu-item" title="Select Language">Japanese<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" title="Select Language" onchange="location = this.value;"><option value="/ja/posts/linter-internship/" selected>Japanese</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#インターン概要">インターン概要</a>
+      <ul>
+        <li><a href="#座学">座学</a>
+          <ul>
+            <li><a href="#golangの良さ">Golangの良さ</a>
+              <ul>
+                <li><a href="#標準パッケージの豊富さ扱いやすさ">標準パッケージの豊富さ･扱いやすさ</a></li>
+                <li><a href="#静的解析ツールの開発しやすさ">静的解析ツールの開発しやすさ</a></li>
+              </ul>
+            </li>
+            <li><a href="#ルールを作る場合はツールも作る">｢ルールを作る場合はツールも作る｣</a></li>
+            <li><a href="#課題まとめ">課題まとめ</a>
+              <ul>
+                <li><a href="#構文解析でわかることわからないことhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_30"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_30">構文解析でわかること，わからないこと</a></a></li>
+                <li><a href="#型チェックでわかることわからないことhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_36"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_36">型チェックでわかること，わからないこと</a></a></li>
+                <li><a href="#不要なパッケージ関数の判別httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg80c1410104_5_281"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g80c1410104_5_281">不要なパッケージ関数の判別</a></a></li>
+                <li><a href="#自作のanalyzerコレクションを作るhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_12"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_12">自作のAnalyzerコレクションを作る</a></a></li>
+                <li><a href="#skeletonのインストールhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_18"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_18">skeletonのインストール</a></a></li>
+                <li><a href="#インポート文の重複を検出しようhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg870cb4ff5f_0_989"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g870cb4ff5f_0_989">インポート文の重複を検出しよう</a></a></li>
+                <li><a href="#抽象構文木の確認">抽象構文木の確認</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#開発">開発</a>
+          <ul>
+            <li><a href="#パッケージ間の依存関係可視化ツール">パッケージ間の依存関係可視化ツール</a></li>
+            <li><a href="#スコープチェッカー">スコープチェッカー</a></li>
+            <li><a href="#ユニットテストが定義されていない関数の検出">ユニットテストが定義されていない関数の検出</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a>
+      <ul>
+        <li><a href="#静的解析はソフトウェア開発の生産性を向上させる選択肢の一つとなりうる">静的解析はソフトウェア開発の生産性を向上させる選択肢の一つとなりうる</a></li>
+        <li><a href="#実装速度とロバスト性の大切さ">実装速度とロバスト性の大切さ</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Online Summer Internship for Gophers 2020に参加しました</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="/ja/" title="Author" rel=" author" class="author">Drumato</a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-09-04">2020-09-04</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2020-09-04">2020-09-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;8130 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;17 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#インターン概要">インターン概要</a>
+      <ul>
+        <li><a href="#座学">座学</a>
+          <ul>
+            <li><a href="#golangの良さ">Golangの良さ</a>
+              <ul>
+                <li><a href="#標準パッケージの豊富さ扱いやすさ">標準パッケージの豊富さ･扱いやすさ</a></li>
+                <li><a href="#静的解析ツールの開発しやすさ">静的解析ツールの開発しやすさ</a></li>
+              </ul>
+            </li>
+            <li><a href="#ルールを作る場合はツールも作る">｢ルールを作る場合はツールも作る｣</a></li>
+            <li><a href="#課題まとめ">課題まとめ</a>
+              <ul>
+                <li><a href="#構文解析でわかることわからないことhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_30"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_30">構文解析でわかること，わからないこと</a></a></li>
+                <li><a href="#型チェックでわかることわからないことhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_36"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_36">型チェックでわかること，わからないこと</a></a></li>
+                <li><a href="#不要なパッケージ関数の判別httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg80c1410104_5_281"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g80c1410104_5_281">不要なパッケージ関数の判別</a></a></li>
+                <li><a href="#自作のanalyzerコレクションを作るhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_12"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_12">自作のAnalyzerコレクションを作る</a></a></li>
+                <li><a href="#skeletonのインストールhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_18"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_18">skeletonのインストール</a></a></li>
+                <li><a href="#インポート文の重複を検出しようhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg870cb4ff5f_0_989"><a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g870cb4ff5f_0_989">インポート文の重複を検出しよう</a></a></li>
+                <li><a href="#抽象構文木の確認">抽象構文木の確認</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#開発">開発</a>
+          <ul>
+            <li><a href="#パッケージ間の依存関係可視化ツール">パッケージ間の依存関係可視化ツール</a></li>
+            <li><a href="#スコープチェッカー">スコープチェッカー</a></li>
+            <li><a href="#ユニットテストが定義されていない関数の検出">ユニットテストが定義されていない関数の検出</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#まとめ">まとめ</a>
+      <ul>
+        <li><a href="#静的解析はソフトウェア開発の生産性を向上させる選択肢の一つとなりうる">静的解析はソフトウェア開発の生産性を向上させる選択肢の一つとなりうる</a></li>
+        <li><a href="#実装速度とロバスト性の大切さ">実装速度とロバスト性の大切さ</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>お久しぶりです．<br>
+2020/8/31 ~ 9/4の5日間に渡って開催された株式会社メルカリ様のインターンに参加しました．<br>
+詳細は<a href="https://mercan.mercari.com/articles/22800/" target="_blank" rel="noopener noreferrer">こちらののページ</a>を御覧ください．</p>
+<p>また，本インターンで使用されていた講義資料については，<br>
+既に <a href="https://engineering.mercari.com/blog/entry/goforbeginners/" target="_blank" rel="noopener noreferrer"><strong>完全公開</strong></a> されています(ありがとうございます)．</p>
+<p>今回は本インターンに参加して勉強になったことや所感，<br>
+講義資料に記載の課題や，自身の活動をまとめたいと思います．</p>
+<!-- raw HTML omitted -->
+<h2 id="インターン概要" class="headerLink">
+    <a href="#%e3%82%a4%e3%83%b3%e3%82%bf%e3%83%bc%e3%83%b3%e6%a6%82%e8%a6%81" class="header-mark"></a>1 インターン概要</h2><p><strong>Golangで学ぶ静的解析</strong> を主なテーマに，</p>
+<ul>
+<li>前半2日間 &hellip; Golangで静的解析を行う上で必要な知識のインプットやコード課題
+<ul>
+<li><strong>何故</strong> 静的解析ツールを開発するのか</li>
+<li>実用的な静的解析ツールの例</li>
+<li>Golangによる静的解析で頻繁に用いられる標準(準標準)パッケージの解説</li>
+<li>字句解析や構文解析などによって得られるデータ構造等，<strong>静的解析に必要な前提知識</strong>の解説</li>
+<li>Golangに精通しているメンターさんだからこその言語仕様に関連した話題の紹介</li>
+</ul>
+</li>
+<li>後半3日間 &hellip; 学んだことを生かして，実際に静的解析ツールを開発する
+<ul>
+<li>自身でテーマを設定して取り組む</li>
+<li>コーディング等で困ったことがあればメンターさんからサポートしていただける</li>
+</ul>
+</li>
+</ul>
+<p>という内容の予定でした．<br>
+実際にはメンターさんの都合もあって開発の日にちが変更になりましたので，<br>
+インプットとアウトプットの2つに分けて振り返りたいと思います．</p>
+<h3 id="座学" class="headerLink">
+    <a href="#%e5%ba%a7%e5%ad%a6" class="header-mark"></a>1.1 座学</h3><p>記事冒頭に記載した資料をもとに，静的解析関連の知識を勉強しました．<br>
+私は普段コンパイラ理論の勉強をしているので字句解析や構文解析，型検査やSSAについては多少の前提知識がありましたが，<br>
+静的解析という目線ではただ｢データ構造を構築すること｣だけでなく，<br>
+<strong>ツールの目的</strong> に応じてデータ構造を柔軟に利用することが求められることがわかり，勉強になりました．</p>
+<p>講義の具体的な内容についてはここでは触れません(講義資料が本当に素晴らしいので，そちらを参照ください)が，<br>
+いくつか個人的に感じたことについて触れておきます．<br>
+見たくない人は <a href="#%e9%96%8b%e7%99%ba" rel="">開発セクション</a> まで読み飛ばしていただければ．</p>
+<h4 id="golangの良さ" class="headerLink">
+    <a href="#golang%e3%81%ae%e8%89%af%e3%81%95" class="header-mark"></a>1.1.1 Golangの良さ</h4><p>私は最近，基本的にRust以外のプログラミング言語を触っていません．<br>
+Atcoder等の解答にPythonを用いたり，ちょっとしたコード例としてHaskellを使うみたいなことはありますが，<br>
+Golangをガッツリ触ったのは久しぶりなので，新鮮で楽しかったです．</p>
+<p>Golangの良さは既に語り尽くされていて，多くの人がブログ等で言及しているので，<br>
+ここでは｢静的解析ツールを作る上で｣の利点について述べようと思っています．</p>
+<h5 id="標準パッケージの豊富さ扱いやすさ" class="headerLink">
+    <a href="#%e6%a8%99%e6%ba%96%e3%83%91%e3%83%83%e3%82%b1%e3%83%bc%e3%82%b8%e3%81%ae%e8%b1%8a%e5%af%8c%e3%81%95%e6%89%b1%e3%81%84%e3%82%84%e3%81%99%e3%81%95" class="header-mark"></a>1.1.1.1 標準パッケージの豊富さ･扱いやすさ</h5><p>そんなことはもう知ってるよ! と思うかもしれませんが，改めて考えてみても優秀です．<br>
+講義資料にも書いてありますが，静的解析ツールには<br>
+フラットな <strong>&ldquo;ソースコード&rdquo;</strong> というテキストから <strong>階層/親子構造</strong> を抽出したり，<br>
+識別子が参照する･される等の <strong>依存関係</strong> も解析する必要があります．</p>
+<p>そのために字句解析，構文解析，パッケージ間の依存グラフの構築等も必要になります．<br>
+言語処理系をスクラッチで書いたことがある人はイメージしやすいと思いますが，<br>
+これらアルゴリズムの実装には <strong>多くのコスト</strong> がかかり，<br>
+かなりの労力を要します．</p>
+<p>しかし，GolangにはトークンやAST,構文解析や型関連の標準パッケージが存在します．<br>
+また， <code>x/tools/go</code> 以下には静的解析系ツールやコールグラフ，CFGやSSA等の更に便利な機能が存在します．<br>
+例えば，Golangのソースコードに対し構文解析を行い，インポートしているパッケージを表示するプログラムを見てみましょう．</p>
+<blockquote>
+<p>引用: <a href="https://golang.org/pkg/go/parser/#example_ParseFile" target="_blank" rel="noopener noreferrer">Example - ParseFile</a></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;go/parser&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;go/token&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fset</span> <span class="o">:=</span> <span class="nx">token</span><span class="p">.</span><span class="nf">NewFileSet</span><span class="p">()</span> <span class="c1">// positions are relative to fset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="nx">src</span> <span class="o">:=</span> <span class="s">`package foo
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">import (
+</span></span></span><span class="line"><span class="cl"><span class="s">	&#34;fmt&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">	&#34;time&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">)
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">func bar() {
+</span></span></span><span class="line"><span class="cl"><span class="s">	fmt.Println(time.Now())
+</span></span></span><span class="line"><span class="cl"><span class="s">}`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Parse src but stop after processing the imports.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">f</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">parser</span><span class="p">.</span><span class="nf">ParseFile</span><span class="p">(</span><span class="nx">fset</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">src</span><span class="p">,</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">ImportsOnly</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Print the imports from the file&#39;s AST.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">s</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">f</span><span class="p">.</span><span class="nx">Imports</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">Path</span><span class="p">.</span><span class="nx">Value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>このように非常にシンプルに解析資源を得られるので，<br>
+静的解析ツールの書きやすさはかなり高いと思います．</p>
+<p><code>x/tools/go/analysis</code> がその最たる例で， <strong>静的解析ツールを開発するためのパッケージ</strong> が用意されています．<br>
+これについては上記講義資料に加えて，<a href="https://engineering.mercari.com/blog/entry/2018-12-16-150000/" target="_blank" rel="noopener noreferrer">こちらの記事</a>も参考になると思います．</p>
+<p>このように，標準･準標準パッケージが豊富であり扱いやすいところからも，<br>
+<strong>Golangで静的解析ツールが書きやすい</strong> と言えそうです．</p>
+<h5 id="静的解析ツールの開発しやすさ" class="headerLink">
+    <a href="#%e9%9d%99%e7%9a%84%e8%a7%a3%e6%9e%90%e3%83%84%e3%83%bc%e3%83%ab%e3%81%ae%e9%96%8b%e7%99%ba%e3%81%97%e3%82%84%e3%81%99%e3%81%95" class="header-mark"></a>1.1.1.2 静的解析ツールの開発しやすさ</h5><p>実際に作り始めるにはいくつかのお作法が存在する静的解析ツールですが，<br>
+本インターンのメンターである <a href="https://twitter.com/tenntenn?s=20" target="_blank" rel="noopener noreferrer">@tenntennさん</a> も在籍する Org の<br>
+<a href="https://github.com/gostaticanalysis" target="_blank" rel="noopener noreferrer">GoStaticAnalysis</a> が <a href="https://github.com/gostaticanalysis/skeleton" target="_blank" rel="noopener noreferrer"><strong>雛形ジェネレータ</strong></a> を公開しています．</p>
+<p>使い方はREADMEや講義資料を参照してください．<br>
+<code>skeleton</code> を利用すればすぐに静的解析ツールの開発を始める事ができます，非常に便利です．<br>
+このあと紹介する課題を解く際に使ってみます．</p>
+<h4 id="ルールを作る場合はツールも作る" class="headerLink">
+    <a href="#%e3%83%ab%e3%83%bc%e3%83%ab%e3%82%92%e4%bd%9c%e3%82%8b%e5%a0%b4%e5%90%88%e3%81%af%e3%83%84%e3%83%bc%e3%83%ab%e3%82%82%e4%bd%9c%e3%82%8b" class="header-mark"></a>1.1.2 ｢ルールを作る場合はツールも作る｣</h4><p>本インターンで一番共感した講義内容の一つです．<br>
+講義資料の23ページに書かれています．</p>
+<p>コーディングルールやベストプラクティス，アンチパターンなど，<br>
+プログラミング中に意識し，開発チーム内で注意しあわなければいけないことはいくつか存在します．<br>
+(これは個人開発でも同様に重要だと考えています)</p>
+<p>これらを意識し続けることは簡単ではありません．<br>
+コンパイルエラーが発生するのであれば特に大きな問題にはなりませんが，<br>
+そういう訳ではないので｢無意識のうちに良くない書き方をする｣ということが考えられます．</p>
+<p>このようなミスを <strong>エンジニアリングによって解決する</strong> というのは非常にスマートで美しい考え方だと思います．<br>
+GitのコミットやPRごとにCIが回るようにして，ルールに即した静的解析ツールが動く．<br>
+そして自動的にアンチパターンを防げるようになれば，生産性は大幅に向上するはずです．</p>
+<p>学生で，かつ(長期インターン等を除き)個人の学習の範囲でしか開発していないような私からすると，<br>
+このような <strong>実際に業務で開発している人</strong> の考え方に触れることができて，凄い勉強になりました．</p>
+<h4 id="課題まとめ" class="headerLink">
+    <a href="#%e8%aa%b2%e9%a1%8c%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>1.1.3 課題まとめ</h4><p>ここからは，講義資料に記載されている課題について考え，実装してみたいと思います．<br>
+本インターンの活動中には時間が足りず解答しきれなかったので，夜の時間等にちまちま解き進めていました．</p>
+<h5 id="構文解析でわかることわからないことhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_30" class="headerLink">
+    <a href="#%e6%a7%8b%e6%96%87%e8%a7%a3%e6%9e%90%e3%81%a7%e3%82%8f%e3%81%8b%e3%82%8b%e3%81%93%e3%81%a8%e3%82%8f%e3%81%8b%e3%82%89%e3%81%aa%e3%81%84%e3%81%93%e3%81%a8httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_30" class="header-mark"></a>1.1.3.1 <a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_30" target="_blank" rel="noopener noreferrer">構文解析でわかること，わからないこと</a></h5><ul>
+<li>パッケージ変数の数</li>
+<li>ファイル中に定義されている構造体のフィールド名</li>
+<li>インポートしているファイルのパス</li>
+</ul>
+<p>は構文解析で検出することができます．<br>
+<code>go/ast</code> のAPIでは(おそらく)以下のように対応しています．</p>
+<ul>
+<li>パッケージ変数の数
+<ul>
+<li><code>ast.File.Decls</code> のエントリを <code>*ast.GenDecl</code> にtype assertionし， <code>.Tok == token.VAR</code> を数える</li>
+</ul>
+</li>
+<li>ファイル中に定義されている構造体のフィールド名
+<ul>
+<li><code>ast.File.Decls</code> のエントリを <code>*ast.GenDecl</code> にtype assertionし， <code>.Tok == token.TYPE</code> を検査する</li>
+<li><code>ast.GenDecl.Specs</code> のエントリを <code>*ast.TypeSpec</code> にキャストし， <code>.Type</code> を <code>*ast.StructType</code> にキャストする</li>
+<li><code>go/types</code> から <code>Info.Defs</code> のマップを探索し，<code>types.Object.Type()</code> を <code>*types.Struct</code> にキャストして <code>NumFields()</code> 分ループ</li>
+</ul>
+</li>
+<li>インポートしているファイルのパス
+<ul>
+<li><code>ast.File.Imports</code> のエントリのそれぞれが， <code>$GOPATH/src</code> もしくは <code>$GOROOT/src</code> に存在するかどうかを調べれば良い
+<ul>
+<li><code>$GOPATH/src</code> にはサードパーティ製パッケージが， <code>$GOROOT/src</code> には標準パッケージが存在</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>逆に，<code>context.Context</code> 型のフィールドを持つ構造体の検出は構文解析だけではできません．<br>
+型チェックの機構やパッケージ解析を用いて， <code>std/context.Context</code> であるかどうか判断しないといけません．<br>
+(別パッケージの <code>Context</code> 構造体をフィールドに持っている場合も，構文上は全く同じであり，ASTを探索するだけで検出できない)</p>
+<h5 id="型チェックでわかることわからないことhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_36" class="headerLink">
+    <a href="#%e5%9e%8b%e3%83%81%e3%82%a7%e3%83%83%e3%82%af%e3%81%a7%e3%82%8f%e3%81%8b%e3%82%8b%e3%81%93%e3%81%a8%e3%82%8f%e3%81%8b%e3%82%89%e3%81%aa%e3%81%84%e3%81%93%e3%81%a8httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_36" class="header-mark"></a>1.1.3.2 <a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_36" target="_blank" rel="noopener noreferrer">型チェックでわかること，わからないこと</a></h5><p>まず ｢<code>context.Context</code> 型のフィールドを持つ構造体の検出｣は型チェックで検出することができます．<br>
+これについては<a href="https://github.com/gostaticanalysis/ctxfield" target="_blank" rel="noopener noreferrer">こちらのリポジトリ</a>にそのまま同じ用途の静的解析ツールが存在するので，参考にすると良いでしょう．</p>
+<p>次に ｢使われていない非公開なパッケージ関数｣ ですが，これも構文解析や型チェックの情報で検出可能です．<br>
+ASTを探索し，</p>
+<ul>
+<li>関数呼び出し</li>
+<li>関数ポインタ代入</li>
+<li>返り値に指定されているか</li>
+</ul>
+<p>のいずれも行われていない場合を検出すれば良さそうです．</p>
+<p>逆に， ｢<code>100 + 200</code> などの定数式の評価｣ は型チェックだけでは不可能です．<br>
+<code>go/constants</code> のように定数評価器のパッケージを利用する等が必要です．<br>
+講義資料には <code>go/types</code> や <code>go/constant</code> によって定数式の評価が可能と書いてあります．<br>
+Golangのパッケージはとても優秀ですね．</p>
+<p>また， ｢インタフェース型のメソッドを呼び出した場合のレシーバの実際の型｣ も型チェックだけでは難しいと思います．<br>
+インタフェース型メソッドの呼び出しに渡される引数から <strong>ポインタ解析( <code>golang.org/x/tools/go/pointer</code> )</strong> を行う必要がありそうです．</p>
+<h5 id="不要なパッケージ関数の判別httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg80c1410104_5_281" class="headerLink">
+    <a href="#%e4%b8%8d%e8%a6%81%e3%81%aa%e3%83%91%e3%83%83%e3%82%b1%e3%83%bc%e3%82%b8%e9%96%a2%e6%95%b0%e3%81%ae%e5%88%a4%e5%88%a5httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg80c1410104_5_281" class="header-mark"></a>1.1.3.3 <a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g80c1410104_5_281" target="_blank" rel="noopener noreferrer">不要なパッケージ関数の判別</a></h5><p>パッケージ外部に公開されておらず，またどの関数からも呼び出されていないような関数の検出です．<br>
+<a href="#%e5%9e%8b%e3%83%81%e3%82%a7%e3%83%83%e3%82%af%e3%81%a7%e3%82%8f%e3%81%8b%e3%82%8b%e3%81%93%e3%81%a8%e3%82%8f%e3%81%8b%e3%82%89%e3%81%aa%e3%81%84%e3%81%93%e3%81%a8" rel="">こちらの課題</a>で解き方を簡単に考察してみたので，これの通り実装してみましょう．<br>
+ここからは静的解析ツールを実装する課題になるので， <a href="https://github.com/gostaticanalysis/skeleton" target="_blank" rel="noopener noreferrer">gostaticanalysis/skeleton</a> の使い方も解説します．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// want &#34;unused function&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;a&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">b</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;b&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">B</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;B&#34;</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>における <code>a</code> のような関数を検出するのが目的．</p>
+<p>まずは <code>skeleton</code> をインストールし，静的解析ツールの雛形を作成しましょう．</p>
+<blockquote>
+<p>Windows上で実行していますが，Golang製なのでその他多くの環境で動くはずです．</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">$ go get -u github.com/gostaticanalysis/skeleton
+</span></span><span class="line"><span class="cl">$ skeleton try1
+</span></span><span class="line"><span class="cl">create try1\try1.go
+</span></span><span class="line"><span class="cl">create try1\try1_test.go
+</span></span><span class="line"><span class="cl">create try1\cmd\try1\main.go
+</span></span><span class="line"><span class="cl">create try1\plugin\main.go
+</span></span><span class="line"><span class="cl">create try1\testdata\src\a\a.go
+</span></span></code></pre></div><p>このように，パッケージ名を指定するといい感じに雛形が作成されます．<br>
+それぞれ解説します．</p>
+<ul>
+<li><code>cmd/try1/main.go</code> &hellip; 静的解析ツールのエントリポイント
+<ul>
+<li><code>cmd/pkgName</code> にエントリポイントを置くのはGolangの慣習</li>
+</ul>
+</li>
+<li><code>plugin/main.go</code> &hellip; golangci-lint用のコード</li>
+<li><code>testdata/src/a/a.go</code> &hellip; 静的解析ツールのテストデータ
+<ul>
+<li><code>testdata/src</code> 以下に適当にテストケースを置いていき <code>_test.go</code> を拡張すればガンガンTDDできる</li>
+<li>静的解析ツールはシンプルなケースから徐々に複雑なケースに対応できるように拡張する開発手法がやりやすい</li>
+</ul>
+</li>
+<li><code>try1.go</code> &hellip; 実際の静的解析ロジック</li>
+</ul>
+<p><code>try1.go</code> の中身をいい感じに書き換えてみれば良さそうです．<br>
+まずは以下のような実装方針に従って素朴に実装してみます．</p>
+<ul>
+<li>パッケージ内に宣言されたunexportedな関数のマップを作る</li>
+<li><code>CallExpr</code> を探索して，呼び出されている関数に対応するマップにマークする</li>
+<li>マップをイテレートして，マークのついていない関数を検出対象とする</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">try1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;go/ast&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/analysis&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/analysis/passes/inspect&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/ast/inspector&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="nx">doc</span> <span class="p">=</span> <span class="s">&#34;try1 is ...&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Analyzer is ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">Analyzer</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;try1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Doc</span><span class="p">:</span>  <span class="nx">doc</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Run</span><span class="p">:</span>  <span class="nx">run</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Requires</span><span class="p">:</span> <span class="p">[]</span><span class="o">*</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">inspect</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">identifier</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">base</span> <span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Ident</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">used</span> <span class="kt">bool</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">run</span><span class="p">(</span><span class="nx">pass</span> <span class="o">*</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Pass</span><span class="p">)</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 識別子 =&gt; 参照されているかのマップ
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">usedFunctions</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">identifier</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">inspect</span> <span class="o">:=</span> <span class="nx">pass</span><span class="p">.</span><span class="nx">ResultOf</span><span class="p">[</span><span class="nx">inspect</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">].(</span><span class="o">*</span><span class="nx">inspector</span><span class="p">.</span><span class="nx">Inspector</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// *ast.FuncDecl を探索し，対応する関数定義をマップに登録する
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">visitAllFnDecl</span><span class="p">(</span><span class="nx">usedFunctions</span><span class="p">,</span> <span class="nx">inspect</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// *ast.CallExpr を探索し，マークを付ける
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">markAsUsedToFuncs</span><span class="p">(</span><span class="nx">usedFunctions</span><span class="p">,</span> <span class="nx">inspect</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">id</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">usedFunctions</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">!</span><span class="nx">id</span><span class="p">.</span><span class="nx">used</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">pass</span><span class="p">.</span><span class="nf">Reportf</span><span class="p">(</span><span class="nx">id</span><span class="p">.</span><span class="nx">base</span><span class="p">.</span><span class="nf">Pos</span><span class="p">(),</span> <span class="s">&#34;unused function&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">visitAllFnDecl</span><span class="p">(</span><span class="nx">ids</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">identifier</span><span class="p">,</span> <span class="nx">insp</span> <span class="o">*</span><span class="nx">inspector</span><span class="p">.</span><span class="nx">Inspector</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">insp</span><span class="p">.</span><span class="nf">Preorder</span><span class="p">([]</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Node</span><span class="p">{</span><span class="nb">new</span><span class="p">(</span><span class="nx">ast</span><span class="p">.</span><span class="nx">FuncDecl</span><span class="p">)},</span> <span class="kd">func</span><span class="p">(</span><span class="nx">n</span> <span class="nx">ast</span><span class="p">.</span><span class="nx">Node</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">switch</span> <span class="nx">n</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">FuncDecl</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Name</span><span class="p">.</span><span class="nf">IsExported</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nx">ids</span><span class="p">[</span><span class="nx">n</span><span class="p">.</span><span class="nx">Name</span><span class="p">.</span><span class="nx">Name</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">identifier</span><span class="p">{</span><span class="nx">base</span><span class="p">:</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">used</span><span class="p">:</span> <span class="kc">false</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">markAsUsedToFuncs</span><span class="p">(</span><span class="nx">ids</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">identifier</span><span class="p">,</span> <span class="nx">insp</span> <span class="o">*</span><span class="nx">inspector</span><span class="p">.</span><span class="nx">Inspector</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">insp</span><span class="p">.</span><span class="nf">Preorder</span><span class="p">([]</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Node</span><span class="p">{</span><span class="nb">new</span><span class="p">(</span><span class="nx">ast</span><span class="p">.</span><span class="nx">CallExpr</span><span class="p">)},</span> <span class="kd">func</span><span class="p">(</span><span class="nx">n</span> <span class="nx">ast</span><span class="p">.</span><span class="nx">Node</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">switch</span> <span class="nx">n</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">CallExpr</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">id</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Fun</span><span class="p">.(</span><span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Ident</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">exist</span> <span class="o">:=</span> <span class="nx">ids</span><span class="p">[</span><span class="nx">id</span><span class="p">.</span><span class="nx">Name</span><span class="p">];</span> <span class="p">!</span><span class="nx">exist</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nx">ids</span><span class="p">[</span><span class="nx">id</span><span class="p">.</span><span class="nx">Name</span><span class="p">].</span><span class="nx">used</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>このような素朴な実装でも，先述したテストをPASSすることができます．<br>
+しかし，次のようなケースを検出することができません．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">b</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// want &#34;unused function&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;a&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">f</span> <span class="o">:=</span> <span class="nx">b</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">f</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;b&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">B</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;B&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>上記例のように， <code>b()</code> が直接呼び出されないケースがあるので，<br>
+<code>*ast.CallExpr</code> だけの探索では不十分です．<br>
+よって <code>*ast.Ident</code> も調査対象に含めましょう．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">markAsUsedToFuncs</span><span class="p">(</span><span class="nx">pass</span> <span class="o">*</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Pass</span><span class="p">,</span> <span class="nx">ids</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">identifier</span><span class="p">,</span> <span class="nx">insp</span> <span class="o">*</span><span class="nx">inspector</span><span class="p">.</span><span class="nx">Inspector</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// *ast.Identも含める
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">refFilter</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Node</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="p">(</span><span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">CallExpr</span><span class="p">)(</span><span class="kc">nil</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">		<span class="p">(</span><span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Ident</span><span class="p">)(</span><span class="kc">nil</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">insp</span><span class="p">.</span><span class="nf">Preorder</span><span class="p">(</span><span class="nx">refFilter</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">n</span> <span class="nx">ast</span><span class="p">.</span><span class="nx">Node</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">switch</span> <span class="nx">n</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">CallExpr</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// stripped
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">case</span> <span class="o">*</span><span class="nx">ast</span><span class="p">.</span><span class="nx">Ident</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 定義箇所に対する探索の可能性もあるため，uses集合に含まれているかチェック
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nx">use</span><span class="p">,</span> <span class="nx">used</span> <span class="o">:=</span> <span class="nx">pass</span><span class="p">.</span><span class="nx">TypesInfo</span><span class="p">.</span><span class="nx">Uses</span><span class="p">[</span><span class="nx">n</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">use</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">||</span> <span class="p">!</span><span class="nx">used</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">exist</span> <span class="o">:=</span> <span class="nx">ids</span><span class="p">[</span><span class="nx">n</span><span class="p">.</span><span class="nx">Name</span><span class="p">];</span> <span class="p">!</span><span class="nx">exist</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nx">ids</span><span class="p">[</span><span class="nx">n</span><span class="p">.</span><span class="nx">Name</span><span class="p">].</span><span class="nx">used</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>これで上記例も正しく動きました．<br>
+実はこの変更で， <strong>関数を引数に取る</strong> ケースや <strong>関数を返り値とする</strong> ケースには対応することができます．<br>
+具体的には，次のような場合ですね．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">c</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">c</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// want &#34;unused function&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">e</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">f</span> <span class="o">:=</span> <span class="nf">h</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">f</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">d</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;d&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">d2</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nb">println</span><span class="p">(</span><span class="s">&#34;d&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">e</span><span class="p">(</span><span class="nx">f</span> <span class="kd">func</span><span class="p">())</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">f</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">h</span><span class="p">()</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">d2</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>とりあえず課題1の回答はここまでとしておきます．<br>
+これ以上のエッジケースを思いついた方はぜひご連絡ください．<br>
+実装を変更して，記事修正を行います．</p>
+<h5 id="自作のanalyzerコレクションを作るhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_12" class="headerLink">
+    <a href="#%e8%87%aa%e4%bd%9c%e3%81%aeanalyzer%e3%82%b3%e3%83%ac%e3%82%af%e3%82%b7%e3%83%a7%e3%83%b3%e3%82%92%e4%bd%9c%e3%82%8bhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_12" class="header-mark"></a>1.1.3.4 <a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_12" target="_blank" rel="noopener noreferrer">自作のAnalyzerコレクションを作る</a></h5><p><code>skeleton</code> コマンドで雛形を作成した後，<br>
+<code>cmd/pkgName/main.go</code> を次のように編集します．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/analysis&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/analysis/unitchecker&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/gostaticanalysis/unused&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/gostaticanalysis/called&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/gostaticanalysis/ctxfield&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">analyzers</span> <span class="o">:=</span> <span class="p">[]</span><span class="o">*</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">unused</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">called</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ctxfield</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">unitchecker</span><span class="p">.</span><span class="nf">Main</span><span class="p">(</span><span class="nx">analyzers</span><span class="o">...</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></div><p>このように， <code>unitchecker.Main</code> にスライスを展開しつつ渡すだけです．<br>
+<code>analysis</code> パッケージを用いて実装された静的解析ツールはモジュール化されており，<br>
+組み合わせて簡単に用いることができるのも利点ですね．</p>
+<h5 id="skeletonのインストールhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_18" class="headerLink">
+    <a href="#skeleton%e3%81%ae%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%abhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg6298a0e67590aa1e_18" class="header-mark"></a>1.1.3.5 <a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g6298a0e67590aa1e_18" target="_blank" rel="noopener noreferrer">skeletonのインストール</a></h5><p><a href="#%e4%b8%8d%e8%a6%81%e3%81%aa%e3%83%91%e3%83%83%e3%82%b1%e3%83%bc%e3%82%b8%e9%96%a2%e6%95%b0%e3%81%ae%e5%88%a4%e5%88%a5" rel="">こちらのセクション</a> を参照してください．</p>
+<h5 id="インポート文の重複を検出しようhttpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg870cb4ff5f_0_989" class="headerLink">
+    <a href="#%e3%82%a4%e3%83%b3%e3%83%9d%e3%83%bc%e3%83%88%e6%96%87%e3%81%ae%e9%87%8d%e8%a4%87%e3%82%92%e6%a4%9c%e5%87%ba%e3%81%97%e3%82%88%e3%81%86httpsdocsgooglecompresentationd1i4phnzv2dfombrcpa-xd0talcx6pbkpls6wxghomjogeditslideidg870cb4ff5f_0_989" class="header-mark"></a>1.1.3.6 <a href="https://docs.google.com/presentation/d/1I4pHnzV2dFOMbRcpA-XD0TaLcX6PBKpls6WxGHoMjOg/edit#slide=id.g870cb4ff5f_0_989" target="_blank" rel="noopener noreferrer">インポート文の重複を検出しよう</a></h5><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nx">fmt1</span> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nx">fmt2</span> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt1</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Hello&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt2</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;World&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>のようなケースを検出できるようにするのが目的です．<br>
+<code>skeleton</code> コマンドで雛形を作成した後，静的解析のロジックを次のように編集します．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">try2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;strconv&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/analysis&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;golang.org/x/tools/go/analysis/passes/inspect&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="nx">doc</span> <span class="p">=</span> <span class="s">&#34;try2 is ...&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Analyzer is ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">Analyzer</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;try2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Doc</span><span class="p">:</span>  <span class="nx">doc</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Run</span><span class="p">:</span>  <span class="nx">run</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Requires</span><span class="p">:</span> <span class="p">[]</span><span class="o">*</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">inspect</span><span class="p">.</span><span class="nx">Analyzer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">run</span><span class="p">(</span><span class="nx">pass</span> <span class="o">*</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">Pass</span><span class="p">)</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">f</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pass</span><span class="p">.</span><span class="nx">Files</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="c1">// インポートパスはGoパッケージに対して1対1に存在するはず
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// エイリアス名がなんであれ，インポートパスは同じなので，それを検出する
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">importedPkgs</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">f</span><span class="p">.</span><span class="nx">Imports</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// *ast.BasicLit.Value はクォートで囲われているかもしれない
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nx">path</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Unquote</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">Path</span><span class="p">.</span><span class="nx">Value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			
+</span></span><span class="line"><span class="cl">			<span class="c1">// もし既にエントリが存在すれば，import済みとして検出する
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">importedPkgs</span><span class="p">[</span><span class="nx">path</span><span class="p">];</span> <span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">pass</span><span class="p">.</span><span class="nf">Reportf</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nf">Pos</span><span class="p">(),</span> <span class="s">&#34;NG&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="k">continue</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nx">importedPkgs</span><span class="p">[</span><span class="nx">path</span><span class="p">]</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>*ast.ImportSpec.Name</code> には <code>fmt1/fmt2</code> のような，<br>
+<strong>実際にパッケージ内で用いられるときの名前</strong> が格納されています．<br>
+しかし <code>*ast.ImportSpec.Path</code> は必ずパッケージと1対1で存在するはずなので，それを使ってあげれば実装できます．<br>
+クォーテーションのことを考えて， <code>strconv.Unquote</code> を使うのもポイントです．</p>
+<h5 id="抽象構文木の確認" class="headerLink">
+    <a href="#%e6%8a%bd%e8%b1%a1%e6%a7%8b%e6%96%87%e6%9c%a8%e3%81%ae%e7%a2%ba%e8%aa%8d" class="header-mark"></a>1.1.3.7 抽象構文木の確認</h5><p>これは静的解析ツールを開発する課題ではないですし，<br>
+非常にシンプルなコード片で実装可能なので，<a href="https://play.golang.org/p/tNi5Coj_hcX" target="_blank" rel="noopener noreferrer">Playgroundを共有</a>いたします．</p>
+<p>これだけのコードでもかなり深い階層構造を持っていることがわかります．</p>
+<h3 id="開発" class="headerLink">
+    <a href="#%e9%96%8b%e7%99%ba" class="header-mark"></a>1.2 開発</h3><p>私が今回作成したのは，次のようなツール群です．<br>
+本当はこれに加えて <strong><code>const</code> 宣言すべきである識別子の検出</strong> もやりたかったんですが，ちょっと実装速度が足りませんでした．<br>
+やりたい人いらっしゃったら一緒にやりましょう!(投げやり)<br>
+Golangでは <code>var</code> や <code>id :=</code> を用いると標準でミュータブルですが，<br>
+プリミティブな型かつ不変性を許容できる場合については <code>const</code> 宣言を使うことができます．<br>
+これを検出するようなツールも作ろうと考えていました．<br>
+(パッケージ変数，自動変数のどちらも検出したかった)</p>
+<p><a href="https://github.com/Drumato/goanalyzer" target="_blank" rel="noopener noreferrer">リポジトリはこちら．</a></p>
+<h4 id="パッケージ間の依存関係可視化ツール" class="headerLink">
+    <a href="#%e3%83%91%e3%83%83%e3%82%b1%e3%83%bc%e3%82%b8%e9%96%93%e3%81%ae%e4%be%9d%e5%ad%98%e9%96%a2%e4%bf%82%e5%8f%af%e8%a6%96%e5%8c%96%e3%83%84%e3%83%bc%e3%83%ab" class="header-mark"></a>1.2.1 パッケージ間の依存関係可視化ツール</h4><p>Golangパッケージを指定すると，そのパッケージが依存するパッケージを探索し，<br>
+DOT言語( グラフ構造の記述言語 )を生成する，というツールです．</p>
+<p>これはどちらかというと習作というか，勉強の為に作った感じがあります．<br>
+というのも，今回私が作ったものよりも<a href="https://github.com/ofabry/go-callvis" target="_blank" rel="noopener noreferrer">更に高機能で便利なもの</a>が<a href="https://github.com/loov/goda" target="_blank" rel="noopener noreferrer">既に存在する</a>からです．</p>
+<p>しかし実際に作ってみると以下のような問題があり，勉強になりました．</p>
+<ul>
+<li>Golangプログラミングではほぼ必ず <strong>標準パッケージ</strong> を利用する
+<ul>
+<li>先述したように多くの機能が含まれている</li>
+<li>これらを依存グラフに含むと，<strong>真っ黒で何もわからなくなってしまう</strong></li>
+</ul>
+</li>
+<li>多くのパッケージが同じパッケージを参照する，みたいなこともよくある
+<ul>
+<li><strong>愚直に再帰で実装</strong> すると，同じパッケージに対し何回も探索を実行してしまう</li>
+<li>ちゃんと <strong>枝刈り</strong> することが求められる</li>
+</ul>
+</li>
+</ul>
+<p>実際にこのツールを用いて，<br>
+<code>goanalyzer</code> パッケージ自体を解析してみた結果を示します．</p>
+<p><a class="lightgallery" href="/images/gopher-2020/scshot1.png" title="scshot1" data-thumbnail="/images/gopher-2020/scshot1.png">
+        <img
+            class="lazyload"
+            data-src="/images/gopher-2020/scshot1.png"
+            data-srcset="/images/gopher-2020/scshot1.png, /images/gopher-2020/scshot1.png 1.5x, /images/gopher-2020/scshot1.png 2x"
+            data-sizes="auto"
+            alt="/images/gopher-2020/scshot1.png">
+    </a></p>
+<p>ただノードの関係のみマッピングしている状態なのであんまりきれいではないんですが，<br>
+graphvizの機能を使ってノードを区別したり色つけたり，サブグラフ使えばもうちょっときれいになりそうです．<br>
+先程列挙した既存ツールでは <strong>&ldquo;どの関数に依存しているか&rdquo;</strong> もわかるので便利なんですが，<br>
+この簡易な依存グラフを見るだけでもいろいろなことがわかります．<br>
+例えば，非推奨のパッケージを使っていることが視覚的にわかるなど．</p>
+<h4 id="スコープチェッカー" class="headerLink">
+    <a href="#%e3%82%b9%e3%82%b3%e3%83%bc%e3%83%97%e3%83%81%e3%82%a7%e3%83%83%e3%82%ab%e3%83%bc" class="header-mark"></a>1.2.2 スコープチェッカー</h4><p>宣言されている識別子についてルールを適用し，<br>
+背いていれば検出対象とする，みたいなチェッカです．<br>
+これについては具体例を見るほうがわかりやすいと思います．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">x</span> <span class="o">:=</span> <span class="nf">f2</span><span class="p">()</span> <span class="c1">// want &#34;This identifier is only referenced in a scope so should move the declaration to it&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="kc">true</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">y</span> <span class="o">:=</span> <span class="nf">f2</span><span class="p">()</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">f2</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">f</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">30</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>このように，</p>
+<ul>
+<li>識別子が定義されているスコープと参照されているスコープに<strong>親子関係</strong>がある</li>
+<li>識別子を参照するスコープの集合に <strong>定義スコープ自体が含まれない</strong></li>
+</ul>
+<p>ような構造を見つけて検出します．<br>
+これはあくまでも個人の意見ですが，<br>
+Golangに限らず <strong>&ldquo;一般に&quot;スコープは狭ければ狭いほうがいい</strong> と思っているので，作ってみました．</p>
+<ul>
+<li><code>go func() { ... }()</code> として即時関数を定義するケース</li>
+<li><code>if x := f(); condition {}</code> のようなケース</li>
+<li>ネストしたブロックのケース</li>
+</ul>
+<p>でも一応正しく動作しています．</p>
+<p>関数内の識別子だけでなく，トップレベル( unexportedなパッケージ変数)でも動作します．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">strGV1</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">&#34;A&#34;</span> <span class="c1">// want &#34;NG&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">strGC1</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">&#34;A&#34;</span> <span class="c1">// want &#34;NG&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">strGT1</span> <span class="kt">string</span>   <span class="c1">// want &#34;NG&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">strGT2</span> <span class="p">=</span> <span class="kt">string</span> <span class="c1">// want &#34;NG&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">A</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">strGV1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">strGC1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">a</span> <span class="nx">strGT1</span> <span class="p">=</span> <span class="s">&#34;A&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">b</span> <span class="nx">strGT2</span> <span class="p">=</span> <span class="s">&#34;A&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">B</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;B&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">C</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">A</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Goでは，</p>
+<ul>
+<li>type-alias( <code>type Name T</code> )</li>
+<li>named-type( <code>type Name = T</code> )</li>
+<li><code>var</code></li>
+<li><code>const</code></li>
+</ul>
+<p>という種類の宣言がトップレベルで可能になっています(関数も可能だけど今回は関係ないので省略)．<br>
+しかし，これらは関数内でも同様に可能です．<br>
+関数内スコープと同じ概念で，<br>
+<strong>一つの関数からしか利用されない識別子はその中で定義すればいい</strong> というシンプルなルールを持って解析します．<br>
+注意したのは <strong>unexportedな識別子に制限する</strong> ということです．<br>
+GolangでUpperCamelCaseで宣言された識別子はパッケージ内で使用されていないとしても，<br>
+外部パッケージから参照される可能性があるので，そのような実装にしています．<br>
+上の例の宣言を移動しても<a href="https://play.golang.org/p/_vnfikFAZY0" target="_blank" rel="noopener noreferrer">Playgroundで正しく動き</a>ます．</p>
+<p>時間内に実装しきれなかった機能としては，例えば次のようなものがあります．<br>
+機能というよりは痛いバグですね．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">x</span> <span class="o">:=</span> <span class="mi">30</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="kc">true</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>この場合の <code>x</code> はどちらのブロックでも用いられているため，宣言スコープが関数のトップレベルで正しいはずです．<br>
+しかし現在の私のツールでは，これを&quot;宣言を移動するべき&quot;として検出してしまいます．</p>
+<h4 id="ユニットテストが定義されていない関数の検出" class="headerLink">
+    <a href="#%e3%83%a6%e3%83%8b%e3%83%83%e3%83%88%e3%83%86%e3%82%b9%e3%83%88%e3%81%8c%e5%ae%9a%e7%be%a9%e3%81%95%e3%82%8c%e3%81%a6%e3%81%84%e3%81%aa%e3%81%84%e9%96%a2%e6%95%b0%e3%81%ae%e6%a4%9c%e5%87%ba" class="header-mark"></a>1.2.3 ユニットテストが定義されていない関数の検出</h4><p><a href="https://github.com/Drumato/goanalyzer/tree/master/testdata/src/undefined_unit_test/a" target="_blank" rel="noopener noreferrer">この例</a>を見ていただけるとわかりやすいのですが，</p>
+<ul>
+<li><code>f</code> &hellip; 関数のテストが書かれていない</li>
+<li><code>F2</code> &hellip; 関数のテストが書かれている</li>
+</ul>
+<p>みたいなコードです．<br>
+この <code>f</code> みたいな関数を検出するようなアナライザを実装しました．<br>
+どうしてもテストが難しいような関数や，テストが必要な場合もあるかもしれないので，<br>
+そういう場合には <code>// @ignore</code> みたいなDocCommentがついていたら検出しないようにもしたかったのですが，<br>
+スコープチェッカの実装に大きな穴が見つかってそっちを直していたらインターンが終わってしまいました．</p>
+<h2 id="まとめ" class="headerLink">
+    <a href="#%e3%81%be%e3%81%a8%e3%82%81" class="header-mark"></a>2 まとめ</h2><p>今回このような勉強の機会を与えてくださった株式会社メルカリ様，<br>
+また講義やコードレビュー等をして頂いたメンターの方々，<br>
+そしてインターンに一緒に参加していた受講生の方々，<br>
+本当にありがとうございました!</p>
+<p>上記以外にも，特筆すべき2つの点について述べておきます．</p>
+<h3 id="静的解析はソフトウェア開発の生産性を向上させる選択肢の一つとなりうる" class="headerLink">
+    <a href="#%e9%9d%99%e7%9a%84%e8%a7%a3%e6%9e%90%e3%81%af%e3%82%bd%e3%83%95%e3%83%88%e3%82%a6%e3%82%a7%e3%82%a2%e9%96%8b%e7%99%ba%e3%81%ae%e7%94%9f%e7%94%a3%e6%80%a7%e3%82%92%e5%90%91%e4%b8%8a%e3%81%95%e3%81%9b%e3%82%8b%e9%81%b8%e6%8a%9e%e8%82%a2%e3%81%ae%e4%b8%80%e3%81%a4%e3%81%a8%e3%81%aa%e3%82%8a%e3%81%86%e3%82%8b" class="header-mark"></a>2.1 静的解析はソフトウェア開発の生産性を向上させる選択肢の一つとなりうる</h3><p>当たり前だと思うかもしれませんが，個人的にはこれを再認識できたのは非常に大きいと思っています．<br>
+今まで静的解析ツールは <strong>個人開発の時，IDEがバグを早期発見するために提供してくれる機能</strong> ぐらいにしか意識していませんでした．<br>
+しかし，<a href="#%e3%83%ab%e3%83%bc%e3%83%ab%e3%82%92%e4%bd%9c%e3%82%8b%e5%a0%b4%e5%90%88%e3%81%af%e3%83%84%e3%83%bc%e3%83%ab%e3%82%82%e4%bd%9c%e3%82%8b" rel="">こちら</a>で話したように，<br>
+静的解析ツールを作ることでプロジェクト全体の開発スピードが円滑に，そしてスマートになる可能性を知ることができました．<br>
+私も普段のプログラミングでよくやってしまうミスなどはツール自作により技術的に解決したいなと，そう思うことができました．</p>
+<h3 id="実装速度とロバスト性の大切さ" class="headerLink">
+    <a href="#%e5%ae%9f%e8%a3%85%e9%80%9f%e5%ba%a6%e3%81%a8%e3%83%ad%e3%83%90%e3%82%b9%e3%83%88%e6%80%a7%e3%81%ae%e5%a4%a7%e5%88%87%e3%81%95" class="header-mark"></a>2.2 実装速度とロバスト性の大切さ</h3><p>Golangに対する経験が少ないというのはありますが，<br>
+実装速度が非常に遅かったのと，またバグもしばしば生んでしまいました．<br>
+他のインターン生を見ると，皆まさに <strong>爆速</strong> で実装していて，それはもうゾクゾクしました．<br>
+やはり周りが凄いと自分も頑張りたくなるもので，とても良い環境で勉強させていただきました．</p>
+</div>
+
+        <div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="#" onclick="return false;" title="Share on Twitter" data-sharer="twitter" data-url="http://drumato.com/ja/posts/linter-internship/" data-title="Online Summer Internship for Gophers 2020に参加しました" data-hashtags="static-analyzer,go"><i class="fab fa-twitter fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Facebook" data-sharer="facebook" data-url="http://drumato.com/ja/posts/linter-internship/" data-hashtag="static-analyzer"><i class="fab fa-facebook-square fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Hacker News" data-sharer="hackernews" data-url="http://drumato.com/ja/posts/linter-internship/" data-title="Online Summer Internship for Gophers 2020に参加しました"><i class="fab fa-hacker-news fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Reddit" data-sharer="reddit" data-url="http://drumato.com/ja/posts/linter-internship/"><i class="fab fa-reddit fa-fw"></i></a><a href="#" onclick="return false;" title="Share on Line" data-sharer="line" data-url="http://drumato.com/ja/posts/linter-internship/" data-title="Online Summer Internship for Gophers 2020に参加しました"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="#" onclick="return false;" title="Share on Pocket" data-sharer="pocket" data-url="http://drumato.com/ja/posts/linter-internship/"><i class="fab fa-get-pocket fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/ja/tags/static-analyzer/">static-analyzer</a>,&nbsp;<a href="/ja/tags/go/">go</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/ja/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/ja/posts/abc-with-automaton/" class="prev" rel="prev" title="Rustで有限オートマトンを書いてAtcoder Beginner ContestのA問題を解いてみる"><i class="fas fa-angle-left fa-fw"></i>Rustで有限オートマトンを書いてAtcoder Beginner ContestのA問題を解いてみる</a>
+            <a href="/ja/posts/tuipeach/" class="next" rel="next" title="TUI Based ELF Analyzer in Rust">TUI Based ELF Analyzer in Rust<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.108.0">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.2.13"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/ja/" target="_blank" rel="noopener noreferrer">Drumato</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/fuse/fuse.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/topbar/topbar.min.js"></script><script type="text/javascript" src="/lib/pjax/pjax.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script></div>
+
+<div class="pjax-assets"><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"data":{"desktop-header-typeit":"drumato.com","mobile-header-typeit":"drumato.com"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/ja/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"sharerjs":true,"typeit":{"cursorChar":null,"cursorSpeed":null,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":null,"speed":null}};</script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/js/katex.min.js" defer></script><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"></noscript></div>
+</body>
+
+</html>

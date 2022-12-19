@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>frr - Tag - drumato.com</title>
+        <link>http://drumato.com/tags/frr/</link>
+        <description>frr - Tag - drumato.com</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 04 Jan 2022 00:00:00 &#43;0000</lastBuildDate><atom:link href="http://drumato.com/tags/frr/" rel="self" type="application/rss+xml" /><item>
+    <title>Replace FRR Zebra SRv6 Manager with YANG Backend</title>
+    <link>http://drumato.com/posts/srv6-manager/</link>
+    <pubDate>Tue, 04 Jan 2022 00:00:00 &#43;0000</pubDate><author>
+        <name>Drumato</name>
+    </author><guid>http://drumato.com/posts/srv6-manager/</guid>
+    <description><![CDATA[Now I&rsquo;m playing with FRRouting and contributing with tiny PRs(my PRs have merged twice). Today I&rsquo;ll introduce my recent PoC that achieves replacement SRv6 Manager with YANG backend. This PoC is related with FRR Northbound API so I&rsquo;m interesting in it. This PoC is incomplete but it&rsquo;s maybe helpful if you want to know about the FRR&rsquo;s mechanism of Northbound API. You can see the PoC in here .
+1 Prerequisites 1.]]></description>
+</item></channel>
+</rss>
