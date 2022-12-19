@@ -191,7 +191,7 @@ theme = "DoIt"
       avatarURL = "/images/drumato.png"
       typeit = true
       social = true
-    [[languages.en.menu.main]]
+    [[languages.ja.menu.main]]
       identifier = "about"
       pre = ""
       post = ""
