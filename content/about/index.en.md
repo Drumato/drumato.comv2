@@ -20,11 +20,11 @@ toc:
 
 |||
 |:--:|:--:|
+| Mastodon(Fedibird.com) | https://fedibird.com/web/accounts/109549000662603403/about |
 | GitHub | <https://github.com/Drumato> |
 | Twitter| <https://twitter.com/drumato/> |
 | Facebook | <https://www.facebook.com/drumato.yamato.sugawara>|
 | LinkedIn| <https://www.linkedin.com/in/drumato/>|
-
 
 ## OSS Contributions
 
