@@ -41,7 +41,7 @@ nodes:
 
 ## 背景 
 
-## Kubernetes APIに対するアクセスコントロール
+### Kubernetes APIに対するアクセスコントロール
 
 Kubernetesでは、APIに対するアクセスコントロールを行う仕組みが複数用意されています。
 
