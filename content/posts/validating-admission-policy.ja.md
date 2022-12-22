@@ -189,7 +189,7 @@ spec:
   policyName: "sample1.drumato.com"
 ```
 
-実際に `app: nginx` のLabelがつけられたDeploymentの作成を弾く様子を以下に示します。
+実際に `.spec.replicas: 3` のDeploymentが作成されるのを弾く様子を以下に示します。
 
 ```bash
 $ kubectl get ns default -o json | jq .metadata.labels # 該当Labelを持ったns
@@ -206,7 +206,7 @@ $ kubectl apply -f deployment.yaml # バリデーションで弾かれる
 The deployments "nginx-deployment" is invalid: : ValidatingAdmissionPolicy 'sample1.drumato.com' with binding 'sample1-bind.drumato.com' denied request: failed expression: object.spec.replicas != 1
 
 $ nvim deployment.yaml # "app: nginx" を "app: nginx2" に変える
-$ kubectl apply -f deployment.yaml # バリデーションがパスされる
+$ kubectl apply -f deployment.yaml # バリデーション対象から外れる
 deployment.apps/nginx-deployment created
 ```
 
