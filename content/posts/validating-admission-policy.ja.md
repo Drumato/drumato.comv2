@@ -7,7 +7,7 @@ tags: ["kubernetes"]
 
 ## 概要
 
-- 12/20に、Kubernetes公式ブログに、 [Kubernetes 1.26: Introducing Validating Admission Policies](https://kubernetes.io/blog/2022/12/20/validating-admission-policies-alpha/) という記事が投稿されました
+- 12/20に、Kubernetes公式ブログに、 **[Kubernetes 1.26: Introducing Validating Admission Policies](https://kubernetes.io/blog/2022/12/20/validating-admission-policies-alpha/)** という記事が投稿されました
 - 本記事では、公式ブログの記事の内容を復習しつつ、実際に使ってみます
   - 従来のvalidation webhookと比較して、どんなメリットがあるのか
   - 簡単な使い方
@@ -55,11 +55,11 @@ Kubernetesでは、APIに対するアクセスコントロールを行う仕組�
 ### Admission Webhookについて
 
 このうち、Admission Controlの部分でAPIリクエストのバリデーションを実現する方法としては、
-validation webhook というやり方が主流です。
+**validation webhook** というやり方が主流です。
 
 これは、クラスタ運用者が独自にWebhookエンドポイントを用意してデプロイすることで、
 Kubernetes APIに対するリクエストの検査をおこないます。
-リクエスト検査のロジックをプログラマブルに扱えることから、自由度はかなり高いです。
+**リクエスト検査のロジックをプログラマブルに記述できる** ことから、自由度はかなり高いです。
 
 また、kubebuilder(controller-runtime)などは、admission webhookに対するサポートをおこなっているので、
 カスタムリソースに対するadmission webhookの適用を比較的簡単に始める事ができます。
@@ -115,7 +115,7 @@ APIリクエストそのものを弾く、という以外にも選択肢はあ�
 - バリデーションルールをK8sマニフェスト上に直接記述できる
   - バリデーションルールが宣言的に管理できる
   - ルールの更新は、単にAPIオブジェクトの更新だけ
-    - validation webhookでは再デプロイしていた
+    - validation webhookではエンドポイントを再デプロイしていた
 - K8s運用者が管理するのは **相変わらず** マニフェストだけ
 - **[Common Expression Language](https://github.com/google/cel-spec)** の表現力が高く、多くのケースをカバーできる
   - すでにCRDに対するバリデーション機能としてKubernetesに採用されていたので、親しみやすい
@@ -145,14 +145,13 @@ spec:
 `.spec.matchConstraints` で、ポリシーがマッチする条件を記述します。
 `NetworkPolicy.networking.k8s.io` やRBACのマニフェストで近い概念があるので、比較的わかりやすいと思います。
 利用できる制約は以下の通りです。
+また、 `excludeResourceRules` で、ポリシーが対象としないAPIオブジェクトを明示することもできます。
 
 |                     |                                                                                         |
 | :-----------------: | :-------------------------------------------------------------------------------------: |
 | `namespaceSelector` | 特定のLabelを持ったNamespaceにマッチし、そのNamespace以下のすべてのリソースを対象とする |
 |  `objectSelector`   |                     特定のNamespaceを持ったオブジェクトにマッチする                     |
 |   `resourceRules`   |                     APIリソースに対する細かいマッチルールを記述する                     |
-
-また、 `excludeResourceRules` で、ポリシーが対象としないAPIオブジェクトを明示することもできます。
 
 例えば、 **`environment: test` を持ったNamespace内の、 `app: nginx` を持ったDeployment** をマッチさせる場合は以下のようにします。
 
