@@ -7,11 +7,12 @@ tags: ["kubernetes"]
 
 ## 概要
 
-- 12/20に、Kubernetes公式ブログに、 **[Kubernetes 1.26: Introducing Validating Admission Policies](https://kubernetes.io/blog/2022/12/20/validating-admission-policies-alpha/)** という記事が投稿されました
-- 本記事では、公式ブログの記事の内容を復習しつつ、実際に使ってみます
-  - 従来のvalidation webhookと比較して、どんなメリットがあるのか
-  - 簡単な使い方
-  - どんな挙動を取るか
+お久しぶりです。最近ドラム式洗濯機を購入して、快適な生活ができているDrumatoです。
+
+12/20, Kubernetes公式ブログに、 **[Kubernetes 1.26: Introducing Validating Admission Policies](https://kubernetes.io/blog/2022/12/20/validating-admission-policies-alpha/)** という記事が投稿されました。
+そこで本記事では、公式ブログの記事の内容を復習しつつ、実際に使ってみます。
+公式ブログの内容を素早くレポートするのが目的なので、あまり凝ったことはしていないですが、
+すぐに使い始める方にとって十分な情報はカバーできていると思います。
 
 今回の検証環境を以下に示します。
 
