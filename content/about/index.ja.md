@@ -3,14 +3,14 @@ draft: false
 tags: []
 series: []
 toc:
-  auto: false
+  auto: true
 ---
 
-# About 
+# About
 
 ## Profile
 
-| Key | Value|
+| | |
 |:--:|:--:|
 | Name | Yamato Sugawara |
 | Handle | Drumato |
@@ -33,7 +33,7 @@ toc:
     - [zebra: Add support for json output in srv6 locator detail command](https://github.com/FRRouting/frr/pull/9899)
     - [enable to transition to SEGMENT_ROUTING_NODE when pathd is disabled](https://github.com/FRRouting/frr/pull/10350)
 
-## My Products
+## GitHub Repositories
 
 - [drumato.comv2](https://github.com/Drumato/drumato.comv2) ... My Blog with TypeScript + Next.js
 - [Depth](https://github.com/Drumato/Depth) ... my 1st generation x86_64 toolchain
@@ -59,31 +59,31 @@ toc:
 - Japanese
   - Zenn.dev
     - [[全部無料]最小限で理解しつつ作るELF parser入門 in Rust](https://zenn.dev/drumato/books/afc3e00a4c7f1d)
-      - Rustでpopularに使われるparser combinatorであるnomを使ってELF parserを作る本です
-      - ELFについて全く知らない人にもおすすめです
-  - 技術同人誌
+      - It introduces how to write an ELF parser by using nom(a popular parser combinator)
+      - I think this book is kind if you're new to analyze/parse ELF
+    - [[全編無料] 他言語習得者がとりあえず使えるようになるZig](https://zenn.dev/drumato/books/learn-zig-to-be-a-beginner)
+  - Fanzines
     - [OtakuAssembly Vol.1(co-authored)](https://booth.pm/ja/items/1578084)
-      - OtakuAssemblyというサークルに所属してELFのことを書きました
-      - 行動力のある人たちと一緒に本を書き上げる経験はとても貴重でした
 
 ## Events
 
-- seccamp2019 Y-Ⅱ Cコンパイラを自作してみよう! 受講生
-  - [report](https://www.drumato.com/ja/post/c-compiler-at-seccamp2019/)
+- seccamp2019 Y-ⅡCコンパイラを自作してみよう! Trainee
+  - [Report in Japanese](https://www.drumato.com/ja/post/c-compiler-at-seccamp2019/)
 - SecHack365'19 Trainee
-  - [SecHack365での1年間をまとめたreport](https://www.drumato.com/ja/post/execution-program-infra-at-sechack365/)
-  - [成果物についてfocusしてまとめたreport](https://www.drumato.com/ja/post/execution-program-infra-in-rust/)
-- 第10期サイボウズ･ラボユース生
-  -  [Report in Japanese](https://www.drumato.com/ja/post/cybozu-labs-youth-10th/)
-- Online Summer Internship for Gophers 2020参加
-  - [Report in Japanese](https://www.drumato.com/ja/post/online-summer-internship-for-gophers-2020/)
+  - [Report in Japanese](https://www.drumato.com/ja/post/execution-program-infra-at-sechack365/)
+  - [Report2 in Japanese](https://www.drumato.com/ja/post/execution-program-infra-in-rust/)
+- Cybozu Labs Youth 10th
+  - [Report in Japanese](https://www.drumato.com/ja/post/cybozu-labs-youth-10th/)
+- Online Summer Internship for Gophers 2020
+  - [Report in Japanese](https://www.drumato.com/ja/pos/online-summer-internship-for-gophers-2020/)
 - KLab Expert Camp#3
 
-## Other posts
+## Posts
 
 - as an SRE in SAKURA Internet Inc.
   - Japanese
     - [社内のKubernetesクラスタ運用を効率化する基盤について](https://knowledge.sakura.ad.jp/31773/)
+    - [マネージドMariaDBサービスの設計と仕組みについて](https://knowledge.sakura.ad.jp/35102/)
 - as a part-timer of LINE Corporation
   - Japanese
     - [仮想ルータクラスタを自動でローリングアップデートする仕組みの検討と実装](https://engineering.linecorp.com/ja/blog/rollingupdate-vrouter-cluster/)
