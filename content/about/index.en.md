@@ -3,7 +3,7 @@ draft: false
 tags: []
 series: []
 toc:
-  auto: false
+  auto: true
 ---
 
 # About
@@ -61,6 +61,7 @@ toc:
     - [[全部無料]最小限で理解しつつ作るELF parser入門 in Rust](https://zenn.dev/drumato/books/afc3e00a4c7f1d)
       - It introduces how to write an ELF parser by using nom(a popular parser combinator)
       - I think this book is kind if you're new to analyze/parse ELF
+    - [[全編無料] 他言語習得者がとりあえず使えるようになるZig](https://zenn.dev/drumato/books/learn-zig-to-be-a-beginner)
   - Fanzines
     - [OtakuAssembly Vol.1(co-authored)](https://booth.pm/ja/items/1578084)
 
@@ -77,11 +78,12 @@ toc:
   - [Report in Japanese](https://www.drumato.com/ja/pos/online-summer-internship-for-gophers-2020/)
 - KLab Expert Camp#3
 
-## Other Posts
+## Posts
 
 - as an SRE in SAKURA Internet Inc.
   - Japanese
     - [社内のKubernetesクラスタ運用を効率化する基盤について](https://knowledge.sakura.ad.jp/31773/)
+    - [マネージドMariaDBサービスの設計と仕組みについて](https://knowledge.sakura.ad.jp/35102/)
 - as a part-timer of LINE Corporation
   - Japanese
     - [仮想ルータクラスタを自動でローリングアップデートする仕組みの検討と実装](https://engineering.linecorp.com/ja/blog/rollingupdate-vrouter-cluster/)
