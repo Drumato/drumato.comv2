@@ -84,6 +84,7 @@ toc:
   - Japanese
     - [社内のKubernetesクラスタ運用を効率化する基盤について](https://knowledge.sakura.ad.jp/31773/)
     - [マネージドMariaDBサービスの設計と仕組みについて](https://knowledge.sakura.ad.jp/35102/)
+    - [本選のみ開催のISUCON13、問題はどう変わる？ 作問チームが語る”問題に込めた思い”](https://flatt.tech/magazine/entry/20231107_isucon13_question) by Flatt Security
 - as a part-timer of LINE Corporation
   - Japanese
     - [仮想ルータクラスタを自動でローリングアップデートする仕組みの検討と実装](https://engineering.linecorp.com/ja/blog/rollingupdate-vrouter-cluster/)
