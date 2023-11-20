@@ -77,6 +77,8 @@ toc:
 - Online Summer Internship for Gophers 2020
   - [Report in Japanese](https://www.drumato.com/ja/pos/online-summer-internship-for-gophers-2020/)
 - KLab Expert Camp#3
+- ISUCON13 本戦 作問
+- CloudNative Days Tokyo 2023 実行委員
 
 ## Posts
 
