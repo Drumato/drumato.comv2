@@ -48,7 +48,7 @@ theme = "DoIt"
           h6 = "{h2}.{h3}.{h4}.{h5}.{h6} {title}"
     [params.page.toc]
       enable = true
-      keepStatic = false 
+      keepStatic = true
       auto = true
     [params.page.share]
       enable = true
