@@ -82,6 +82,8 @@ toc:
 
 ## Posts
 
+- as a member of ISUCON member
+  - [ISUCON13に作問チームとして参加しました](https://www.drumato.com/ja/diaries/isucon13/)
 - as an SRE in SAKURA Internet Inc.
   - Japanese
     - [社内のKubernetesクラスタ運用を効率化する基盤について](https://knowledge.sakura.ad.jp/31773/)
