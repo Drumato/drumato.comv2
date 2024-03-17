@@ -57,7 +57,6 @@ node-000009   Ready    agent   11m   kwok-v0.5.1
 ```
 
 適当にサフィックスが偶数か奇数かで分けてLabelをつけておく。
-あと、PDBの
 
 ```shell
 > cat add-label.sh
