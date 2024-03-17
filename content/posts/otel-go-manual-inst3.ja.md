@@ -1,7 +1,7 @@
 ---
 title: "OpenTelemetryのGo手動計装3-Metrics APIを触ってみる-"
-date: "2024-03-12"
-lastmod: "2024-03-12"
+date: "2024-03-13"
+lastmod: "2024-03-13"
 tags: ["memo", "opentelemetry"]
 ---
 
