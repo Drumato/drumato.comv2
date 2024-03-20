@@ -71,7 +71,6 @@ Go内でcelの処理系や評価器を動かすためにやることは以下。
 - 環境下でCELプログラムをコンパイルする
   - これにより [Ast](https://pkg.go.dev/github.com/google/cel-go@v0.20.1/cel#Ast) が得られる
 - `Program` 構造体を用意し、評価器にわたす
-  - 
 
 ここまでの内容をもとに、コードを紹介する。
 
