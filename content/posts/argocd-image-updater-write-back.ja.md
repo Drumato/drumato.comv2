@@ -98,6 +98,8 @@ ArgoCD Applicationのsourceに書き込める感じで生成されますが､
 例としてPR作ってみたので､こちらを見ていただけると雰囲気がつかめると思います｡
 <https://github.com/Drumato/blog_samples/pull/1>
 
+![image](https://github.com/Drumato/drumato.comv2/assets/41734896/8b391fa4-4b8f-4748-87c0-7c1bfca0d8da)
+
 ということで､なんかめちゃくちゃ簡単にできてしまいました｡すごい｡
 
 ## 参考資料
