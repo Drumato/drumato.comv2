@@ -2,7 +2,7 @@
 title: "ProxySQL1: とりあえずKubernetesで動かす"
 date: "2024-07-23"
 lastmod: "2024-07-23"
-tags: ["kubernetes", "proxysql"]
+tags: ["memo", "kubernetes", "proxysql"]
 ---
 
 ## 概要
