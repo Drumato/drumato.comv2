@@ -93,7 +93,12 @@ toc:
   - Japanese
     - [仮想ルータクラスタを自動でローリングアップデートする仕組みの検討と実装](https://engineering.linecorp.com/ja/blog/rollingupdate-vrouter-cluster/)
     - [BGP Graceful Restartに関わる各OSSルーティングプラットフォームの動向調査](https://engineering.linecorp.com/ja/blog/oss-routing-platform-involved-in-bgp-graceful-restart/)
-
+- as an SRE in GMO Pepabo, Inc.
+  - Japanese
+    - [「春のSREまつり2024 〜OpenTelemetry活用すべて見せます〜」を開催しました](https://tech.pepabo.com/2024/05/17/pepabo-tech-sre-maturi-2024-otel/)
+    - [技術部合同で合宿をしました！ in 沼津](https://tech.pepabo.com/2024/07/24/development-camp-in-numazu/)
+    - [2024年度新卒エンジニア研修を実施しました!](https://tech.pepabo.com/2024/09/03/2024-engineer-training/)
+   
 ## Career
 
 See [LinkedIn](https://www.linkedin.com/in/drumato/)  
